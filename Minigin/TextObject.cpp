@@ -50,5 +50,3 @@ void dae::TextObject::SetPosition(const float x, const float y)
 {
 	m_transform.SetPosition(x, y, 0.0f);
 }
-
-

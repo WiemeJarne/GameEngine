@@ -1,10 +1,17 @@
 #include <SDL.h>
 #include "Texture2D.h"
+#include "ResourceManager.h"
+
+dae::Texture2D::Texture2D(const std::string& filename)
+	:m_texture{ dae::ResourceManager::GetInstance().LoadTexture(filename) }
+{ }
 
 dae::Texture2D::~Texture2D()
 {
 	SDL_DestroyTexture(m_texture);
 }
+
+void dae::Texture2D::Update() {}
 
 glm::ivec2 dae::Texture2D::GetSize() const
 {
