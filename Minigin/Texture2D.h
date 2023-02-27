@@ -13,6 +13,7 @@ namespace dae
 	{
 	public:
 		SDL_Texture* GetSDLTexture() const;
+		Texture2D() = default;
 		Texture2D(const std::string& filename);
 		Texture2D(SDL_Texture* texture);
 		~Texture2D();

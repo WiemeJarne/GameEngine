@@ -24,4 +24,6 @@ void Timer::Update()
 		m_FPSTimer = 0.f;
 		m_FrameCount = 0;
 	}
+
+	
 }
