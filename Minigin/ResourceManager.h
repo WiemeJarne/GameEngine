@@ -7,7 +7,7 @@ struct SDL_Texture;
 
 namespace dae
 {
-	class Texture2D;
+	class TextureComponent;
 	class Font;
 	class ResourceManager final : public Singleton<ResourceManager>
 	{

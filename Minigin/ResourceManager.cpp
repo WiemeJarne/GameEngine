@@ -3,7 +3,7 @@
 #include <SDL_ttf.h>
 #include "ResourceManager.h"
 #include "Renderer.h"
-#include "Texture2D.h"
+#include "TextureComponent.h"
 #include "Font.h"
 
 void dae::ResourceManager::Init(const std::string& dataPath)

@@ -2,13 +2,14 @@
 #include <memory>
 #include <vector>
 #include "Transform.h"
-#include "Texture2D.h"
+#include "TextureComponent.h"
+#include "TextComponent.h"
 
 class Component;
 
 namespace dae
 {
-	//class Texture2D;
+	//class TextureComponent;
 
 	// todo: this should become final.
 	class GameObject final

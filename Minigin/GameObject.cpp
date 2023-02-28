@@ -4,6 +4,8 @@
 #include "Renderer.h"
 #include "Component.h"
 #include "RenderComponent.h"
+#include "TextureComponent.h"
+#include "TextComponent.h"
 
 dae::GameObject::~GameObject() = default;
 
@@ -17,7 +19,10 @@ void dae::GameObject::Update()
 
 void dae::GameObject::Render() const
 {
-	this->GetComponent<RenderComponent>()->Render(*this);
+	for (const std::shared_ptr<Component>& component : m_Components)
+	{
+		component.get()->Render(*this);
+	}
 }
 
 void dae::GameObject::AddComponent(std::shared_ptr<Component> pComponent)

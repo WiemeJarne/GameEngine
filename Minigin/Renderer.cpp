@@ -1,7 +1,7 @@
 #include <stdexcept>
 #include "Renderer.h"
 #include "SceneManager.h"
-#include "Texture2D.h"
+#include "TextureComponent.h"
 
 int GetOpenGLDriverIndex()
 {
@@ -47,7 +47,7 @@ void dae::Renderer::Destroy()
 	}
 }
 
-void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y) const
+void dae::Renderer::RenderTexture(const TextureComponent& texture, const float x, const float y) const
 {
 	SDL_Rect dst{};
 	dst.x = static_cast<int>(x);
@@ -56,7 +56,7 @@ void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const
 	SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
 }
 
-void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y, const float width, const float height) const
+void dae::Renderer::RenderTexture(const TextureComponent& texture, const float x, const float y, const float width, const float height) const
 {
 	SDL_Rect dst{};
 	dst.x = static_cast<int>(x);
