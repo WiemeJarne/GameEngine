@@ -14,16 +14,4 @@ void Timer::Update()
 	m_PreviousTime = currentTime;
 	
 	m_TotalSec += m_ElapsedSec;
-
-	m_FPSTimer += m_ElapsedSec;
-	++m_FrameCount;
-
-	if (m_FPSTimer >= 1.f)
-	{
-		m_FPS = m_FrameCount;
-		m_FPSTimer = 0.f;
-		m_FrameCount = 0;
-	}
-
-	
 }

@@ -4,6 +4,7 @@
 #include <string>
 
 struct SDL_Texture;
+
 namespace dae
 {
 	/**
@@ -13,18 +14,17 @@ namespace dae
 	{
 	public:
 		SDL_Texture* GetSDLTexture() const;
-		TextureComponent() = default;
-		TextureComponent(const std::string& filename);
-		TextureComponent(SDL_Texture* texture);
+		TextureComponent(std::weak_ptr<dae::GameObject> owner, const std::string& filename);
+		TextureComponent(std::weak_ptr<dae::GameObject> owner, SDL_Texture* texture);
 		~TextureComponent();
-
-		virtual void Update() override;
-		glm::ivec2 GetSize() const;
-
 		TextureComponent(const TextureComponent&) = delete;
 		TextureComponent(TextureComponent&&) = delete;
 		TextureComponent& operator= (const TextureComponent&) = delete;
 		TextureComponent& operator= (const TextureComponent&&) = delete;
+
+		virtual void Update() override {};
+		virtual void Render() const override {};
+		glm::ivec2 GetSize() const;
 
 	private:
 		SDL_Texture* m_texture;

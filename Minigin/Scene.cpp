@@ -30,6 +30,11 @@ void Scene::Update()
 	{
 		object->Update();
 	}
+
+	for (auto& object : m_objects)
+	{
+		object->EraseComponentsMarkedForDelete();
+	}
 }
 
 void Scene::Render() const

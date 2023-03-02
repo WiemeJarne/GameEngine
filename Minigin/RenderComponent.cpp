@@ -2,23 +2,25 @@
 #include "GameObject.h"
 #include "Renderer.h"
 
-RenderComponent::RenderComponent(const std::string& textureFilename)
+RenderComponent::RenderComponent(std::weak_ptr<dae::GameObject> owner)
+	: Component(owner)
+{}
+
+RenderComponent::RenderComponent(std::weak_ptr<dae::GameObject> owner, const std::string& textureFilename)
+	: Component(owner)
 {
 	SetTextureComponent(textureFilename);
 }
 
-RenderComponent::RenderComponent(std::shared_ptr<dae::TextureComponent> textureComponent)
+RenderComponent::RenderComponent(std::weak_ptr<dae::GameObject> owner, std::shared_ptr<dae::TextureComponent> textureComponent)
+	: Component(owner)
 {
 	SetTextureComponent(textureComponent);
 }
 
-RenderComponent::~RenderComponent() = default;
-
-void RenderComponent::Update() {}
-
-void RenderComponent::Render(const dae::GameObject& go) const
+void RenderComponent::Render() const
 {
-	const auto& pos = go.GetTransform().GetPosition();
+	const auto& pos = m_Owner.lock()->GetWorldPos();
 
 	if (m_TextureComponent)
 	{
@@ -28,7 +30,7 @@ void RenderComponent::Render(const dae::GameObject& go) const
 
 void RenderComponent::SetTextureComponent(const std::string& filename)
 {
-	m_TextureComponent = std::make_shared<dae::TextureComponent>(filename);
+	m_TextureComponent = std::make_shared<dae::TextureComponent>(m_Owner, filename);
 }
 
 void RenderComponent::SetTextureComponent(std::shared_ptr<dae::TextureComponent> textureComponent)

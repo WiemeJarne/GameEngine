@@ -2,24 +2,22 @@
 #include "Timer.h"
 #include "TextComponent.h"
 
-FPSComponent::FPSComponent(std::shared_ptr<dae::TextComponent> textComponent)
-	: m_TextComponent{ textComponent }
-{
-
-}
+FPSComponent::FPSComponent(std::weak_ptr<dae::GameObject> owner, std::shared_ptr<dae::TextComponent> textComponent)
+	: Component(owner),
+	  m_TextComponent{ textComponent }
+{}
 
 FPSComponent::~FPSComponent() = default;
 
 void FPSComponent::Update()
 {
-	m_FPSTimer += Timer::GetInstance().GetElapsedSec();
-	++m_FrameCount;
+	m_Timer += Timer::GetInstance().GetElapsedSec();
 
-	if (m_FPSTimer >= 1.f)
+	m_FPS = 1.f / Timer::GetInstance().GetElapsedSec();
+
+	if (m_Timer >= 1.f) //update the text 1 time per second
 	{
-		m_FPS = m_FrameCount;
-		m_FPSTimer = 0.f;
-		m_FrameCount = 0;
-		m_TextComponent->SetText(std::to_string(m_FPS) + " FPS");
+		m_Timer = 0.f;
+		m_TextComponent->SetText(std::to_string(static_cast<int>(m_FPS)) + " FPS");
 	}
 }

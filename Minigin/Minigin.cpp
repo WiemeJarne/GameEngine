@@ -81,6 +81,9 @@ void dae::Minigin::Run(const std::function<void()>& load)
 {
 	load();
 
+	const float desiredFPS{ 60.f };
+	std::chrono::duration<long long, std::milli> msPerFrame{ static_cast<long long>(1000.f / desiredFPS) };
+
 	auto& renderer = Renderer::GetInstance();
 	auto& sceneManager = SceneManager::GetInstance();
 	auto& input = InputManager::GetInstance();
@@ -90,10 +93,15 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	bool doContinue = true;
 	while (doContinue)
 	{
+		const auto start = std::chrono::high_resolution_clock::now();
+
 		doContinue = input.ProcessInput();
 		sceneManager.Update();
 		renderer.Render();
 
 		Timer::GetInstance().Update();
+
+		const auto sleepTime{ start + std::chrono::milliseconds(msPerFrame) - std::chrono::high_resolution_clock::now()};
+		std::this_thread::sleep_for(sleepTime);
 	}
 }
