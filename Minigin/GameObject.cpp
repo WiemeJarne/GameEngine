@@ -52,17 +52,17 @@ void dae::GameObject::SetParent(std::shared_ptr<dae::GameObject> parent, bool ke
 		{
 			auto newLocalPos{ GetLocalPos() - parent->GetWorldPos() };
 			SetLocalPosition(newLocalPos.x, newLocalPos.y);
-			m_UpdateWorldPos = true;
 		}
+		m_UpdateWorldPos = true;
 	}
 
-	if (m_Parent)
-		m_Parent->RemoveChild(this);
+	if (m_Parent.lock())
+		m_Parent.lock()->RemoveChild(this);
 
 	m_Parent = parent;
 
-	if (m_Parent)
-		m_Parent->AddChild(this);
+	if (m_Parent.lock())
+		m_Parent.lock()->AddChild(this);
 }
 
 void dae::GameObject::SetLocalPosition(float x, float y)
@@ -91,11 +91,11 @@ const glm::vec3& dae::GameObject::GetWorldPos()
 
 void dae::GameObject::UpdateWorldPos()
 {
-	if (!m_Parent)
-		m_WorldTransform = m_LocalTransform;
+	if (!m_Parent.lock())
+		m_WorldTransform.SetPosition(m_LocalTransform.GetPosition().x, m_LocalTransform.GetPosition().y, 0.f);
 	else
 	{
-		auto newWorldPos{ m_Parent->GetWorldPos() + m_LocalTransform.GetPosition() };
+		auto newWorldPos{ m_Parent.lock()->GetWorldPos() + m_LocalTransform.GetPosition()};
 		m_WorldTransform.SetPosition(newWorldPos.x, newWorldPos.y, newWorldPos.z);
 	}
 
@@ -115,18 +115,29 @@ void dae::GameObject::EraseComponentsMarkedForDelete()
 	m_ComponentToDeleteIterators.clear();
 }
 
-void dae::GameObject::AddChild(dae::GameObject* child)
+void dae::GameObject::AddChild(dae::GameObject* pChild)
 {
-	for (auto& _child : m_Children)
+	for (auto& child : m_Children)
 	{
-		if (_child.get() == child)
+		if (child.get() == pChild)
 			return;
 	}
 
-	m_Children.push_back(std::make_shared<GameObject>(*child));
+	m_Children.push_back(std::make_shared<GameObject>(*pChild));
 }
 
-void dae::GameObject::RemoveChild(dae::GameObject* child)
+void dae::GameObject::RemoveChild(dae::GameObject* pChild)
 {
-	child->SetParent(std::make_shared<GameObject>(), false);
+	auto iterator = std::find_if(m_Children.begin(), m_Children.end(),
+		[pChild](const std::shared_ptr<GameObject>& child)
+		{
+			return child.get() == pChild;
+		});
+
+	if (iterator != m_Children.end())
+	{
+		m_Children.erase(iterator);
+	}
+
+	pChild->SetParent(std::make_shared<GameObject>(), false);
 }

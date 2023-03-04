@@ -14,7 +14,7 @@ namespace dae
 		virtual void Render() const;
 
 		void SetParent(std::shared_ptr<GameObject> parent, bool keepWorldPos);
-		std::shared_ptr<GameObject> GetParent() const { return m_Parent; }
+		std::weak_ptr<GameObject> GetParent() const { return m_Parent; }
 		size_t GetChildCount() const { return m_Children.size(); }
 		std::weak_ptr<GameObject> GetChildAt(int index) const { return m_Children[index]; }
 		void SetLocalPosition(float x, float y);
@@ -75,12 +75,12 @@ namespace dae
 		std::vector<std::shared_ptr<Component>> m_Components;
 		std::vector<std::vector<std::shared_ptr<Component>>::iterator> m_ComponentToDeleteIterators;
 		std::vector<std::shared_ptr<GameObject>> m_Children;
-		std::shared_ptr<GameObject> m_Parent;
+		std::weak_ptr<GameObject> m_Parent;
 		Transform m_LocalTransform{};
 		Transform m_WorldTransform{};
 		bool m_UpdateWorldPos{};
 
-		void AddChild(GameObject* child);
-		void RemoveChild(GameObject* child);
+		void AddChild(GameObject* pChild);
+		void RemoveChild(GameObject* pChild);
 	};
 }

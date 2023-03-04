@@ -20,7 +20,7 @@ RenderComponent::RenderComponent(std::weak_ptr<dae::GameObject> owner, std::shar
 
 void RenderComponent::Render() const
 {
-	const auto& pos = m_Owner.lock()->GetWorldPos();
+	auto pos = m_Owner.lock()->GetWorldPos();
 
 	if (m_TextureComponent)
 	{

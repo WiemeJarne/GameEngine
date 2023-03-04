@@ -66,6 +66,9 @@
     <ClInclude Include="TextureComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
+    <ClInclude Include="MoveInCircleComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ResourceManager.cpp">
@@ -111,6 +114,9 @@
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="TextureComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveInCircleComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
   </ItemGroup>
