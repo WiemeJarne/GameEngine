@@ -23,7 +23,7 @@ namespace dae
 		const glm::vec3& GetWorldPos();
 		
 		void UpdateWorldPos();
-		void AddComponent(std::shared_ptr<Component> pComponent);
+		void AddComponent(std::shared_ptr<Component> component);
 		
 		template<typename ComponentType>
 		void RemoveComponent()

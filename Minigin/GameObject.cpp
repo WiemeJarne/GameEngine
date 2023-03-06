@@ -28,9 +28,22 @@ void dae::GameObject::Render() const
 	}
 }
 
-void dae::GameObject::AddComponent(std::shared_ptr<Component> pComponent)
+void dae::GameObject::AddComponent(std::shared_ptr<Component> component)
 {
-	m_Components.emplace_back(std::move(pComponent));
+	bool componentAlreadyOnThisObject{};
+
+	for (auto& existingComponent : m_Components)
+	{
+		if (typeid(*existingComponent) == typeid(*component))
+		{
+			componentAlreadyOnThisObject = true;
+		}
+	}
+
+	if (!componentAlreadyOnThisObject)
+	{
+		m_Components.emplace_back(std::move(component));
+	}
 }
 
 void dae::GameObject::SetParent(std::shared_ptr<dae::GameObject> parent, bool keepWorldPos)

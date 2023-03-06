@@ -81,7 +81,7 @@ void dae::Minigin::Run(const std::function<void()>& load)
 {
 	load();
 
-	const float desiredFPS{ 60.f };
+	const float desiredFPS{ 144.f };
 	std::chrono::duration<long long, std::milli> msPerFrame{ static_cast<long long>(1000.f / desiredFPS) };
 
 	auto& renderer = Renderer::GetInstance();
