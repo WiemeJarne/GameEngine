@@ -24,7 +24,7 @@ void dae::GameObject::Render() const
 {
 	for (const std::shared_ptr<Component>& component : m_Components)
 	{
-		component.get()->Render();
+		component->Render();
 	}
 }
 
@@ -32,6 +32,7 @@ void dae::GameObject::AddComponent(std::shared_ptr<Component> component)
 {
 	bool componentAlreadyOnThisObject{};
 
+	//check if there already is a component of this type on this gameObject
 	for (auto& existingComponent : m_Components)
 	{
 		if (typeid(*existingComponent) == typeid(*component))
@@ -40,6 +41,7 @@ void dae::GameObject::AddComponent(std::shared_ptr<Component> component)
 		}
 	}
 
+	//if the object is not on this gameObject add it else do nothing
 	if (!componentAlreadyOnThisObject)
 	{
 		m_Components.emplace_back(std::move(component));
@@ -48,20 +50,23 @@ void dae::GameObject::AddComponent(std::shared_ptr<Component> component)
 
 void dae::GameObject::SetParent(std::shared_ptr<dae::GameObject> parent, bool keepWorldPos)
 {
+	//check if the passed trough parent isn't a direct child of this gameObject
 	for (auto& child : m_Children)
 	{
 		if (parent == child)
 			return;
 	}
 
+	//check if the gameObject isn't trying to assing himself as his own parent
 	if (parent.get() == this)
 		return;
 
+	//if there is no parent the local position is equal to the world position
 	if (!parent)
 		SetLocalPosition(GetWorldPos().x, GetWorldPos().y);
 	else
 	{
-		if (keepWorldPos)
+		if (keepWorldPos) //Updates the local pos so the world pos is kept
 		{
 			auto newLocalPos{ GetLocalPos() - parent->GetWorldPos() };
 			SetLocalPosition(newLocalPos.x, newLocalPos.y);
@@ -69,11 +74,14 @@ void dae::GameObject::SetParent(std::shared_ptr<dae::GameObject> parent, bool ke
 		m_UpdateWorldPos = true;
 	}
 
+	//remove this gameObject as a child from the previous parent
 	if (m_Parent.lock())
 		m_Parent.lock()->RemoveChild(this);
 
+	//assign the new parent
 	m_Parent = parent;
 
+	//add this gameObject as a child of the new parent
 	if (m_Parent.lock())
 		m_Parent.lock()->AddChild(this);
 }

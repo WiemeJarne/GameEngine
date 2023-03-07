@@ -10,19 +10,27 @@ namespace dae
 	class GameObject final
 	{
 	public:
+		GameObject() = default;
+		virtual ~GameObject();
+		GameObject(const GameObject& other) = default;
+		GameObject& operator=(const GameObject& other) = delete;
+
 		virtual void Update();
 		virtual void Render() const;
 
 		void SetParent(std::shared_ptr<GameObject> parent, bool keepWorldPos);
 		std::weak_ptr<GameObject> GetParent() const { return m_Parent; }
+
 		size_t GetChildCount() const { return m_Children.size(); }
 		std::weak_ptr<GameObject> GetChildAt(int index) const { return m_Children[index]; }
+
 		void SetLocalPosition(float x, float y);
-		void SetWorldPosition(float x, float y);
 		const glm::vec3& GetLocalPos();
+
+		void SetWorldPosition(float x, float y);
 		const glm::vec3& GetWorldPos();
-		
 		void UpdateWorldPos();
+		
 		void AddComponent(std::shared_ptr<Component> component);
 		
 		template<typename ComponentType>
@@ -66,16 +74,11 @@ namespace dae
 
 		void EraseComponentsMarkedForDelete();
 
-		GameObject() = default;
-		virtual ~GameObject();
-		GameObject(const GameObject& other) = default;
-		GameObject& operator=(const GameObject& other) = delete;
-
 	private:
 		std::vector<std::shared_ptr<Component>> m_Components;
 		std::vector<std::vector<std::shared_ptr<Component>>::iterator> m_ComponentToDeleteIterators;
-		std::vector<std::shared_ptr<GameObject>> m_Children;
 		std::weak_ptr<GameObject> m_Parent;
+		std::vector<std::shared_ptr<GameObject>> m_Children;
 		Transform m_LocalTransform{};
 		Transform m_WorldTransform{};
 		bool m_UpdateWorldPos{};
