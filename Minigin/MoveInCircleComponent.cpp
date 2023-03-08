@@ -23,13 +23,10 @@ void MoveInCircleComponent::Update()
 		if (m_ClockWise)
 		{
 			newPos = m_Owner.lock()->GetLocalPos() - moveDirection;
-			m_CurrentAngle += m_AngularSpeed * Timer::GetInstance().GetElapsedSec();
 		}
-			
 		else
 		{
 			newPos = m_Owner.lock()->GetLocalPos() + moveDirection;
-			m_CurrentAngle -= m_AngularSpeed * Timer::GetInstance().GetElapsedSec();
 		}
 
 		m_Owner.lock()->SetLocalPosition(newPos.x, newPos.y);

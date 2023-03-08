@@ -90,6 +90,8 @@ void dae::GameObject::SetLocalPosition(float x, float y)
 {
 	m_LocalTransform.SetPosition(x, y, 0.f);
 	m_UpdateWorldPos = true;
+
+	//todo zet de dirty flag van de children
 }
 
 void dae::GameObject::SetWorldPosition(float x, float y)

@@ -77,8 +77,8 @@ namespace dae
 	private:
 		std::vector<std::shared_ptr<Component>> m_Components;
 		std::vector<std::vector<std::shared_ptr<Component>>::iterator> m_ComponentToDeleteIterators;
-		std::weak_ptr<GameObject> m_Parent;
-		std::vector<std::shared_ptr<GameObject>> m_Children;
+		std::weak_ptr<GameObject> m_Parent; //maak dit gewone pointer
+		std::vector<std::shared_ptr<GameObject>> m_Children; //maak dit gewone pointer
 		Transform m_LocalTransform{};
 		Transform m_WorldTransform{};
 		bool m_UpdateWorldPos{};
