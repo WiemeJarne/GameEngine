@@ -6,7 +6,7 @@
 #include "TextureComponent.h"
 #include "RenderComponent.h"
 
-dae::TextComponent::TextComponent(std::weak_ptr<dae::GameObject> owner, const std::string& text, std::shared_ptr<Font> font, std::shared_ptr<RenderComponent> renderComponent)
+dae::TextComponent::TextComponent(dae::GameObject* owner, const std::string& text, std::shared_ptr<Font> font, std::shared_ptr<RenderComponent> renderComponent)
 	: Component{ owner },
 	  m_needsUpdate{ true },
 	  m_text{ text },

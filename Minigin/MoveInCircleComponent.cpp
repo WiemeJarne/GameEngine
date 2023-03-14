@@ -3,7 +3,7 @@
 #include "GameObject.h"
 #include <iostream>
 
-MoveInCircleComponent::MoveInCircleComponent(std::weak_ptr<dae::GameObject> owner, float radius, float rotationSpeed, bool clockWise)
+MoveInCircleComponent::MoveInCircleComponent(dae::GameObject* owner, float radius, float rotationSpeed, bool clockWise)
 	: Component(owner),
 	  m_Radius{ radius },
 	  m_AngularSpeed{ rotationSpeed },
@@ -22,14 +22,14 @@ void MoveInCircleComponent::Update()
 	
 		if (m_ClockWise)
 		{
-			newPos = m_Owner.lock()->GetLocalPos() - moveDirection;
+			newPos = m_Owner->GetLocalPos() - moveDirection;
 		}
 		else
 		{
-			newPos = m_Owner.lock()->GetLocalPos() + moveDirection;
+			newPos = m_Owner->GetLocalPos() + moveDirection;
 		}
 
-		m_Owner.lock()->SetLocalPosition(newPos.x, newPos.y);
+		m_Owner->SetLocalPosition(newPos.x, newPos.y);
 		m_IsInitialised = true;
 	}
 	else
@@ -46,8 +46,8 @@ void MoveInCircleComponent::Update()
 
 		glm::vec3 newPos{};
 
-		newPos = m_Owner.lock()->GetLocalPos() + moveDirection;
+		newPos = m_Owner->GetLocalPos() + moveDirection;
 
-		m_Owner.lock()->SetLocalPosition(newPos.x, newPos.y);
+		m_Owner->SetLocalPosition(newPos.x, newPos.y);
 	}
 }

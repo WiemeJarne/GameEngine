@@ -1,18 +1,19 @@
 #include "RenderComponent.h"
 #include "GameObject.h"
 #include "Renderer.h"
+#include <iostream>
 
-RenderComponent::RenderComponent(std::weak_ptr<dae::GameObject> owner)
+RenderComponent::RenderComponent(dae::GameObject* owner)
 	: Component(owner)
 {}
 
-RenderComponent::RenderComponent(std::weak_ptr<dae::GameObject> owner, const std::string& textureFilename)
+RenderComponent::RenderComponent(dae::GameObject* owner, const std::string& textureFilename)
 	: Component(owner)
 {
 	SetTextureComponent(textureFilename);
 }
 
-RenderComponent::RenderComponent(std::weak_ptr<dae::GameObject> owner, std::shared_ptr<dae::TextureComponent> textureComponent)
+RenderComponent::RenderComponent(dae::GameObject* owner, std::shared_ptr<dae::TextureComponent> textureComponent)
 	: Component(owner)
 {
 	SetTextureComponent(textureComponent);
@@ -20,7 +21,7 @@ RenderComponent::RenderComponent(std::weak_ptr<dae::GameObject> owner, std::shar
 
 void RenderComponent::Render() const
 {
-	auto pos = m_Owner.lock()->GetWorldPos();
+	auto pos = m_Owner->GetWorldPos();
 
 	if (m_TextureComponent)
 	{

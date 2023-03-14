@@ -12,9 +12,9 @@ namespace dae
 class RenderComponent final : public Component
 {
 public:
-	RenderComponent(std::weak_ptr<dae::GameObject> owner);
-	RenderComponent(std::weak_ptr<dae::GameObject> owner, const std::string& textureFilename);
-	RenderComponent(std::weak_ptr<dae::GameObject> owner, std::shared_ptr<dae::TextureComponent> textureComponent);
+	RenderComponent(dae::GameObject* owner);
+	RenderComponent(dae::GameObject* owner, const std::string& textureFilename);
+	RenderComponent(dae::GameObject* owner, std::shared_ptr<dae::TextureComponent> textureComponent);
 
 	~RenderComponent() = default;
 	RenderComponent(const RenderComponent& other) = delete;

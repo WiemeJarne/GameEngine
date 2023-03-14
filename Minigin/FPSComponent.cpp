@@ -2,7 +2,7 @@
 #include "Timer.h"
 #include "TextComponent.h"
 
-FPSComponent::FPSComponent(std::weak_ptr<dae::GameObject> owner, std::shared_ptr<dae::TextComponent> textComponent)
+FPSComponent::FPSComponent(dae::GameObject* owner, std::shared_ptr<dae::TextComponent> textComponent)
 	: Component(owner),
 	  m_TextComponent{ textComponent }
 {}

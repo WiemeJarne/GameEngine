@@ -14,8 +14,8 @@ namespace dae
 	{
 	public:
 		SDL_Texture* GetSDLTexture() const;
-		TextureComponent(std::weak_ptr<dae::GameObject> owner, const std::string& filename);
-		TextureComponent(std::weak_ptr<dae::GameObject> owner, SDL_Texture* texture);
+		TextureComponent(dae::GameObject* owner, const std::string& filename);
+		TextureComponent(dae::GameObject* owner, SDL_Texture* texture);
 		~TextureComponent();
 		TextureComponent(const TextureComponent&) = delete;
 		TextureComponent(TextureComponent&&) = delete;

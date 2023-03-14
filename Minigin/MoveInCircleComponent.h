@@ -1,10 +1,11 @@
 #pragma once
 #include "Component.h"
+#include <string>
 
 class MoveInCircleComponent final : public Component
 {
 public:
-	MoveInCircleComponent(std::weak_ptr<dae::GameObject> owner, float radius, float angularSpeed, bool clockWise = true);
+	MoveInCircleComponent(dae::GameObject* owner, float radius, float angularSpeed, bool clockWise = true);
 	~MoveInCircleComponent() = default;
 
 	void Update() override;

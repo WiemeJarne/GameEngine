@@ -10,7 +10,7 @@ namespace dae
 class FPSComponent final : public Component
 {
 public:
-	FPSComponent(std::weak_ptr<dae::GameObject> owner, std::shared_ptr<dae::TextComponent> textComponent);
+	FPSComponent(dae::GameObject* owner, std::shared_ptr<dae::TextComponent> textComponent);
 	~FPSComponent();
 	FPSComponent(const FPSComponent& other) = delete;
 	FPSComponent(FPSComponent&& other) = delete;

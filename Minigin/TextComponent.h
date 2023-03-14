@@ -13,7 +13,7 @@ namespace dae
 	class TextComponent final : public Component
 	{
 	public:
-		TextComponent(std::weak_ptr<dae::GameObject> owner, const std::string& text, std::shared_ptr<Font> font, std::shared_ptr<RenderComponent> renderComponent);
+		TextComponent(dae::GameObject* owner, const std::string& text, std::shared_ptr<Font> font, std::shared_ptr<RenderComponent> renderComponent);
 		~TextComponent() = default;
 		TextComponent(const TextComponent& other) = delete;
 		TextComponent(TextComponent&& other) = delete;

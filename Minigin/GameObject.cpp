@@ -6,6 +6,8 @@
 #include "RenderComponent.h"
 #include "TextureComponent.h"
 #include "TextComponent.h"
+#include <iostream>
+#include "MoveInCircleComponent.h"
 
 dae::GameObject::~GameObject() = default;
 
@@ -16,24 +18,34 @@ void dae::GameObject::Update()
 		component->Update();
 	}
 
+	for (const auto& child : m_Children)
+	{
+		child->Update();
+	}
+
 	if (m_UpdateWorldPos)
 		UpdateWorldPos();
 }
 
 void dae::GameObject::Render() const
 {
-	for (const std::shared_ptr<Component>& component : m_Components)
+	for (const auto& component : m_Components)
 	{
 		component->Render();
 	}
+
+	for (const auto& child : m_Children)
+	{
+		child->Render();
+	}
 }
 
-void dae::GameObject::AddComponent(std::shared_ptr<Component> component)
+void dae::GameObject::AddComponent(std::unique_ptr<Component> component)
 {
 	bool componentAlreadyOnThisObject{};
 
 	//check if there already is a component of this type on this gameObject
-	for (auto& existingComponent : m_Components)
+	for (const auto& existingComponent : m_Components)
 	{
 		if (typeid(*existingComponent) == typeid(*component))
 		{
@@ -44,21 +56,23 @@ void dae::GameObject::AddComponent(std::shared_ptr<Component> component)
 	//if the object is not on this gameObject add it else do nothing
 	if (!componentAlreadyOnThisObject)
 	{
+		//std::cout << _name << ' ' << component.use_count() << '\n';
 		m_Components.emplace_back(std::move(component));
+		//std::cout << _name << ' ' << component.use_count() << '\n';
 	}
 }
 
-void dae::GameObject::SetParent(std::shared_ptr<dae::GameObject> parent, bool keepWorldPos)
+void dae::GameObject::SetParent(dae::GameObject* parent, bool keepWorldPos)
 {
 	//check if the passed trough parent isn't a direct child of this gameObject
-	for (auto& child : m_Children)
+	for (const auto& child : m_Children)
 	{
-		if (parent == child)
+		if (parent == child.get())
 			return;
 	}
 
 	//check if the gameObject isn't trying to assing himself as his own parent
-	if (parent.get() == this)
+	if (parent == this)
 		return;
 
 	//if there is no parent the local position is equal to the world position
@@ -75,15 +89,15 @@ void dae::GameObject::SetParent(std::shared_ptr<dae::GameObject> parent, bool ke
 	}
 
 	//remove this gameObject as a child from the previous parent
-	if (m_Parent.lock())
-		m_Parent.lock()->RemoveChild(this);
+	if (m_Parent)
+		m_Parent->RemoveChild(this);
 
 	//assign the new parent
 	m_Parent = parent;
 
 	//add this gameObject as a child of the new parent
-	if (m_Parent.lock())
-		m_Parent.lock()->AddChild(this);
+	if (m_Parent)
+		m_Parent->AddChild(this);
 }
 
 void dae::GameObject::SetLocalPosition(float x, float y)
@@ -114,11 +128,13 @@ const glm::vec3& dae::GameObject::GetWorldPos()
 
 void dae::GameObject::UpdateWorldPos()
 {
-	if (!m_Parent.lock())
-		m_WorldTransform.SetPosition(m_LocalTransform.GetPosition().x, m_LocalTransform.GetPosition().y, 0.f);
-	else
+	if (!m_Parent)
 	{
-		auto newWorldPos{ m_Parent.lock()->GetWorldPos() + m_LocalTransform.GetPosition()};
+		m_WorldTransform.SetPosition(m_LocalTransform.GetPosition().x, m_LocalTransform.GetPosition().y, 0.f);
+	}
+	else if(m_Parent)
+	{
+		auto newWorldPos{ m_Parent->GetWorldPos() + m_LocalTransform.GetPosition()};
 		m_WorldTransform.SetPosition(newWorldPos.x, newWorldPos.y, newWorldPos.z);
 	}
 
@@ -127,7 +143,7 @@ void dae::GameObject::UpdateWorldPos()
 
 void dae::GameObject::EraseComponentsMarkedForDelete()
 {
-	for (auto iterator : m_ComponentToDeleteIterators)
+	for (const auto& iterator : m_ComponentToDeleteIterators)
 	{
 		if (iterator != m_Components.end())
 		{
@@ -140,19 +156,19 @@ void dae::GameObject::EraseComponentsMarkedForDelete()
 
 void dae::GameObject::AddChild(dae::GameObject* pChild)
 {
-	for (auto& child : m_Children)
+	for (const auto& child : m_Children)
 	{
 		if (child.get() == pChild)
 			return;
 	}
 
-	m_Children.push_back(std::make_shared<GameObject>(*pChild));
+	m_Children.push_back(std::make_unique<GameObject>(std::move(*pChild)));
 }
 
 void dae::GameObject::RemoveChild(dae::GameObject* pChild)
 {
 	auto iterator = std::find_if(m_Children.begin(), m_Children.end(),
-		[pChild](const std::shared_ptr<GameObject>& child)
+		[pChild](const std::unique_ptr<GameObject>& child)
 		{
 			return child.get() == pChild;
 		});
@@ -162,5 +178,5 @@ void dae::GameObject::RemoveChild(dae::GameObject* pChild)
 		m_Children.erase(iterator);
 	}
 
-	pChild->SetParent(std::make_shared<GameObject>(), false);
+	pChild->SetParent(nullptr, false);
 }
