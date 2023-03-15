@@ -7,6 +7,10 @@ class MoveInCircleComponent final : public Component
 public:
 	MoveInCircleComponent(dae::GameObject* owner, float radius, float angularSpeed, bool clockWise = true);
 	~MoveInCircleComponent() = default;
+	MoveInCircleComponent(const MoveInCircleComponent& other) = delete;
+	MoveInCircleComponent(MoveInCircleComponent&& other) = delete;
+	MoveInCircleComponent& operator=(const MoveInCircleComponent& other) = delete;
+	MoveInCircleComponent& operator=(MoveInCircleComponent&& other) = delete;
 
 	void Update() override;
 	void Render() const override {}

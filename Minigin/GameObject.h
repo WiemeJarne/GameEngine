@@ -13,9 +13,9 @@ namespace dae
 
 		virtual ~GameObject();
 		GameObject(const GameObject& other) = delete;
-		GameObject(GameObject&& other) = default;
+		GameObject(GameObject&& other) noexcept;
 		GameObject& operator=(const GameObject& other) = delete;
-		GameObject& operator=(GameObject&& other) = default;
+		GameObject& operator=(GameObject&& other) = delete;
 
 		virtual void Update();
 		virtual void Render() const;
@@ -88,5 +88,6 @@ namespace dae
 
 		void AddChild(GameObject* pChild);
 		void RemoveChild(GameObject* pChild);
+		void SetPositionDirty(bool dirty) { m_UpdateWorldPos = dirty; }
 	};
 }

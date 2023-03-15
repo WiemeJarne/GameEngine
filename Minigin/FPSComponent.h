@@ -11,7 +11,7 @@ class FPSComponent final : public Component
 {
 public:
 	FPSComponent(dae::GameObject* owner, std::shared_ptr<dae::TextComponent> textComponent);
-	~FPSComponent();
+	~FPSComponent() = default;
 	FPSComponent(const FPSComponent& other) = delete;
 	FPSComponent(FPSComponent&& other) = delete;
 	FPSComponent& operator=(const FPSComponent& other) = delete;

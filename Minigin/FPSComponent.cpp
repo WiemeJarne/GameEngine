@@ -7,8 +7,6 @@ FPSComponent::FPSComponent(dae::GameObject* owner, std::shared_ptr<dae::TextComp
 	  m_TextComponent{ textComponent }
 {}
 
-FPSComponent::~FPSComponent() = default;
-
 void FPSComponent::Update()
 {
 	m_Timer += Timer::GetInstance().GetElapsedSec();

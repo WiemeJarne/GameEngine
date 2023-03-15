@@ -18,7 +18,7 @@ namespace dae
 		TextureComponent(dae::GameObject* owner, SDL_Texture* texture);
 		~TextureComponent();
 		TextureComponent(const TextureComponent&) = delete;
-		TextureComponent(TextureComponent&&) = delete;
+		TextureComponent(TextureComponent&& component) = delete;
 		TextureComponent& operator= (const TextureComponent&) = delete;
 		TextureComponent& operator= (const TextureComponent&&) = delete;
 

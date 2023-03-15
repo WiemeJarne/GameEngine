@@ -11,6 +11,30 @@
 
 dae::GameObject::~GameObject() = default;
 
+dae::GameObject::GameObject(GameObject&& other) noexcept
+{
+	for (auto& component : other.m_Components)
+	{
+		AddComponent(std::move(component));
+	}
+	other.m_Components.clear();
+
+	for (auto& iterator : other.m_ComponentToDeleteIterators)
+	{
+		m_ComponentToDeleteIterators.push_back(std::move(iterator));
+	}
+	other.m_ComponentToDeleteIterators.clear();
+
+	for (auto& child : other.m_Children)
+	{
+		AddChild(std::move(child.get()));
+	}
+	other.m_Children.clear();
+
+	m_Parent = other.GetParent();
+	other.m_Parent = nullptr;
+}
+
 void dae::GameObject::Update()
 {
 	for (auto& component : m_Components)
@@ -103,9 +127,12 @@ void dae::GameObject::SetParent(dae::GameObject* parent, bool keepWorldPos)
 void dae::GameObject::SetLocalPosition(float x, float y)
 {
 	m_LocalTransform.SetPosition(x, y, 0.f);
-	m_UpdateWorldPos = true;
+	SetPositionDirty(true);
 
-	//todo zet de dirty flag van de children
+	//for (auto& child : m_Children)
+	//{
+	//	child->SetPositionDirty(true);
+	//}
 }
 
 void dae::GameObject::SetWorldPosition(float x, float y)
