@@ -105,7 +105,10 @@ void dae::GameObject::SetLocalPosition(float x, float y)
 	m_LocalTransform.SetPosition(x, y, 0.f);
 	m_UpdateWorldPos = true;
 
-	//todo zet de dirty flag van de children
+	for (auto& child : m_Children)
+	{
+		child->m_UpdateWorldPos = true;
+	}
 }
 
 void dae::GameObject::SetWorldPosition(float x, float y)

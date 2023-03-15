@@ -84,8 +84,7 @@ namespace dae
 		Transform m_LocalTransform{};
 		Transform m_WorldTransform{};
 		bool m_UpdateWorldPos{};
-		
-
+	
 		void AddChild(GameObject* pChild);
 		void RemoveChild(GameObject* pChild);
 	};
