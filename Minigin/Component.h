@@ -12,10 +12,10 @@ public:
 	Component(dae::GameObject* owner) : m_Owner{ owner } {};
 
 	virtual ~Component() = default;
-	Component(const Component& other) = delete;
-	Component(Component&& other) = delete;
-	Component& operator=(const Component& other) = delete;
-	Component& operator=(Component&& other) = delete;
+	//Component(const Component&) = delete;
+	//Component(Component&&) = delete;
+	//Component& operator=(const Component&) = delete;
+	//Component& operator=(Component&&) = delete;
 
 	virtual void Update() = 0;
 	virtual void Render() const = 0;
