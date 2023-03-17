@@ -2,6 +2,7 @@
 #include <memory>
 #include <string>
 #include "Component.h"
+#include "TextureComponent.h"
 
 namespace dae
 {
@@ -14,9 +15,9 @@ class RenderComponent final : public Component
 public:
 	RenderComponent(dae::GameObject* owner);
 	RenderComponent(dae::GameObject* owner, const std::string& textureFilename);
-	RenderComponent(dae::GameObject* owner, std::shared_ptr<dae::TextureComponent> textureComponent);
+	RenderComponent(dae::GameObject* owner, dae::TextureComponent* textureComponent);
 
-	~RenderComponent() = default;
+	~RenderComponent();
 	RenderComponent(const RenderComponent& other) = delete;
 	RenderComponent(RenderComponent&& other) = delete;
 	RenderComponent& operator=(const RenderComponent& other) = delete;
@@ -26,8 +27,8 @@ public:
 	virtual void Render() const override;
 
 	void SetTextureComponent(const std::string& filename);
-	void SetTextureComponent(std::shared_ptr<dae::TextureComponent> textureComponent);
+	void SetTextureComponent(dae::TextureComponent* textureComponent);
 
 private:
-	std::shared_ptr<dae::TextureComponent> m_TextureComponent;
+	dae::TextureComponent* m_TextureComponent;
 };

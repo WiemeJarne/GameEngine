@@ -13,7 +13,7 @@ namespace dae
 	class TextComponent final : public Component
 	{
 	public:
-		TextComponent(dae::GameObject* owner, const std::string& text, std::shared_ptr<Font> font, std::shared_ptr<RenderComponent> renderComponent);
+		TextComponent(dae::GameObject* owner, const std::string& text, std::shared_ptr<Font> font, RenderComponent* renderComponent);
 		~TextComponent() = default;
 		TextComponent(const TextComponent& other) = delete;
 		TextComponent(TextComponent&& other) = delete;
@@ -24,14 +24,12 @@ namespace dae
 		virtual void Render() const override {};
 
 		void SetText(const std::string& text);
-		const std::shared_ptr<TextureComponent>& GetTexture() const { return m_textTexture; }
 
 	private:
 		bool m_needsUpdate;
 		std::string m_text;
 		std::shared_ptr<Font> m_font;
-		std::shared_ptr<TextureComponent> m_textTexture;
-		std::shared_ptr<RenderComponent> m_RenderComponent;
+		RenderComponent* m_RenderComponent;
 
 		void CreateTextTexture();
 	};

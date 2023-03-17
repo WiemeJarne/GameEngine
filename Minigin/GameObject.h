@@ -24,7 +24,7 @@ namespace dae
 		GameObject* GetParent() const { return m_Parent; }
 
 		size_t GetChildCount() const { return m_Children.size(); }
-		GameObject* GetChildAt(int index) const { return m_Children[index].get(); }
+		GameObject* GetChildAt(int index) const { return m_Children[index]; }
 
 		void SetLocalPosition(float x, float y);
 		const glm::vec3& GetLocalPos();
@@ -79,7 +79,7 @@ namespace dae
 	private:
 		std::vector<std::unique_ptr<Component>> m_Components;
 		std::vector<std::vector<std::unique_ptr<Component>>::iterator> m_ComponentToDeleteIterators;
-		std::vector<std::unique_ptr<GameObject>> m_Children;
+		std::vector<GameObject*> m_Children;
 		GameObject* m_Parent{ nullptr };
 		Transform m_LocalTransform{};
 		Transform m_WorldTransform{};

@@ -10,7 +10,7 @@ namespace dae
 class FPSComponent final : public Component
 {
 public:
-	FPSComponent(dae::GameObject* owner, std::shared_ptr<dae::TextComponent> textComponent);
+	FPSComponent(dae::GameObject* owner, dae::TextComponent* textComponent);
 	~FPSComponent();
 	FPSComponent(const FPSComponent& other) = delete;
 	FPSComponent(FPSComponent&& other) = delete;
@@ -24,5 +24,5 @@ private:
 	float m_FPS{ 0.f };
 	float m_Timer{ 0.f };
 	std::chrono::high_resolution_clock::time_point m_PreviousTime;
-	std::shared_ptr<dae::TextComponent> m_TextComponent;
+	dae::TextComponent* m_TextComponent;
 };

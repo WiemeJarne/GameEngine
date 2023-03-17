@@ -9,7 +9,13 @@
 #include <iostream>
 #include "MoveInCircleComponent.h"
 
-dae::GameObject::~GameObject() = default;
+dae::GameObject::~GameObject()
+{
+	for (auto& child : m_Children)
+	{
+		delete child;
+	}
+}
 
 void dae::GameObject::Update()
 {
@@ -56,9 +62,7 @@ void dae::GameObject::AddComponent(std::unique_ptr<Component> component)
 	//if the object is not on this gameObject add it else do nothing
 	if (!componentAlreadyOnThisObject)
 	{
-		//std::cout << _name << ' ' << component.use_count() << '\n';
 		m_Components.emplace_back(std::move(component));
-		//std::cout << _name << ' ' << component.use_count() << '\n';
 	}
 }
 
@@ -67,7 +71,7 @@ void dae::GameObject::SetParent(dae::GameObject* parent, bool keepWorldPos)
 	//check if the passed trough parent isn't a direct child of this gameObject
 	for (const auto& child : m_Children)
 	{
-		if (parent == child.get())
+		if (parent == child)
 			return;
 	}
 
@@ -85,7 +89,13 @@ void dae::GameObject::SetParent(dae::GameObject* parent, bool keepWorldPos)
 			auto newLocalPos{ GetLocalPos() - parent->GetWorldPos() };
 			SetLocalPosition(newLocalPos.x, newLocalPos.y);
 		}
+
 		m_UpdateWorldPos = true;
+
+		for (auto& child : m_Children)
+		{
+			child->m_UpdateWorldPos = true;
+		}
 	}
 
 	//remove this gameObject as a child from the previous parent
@@ -103,6 +113,7 @@ void dae::GameObject::SetParent(dae::GameObject* parent, bool keepWorldPos)
 void dae::GameObject::SetLocalPosition(float x, float y)
 {
 	m_LocalTransform.SetPosition(x, y, 0.f);
+
 	m_UpdateWorldPos = true;
 
 	for (auto& child : m_Children)
@@ -161,25 +172,25 @@ void dae::GameObject::AddChild(dae::GameObject* pChild)
 {
 	for (const auto& child : m_Children)
 	{
-		if (child.get() == pChild)
+		if (child == pChild)
 			return;
 	}
 
-	m_Children.push_back(std::make_unique<GameObject>(std::move(*pChild)));
+	m_Children.push_back(pChild);
 }
 
 void dae::GameObject::RemoveChild(dae::GameObject* pChild)
 {
 	auto iterator = std::find_if(m_Children.begin(), m_Children.end(),
-		[pChild](const std::unique_ptr<GameObject>& child)
+		[pChild](const GameObject* child)
 		{
-			return child.get() == pChild;
+			return child == pChild;
 		});
-
+	
 	if (iterator != m_Children.end())
 	{
 		m_Children.erase(iterator);
 	}
-
+	
 	pChild->SetParent(nullptr, false);
 }
