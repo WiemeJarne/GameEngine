@@ -24,7 +24,7 @@ public:
 	RenderComponent& operator=(RenderComponent&& other) = delete;
 
 	virtual void Update() override {};
-	virtual void Render() const override;
+	virtual void Render() override;
 
 	void SetTextureComponent(const std::string& filename);
 	void SetTextureComponent(dae::TextureComponent* textureComponent);

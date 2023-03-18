@@ -12,13 +12,13 @@ public:
 	Component(dae::GameObject* owner) : m_Owner{ owner } {};
 
 	virtual ~Component() = default;
-	//Component(const Component&) = delete;
-	//Component(Component&&) = delete;
-	//Component& operator=(const Component&) = delete;
-	//Component& operator=(Component&&) = delete;
+	Component(const Component&) = delete;
+	Component(Component&&) = delete;
+	Component& operator=(const Component&) = delete;
+	Component& operator=(Component&&) = delete;
 
 	virtual void Update() = 0;
-	virtual void Render() const = 0;
+	virtual void Render() = 0;
 
 protected:
 	dae::GameObject* m_Owner;

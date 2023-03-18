@@ -23,7 +23,7 @@ namespace dae
 		TextureComponent& operator= (const TextureComponent&&) = delete;
 
 		virtual void Update() override {};
-		virtual void Render() const override {};
+		virtual void Render() override {};
 		glm::ivec2 GetSize() const;
 
 	private:

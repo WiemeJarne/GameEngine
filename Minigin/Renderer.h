@@ -30,8 +30,7 @@ namespace dae
 		void SetBackgroundColor(const SDL_Color& color) { m_clearColor = color; }
 
 	private:
-		bool m_showDemo{ true };
-		TrashTheCache* m_TrashTheCache{};
+		bool m_showDemo{ false };
 	};
 }
 

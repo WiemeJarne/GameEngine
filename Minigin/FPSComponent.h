@@ -18,7 +18,7 @@ public:
 	FPSComponent& operator=(FPSComponent&& other) = delete;
 
 	virtual void Update() override;
-	virtual void Render() const override {};
+	virtual void Render() override {};
 
 private:
 	float m_FPS{ 0.f };

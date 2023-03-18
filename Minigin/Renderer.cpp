@@ -34,8 +34,6 @@ void dae::Renderer::Init(SDL_Window* window)
 	ImGui::CreateContext();
 	ImGui_ImplSDL2_InitForOpenGL(window, SDL_GL_GetCurrentContext());
 	ImGui_ImplOpenGL2_Init();
-
-	m_TrashTheCache = new TrashTheCache();
 }
 
 void dae::Renderer::Render()
@@ -44,13 +42,11 @@ void dae::Renderer::Render()
 	SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
 	SDL_RenderClear(m_renderer);
 
-	SceneManager::GetInstance().Render();
-
 	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplSDL2_NewFrame(m_window);
 	ImGui::NewFrame();
 
-	m_TrashTheCache->Render();
+	SceneManager::GetInstance().Render();
 
 	if (m_showDemo)
 		ImGui::ShowDemoWindow();
@@ -71,8 +67,6 @@ void dae::Renderer::Destroy()
 		SDL_DestroyRenderer(m_renderer);
 		m_renderer = nullptr;
 	}
-
-	delete m_TrashTheCache;
 }
 
 void dae::Renderer::RenderTexture(const TextureComponent& texture, const float x, const float y) const

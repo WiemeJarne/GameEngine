@@ -21,7 +21,7 @@ namespace dae
 		TextComponent& operator=(TextComponent&& other) = delete;
 
 		virtual void Update() override;
-		virtual void Render() const override {};
+		virtual void Render() override {};
 
 		void SetText(const std::string& text);
 
