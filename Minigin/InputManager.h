@@ -1,5 +1,7 @@
 #pragma once
 #include "Singleton.h"
+#include <vector>
+#include "PlayerController.h"
 
 namespace dae
 {
@@ -7,6 +9,11 @@ namespace dae
 	{
 	public:
 		bool ProcessInput();
+		void AddController(std::unique_ptr<PlayerController> playerController);
+		int GetAmountOfPlayers() const { return static_cast<int>(m_Controllers.size()); }
+
+	private:
+		std::vector<std::unique_ptr<PlayerController>> m_Controllers{};
 	};
 
 }

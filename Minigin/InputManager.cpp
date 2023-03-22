@@ -19,5 +19,15 @@ bool dae::InputManager::ProcessInput()
 		ImGui_ImplSDL2_ProcessEvent(&e);
 	}
 
+	for (auto& controller : m_Controllers)
+	{
+		controller->Update();
+	}
+
 	return true;
+}
+
+void dae::InputManager::AddController(std::unique_ptr<PlayerController> playerController)
+{
+	m_Controllers.push_back(std::move(playerController));
 }
