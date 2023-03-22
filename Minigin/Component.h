@@ -19,6 +19,7 @@ public:
 
 	virtual void Update() = 0;
 	virtual void Render() = 0;
+	//TODO: add RenderImGui function
 
 protected:
 	dae::GameObject* m_Owner;
