@@ -1,4 +1,7 @@
 #include "Command.h"
-Command::Command(std::function<void()>& function)
-	: m_Function{ function }
-{}
+
+commands::Command::Command(dae::GameObject* go)
+	: m_Go{ go }
+{
+
+}

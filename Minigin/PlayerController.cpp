@@ -12,39 +12,39 @@ void PlayerController::Update()
 	ZeroMemory(&m_CurrentState, sizeof(XINPUT_STATE));
 	XInputGetState(m_ControllerIndex, &m_CurrentState);
 
+	auto buttonChanges{ m_CurrentState.Gamepad.wButtons ^ m_PreviousState.Gamepad.wButtons };
+	m_ButtonsPressedThisFrame = buttonChanges & m_CurrentState.Gamepad.wButtons;
+	m_ButtonsReleasedThisFrame = buttonChanges & (~m_CurrentState.Gamepad.wButtons);
+
 	for (const auto& command : m_Commands)
 	{
-		switch (std::get<1>(command)) //check what state the button should be for the command to be executed
+		switch (command.first.first) //check what state the button should be for the command to be executed
 		{
 			case KeyState::down:
 				//check if the button is down in the current frame if so execute the command
-				if (IsDownThisFrame(std::get<0>(command))) 
+				if (IsDownThisFrame(command.first.second)) 
 				{
-					std::get<2>(command)();
+					command.second->Execute();
 				}
 				break;
 
 			case KeyState::up:
 				//check if the button is up in the current frame if so execute the command
-				if (IsUpThisFrame(std::get<0>(command)))
+				if (IsUpThisFrame(command.first.second))
 				{
-					std::get<2>(command)();
+					command.second->Execute();
 				}
 				break;
 
 			case KeyState::pressed:
 				//check if the button is pressed if so execute the command
-				if (IsPressed(std::get<0>(command)))
+				if (IsPressed(command.first.second))
 				{
-					std::get<2>(command)();
+					command.second->Execute();
 				}
 				break;
 		}
 	}
-
-	auto buttonChanges{ m_CurrentState.Gamepad.wButtons ^ m_PreviousState.Gamepad.wButtons };
-	m_ButtonsPressedThisFrame = buttonChanges & m_CurrentState.Gamepad.wButtons;
-	m_ButtonsReleasedThisFrame = buttonChanges & (~m_CurrentState.Gamepad.wButtons);
 }
 
 bool PlayerController::IsDownThisFrame(unsigned int button) const
@@ -62,7 +62,7 @@ bool PlayerController::IsPressed(unsigned int button) const
 	return m_CurrentState.Gamepad.wButtons & button;
 }
 
-void PlayerController::AddCommand(unsigned int button, KeyState keyState, std::function<void()> command)
+void PlayerController::AddCommand(std::unique_ptr<commands::Command> command, ControllerKey controllerKey)
 {
-	m_Commands.push_back(std::make_tuple(button, keyState, command));
+	m_Commands.insert(std::pair<ControllerKey, std::unique_ptr<commands::Command>>(controllerKey, std::move(command)));
 }
