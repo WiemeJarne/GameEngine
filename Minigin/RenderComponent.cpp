@@ -24,7 +24,7 @@ RenderComponent::~RenderComponent()
 	delete m_TextureComponent;
 }
 
-void RenderComponent::Render()
+void RenderComponent::Render() const
 {
 	auto pos = m_Owner->GetWorldPos();
 

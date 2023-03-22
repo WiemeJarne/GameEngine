@@ -46,6 +46,19 @@ void dae::GameObject::Render() const
 	}
 }
 
+void dae::GameObject::RenderImGui()
+{
+	for (const auto& component : m_Components)
+	{
+		component->RenderImGui();
+	}
+
+	for (const auto& child : m_Children)
+	{
+		child->RenderImGui();
+	}
+}
+
 void dae::GameObject::AddComponent(std::unique_ptr<Component> component)
 {
 	bool componentAlreadyOnThisObject{};

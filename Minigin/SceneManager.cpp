@@ -9,11 +9,19 @@ void dae::SceneManager::Update()
 	}
 }
 
-void dae::SceneManager::Render()
+void dae::SceneManager::Render() const
 {
 	for (const auto& scene : m_scenes)
 	{
 		scene->Render();
+	}
+}
+
+void dae::SceneManager::RenderImGui()
+{
+	for (const auto& scene : m_scenes)
+	{
+		scene->RenderImGui();
 	}
 }
 

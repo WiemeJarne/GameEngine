@@ -1,4 +1,4 @@
-#include "TrashTheCache.h"
+#include "TrashTheCacheComponent.h"
 #include <chrono>
 #include <algorithm>
 #include <numeric>
@@ -93,7 +93,7 @@ void TrashTheCache::Update()
     }
 }
 
-void TrashTheCache::Render()
+void TrashTheCache::RenderImGui()
 {
 	ImGui::Begin("Exercise 1"); //begin for window Exercise 1
 	ImGui::InputInt("# samples", &m_AmountOfSamplesEX01, 1);

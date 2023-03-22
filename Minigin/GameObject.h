@@ -19,6 +19,7 @@ namespace dae
 
 		virtual void Update();
 		virtual void Render() const;
+		virtual void RenderImGui();
 
 		void SetParent(GameObject* parent, bool keepWorldPos);
 		GameObject* GetParent() const { return m_Parent; }

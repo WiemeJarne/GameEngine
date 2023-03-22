@@ -38,8 +38,9 @@ public:
 	TrashTheCache& operator=(const TrashTheCache& other) = delete;
 	TrashTheCache& operator=(TrashTheCache&& other) = delete;
 
-	virtual void Update() override;
-	virtual void Render() override;
+	void Update() override;
+	void Render() const override {}
+	void RenderImGui() override;
 
 private:
 	int m_AmountOfSamplesEX01{ 10 };

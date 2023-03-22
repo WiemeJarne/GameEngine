@@ -9,7 +9,8 @@ public:
 	~MoveInCircleComponent() = default;
 
 	void Update() override;
-	void Render() override {}
+	void Render() const override {}
+	void RenderImGui() override {}
 
 private:
 	const float m_Radius;

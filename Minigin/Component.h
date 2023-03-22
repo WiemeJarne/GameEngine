@@ -18,8 +18,8 @@ public:
 	Component& operator=(Component&&) = delete;
 
 	virtual void Update() = 0;
-	virtual void Render() = 0;
-	//TODO: add RenderImGui function
+	virtual void Render() const = 0;
+	virtual void RenderImGui() = 0;
 
 protected:
 	dae::GameObject* m_Owner;

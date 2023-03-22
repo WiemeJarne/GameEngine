@@ -4,7 +4,6 @@
 #include "TextureComponent.h"
 #include "imgui_impl_opengl2.h"
 #include "imgui_impl_sdl2.h"
-#include "TrashTheCache.h"
 #include <iostream>
 
 int GetOpenGLDriverIndex()
@@ -42,11 +41,13 @@ void dae::Renderer::Render()
 	SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
 	SDL_RenderClear(m_renderer);
 
+	SceneManager::GetInstance().Render();
+
 	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplSDL2_NewFrame(m_window);
 	ImGui::NewFrame();
 
-	SceneManager::GetInstance().Render(); //TODO: call RenderImGui function and move this function call above the ImGui_ImplOpenGL2_NewFrame
+	SceneManager::GetInstance().RenderImGui();
 
 	if (m_showDemo)
 		ImGui::ShowDemoWindow();
