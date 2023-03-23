@@ -7,7 +7,9 @@
 class PlayerController final
 {
 public:
+	PlayerController();
 	PlayerController(int controllerIndex);
+
 	~PlayerController();
 	PlayerController(const PlayerController& other) = delete;
 	PlayerController(PlayerController&& other) = default;

@@ -17,6 +17,9 @@ public:
 
 	void HandleControllerInput()
 	{
+		if (m_ControllerIndex < 0)
+			return;
+
 		CopyMemory(&m_PreviousState, &m_CurrentState, sizeof(XINPUT_STATE));
 		ZeroMemory(&m_CurrentState, sizeof(XINPUT_STATE));
 		XInputGetState(m_ControllerIndex, &m_CurrentState);
@@ -86,6 +89,10 @@ private:
 	using ControllerCommandsMap = std::map<Control, std::unique_ptr<commands::Command>>;
 	ControllerCommandsMap m_ControllerCommands{};
 };
+
+PlayerController::PlayerController()
+	: m_PlayerControllerImpl{ std::make_unique<PlayerControllerImpl>(-1) } //when the playerController is created for keyboard input then the controller index is set to -1
+{}
 
 PlayerController::PlayerController(int controllerIndex)
 	: m_PlayerControllerImpl{ std::make_unique<PlayerControllerImpl>(controllerIndex) }
