@@ -3,7 +3,6 @@
 
 namespace commands
 {
-	
 	class Command
 	{
 	public:
@@ -11,7 +10,7 @@ namespace commands
 
 		virtual ~Command() = default;
 		Command(const Command&) = delete;
-		Command(Command&&) = delete;
+		Command(Command&&) = default;
 		Command& operator=(const Command&) = delete;
 		Command& operator=(Command&&) = delete;
 
@@ -19,7 +18,7 @@ namespace commands
 		virtual void Undo() = 0;
 
 	protected:
-		dae::GameObject* GetActor() const { return m_Go; }
+		dae::GameObject* GetGameObject() const { return m_Go; }
 
 	private:
 		dae::GameObject* m_Go;
