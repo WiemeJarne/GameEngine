@@ -23,7 +23,7 @@ void dae::GameObject::Update()
 	{
 		component->Update();
 	}
-
+	
 	for (const auto& child : m_Children)
 	{
 		child->Update();
