@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
 #include "Command.h"
-#include <windows.h>
 #include <map>
 
 class PlayerController final
@@ -51,8 +50,8 @@ public:
 private:
 	using KeyboardCommandsMap = std::map<KeyboardKey, std::unique_ptr<commands::Command>>;
 	KeyboardCommandsMap m_KeyboardCommands{};
-	BYTE m_CurrentKeyboardKeysState[256]{};
-	BYTE m_PreviousKeyboardKeysState[256]{};
+	uint8_t m_CurrentKeyboardKeysState[256]{};
+	uint8_t m_PreviousKeyboardKeysState[256]{};
 
 	class PlayerControllerImpl;
 	std::unique_ptr<PlayerControllerImpl> m_PlayerControllerImpl;

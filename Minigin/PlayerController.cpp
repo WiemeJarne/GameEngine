@@ -1,5 +1,6 @@
 #include "PlayerController.h"
 #define KEY_DOWN_MASK 0x80
+#include <Windows.h>
 #include <XInput.h>
 
 class PlayerController::PlayerControllerImpl final
