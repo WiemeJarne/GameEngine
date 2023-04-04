@@ -3,6 +3,11 @@
 #include "Command.h"
 #include <map>
 
+namespace dae
+{
+	enum class KeyState;
+}
+
 class PlayerController final
 {
 public:
@@ -14,13 +19,6 @@ public:
 	PlayerController(PlayerController&& other) = default;
 	PlayerController& operator=(const PlayerController& other) = delete;
 	PlayerController& operator=(PlayerController&& other) = delete;
-
-	enum class KeyState
-	{
-		down,
-		up,
-		pressed
-	};
 
 	enum class ControllerKey : unsigned int
 	{
@@ -42,22 +40,10 @@ public:
 
 	void Update();
 	
-	using Control = std::pair<KeyState, ControllerKey>;
+	using Control = std::pair<dae::KeyState, ControllerKey>;
 	void AddCommand(std::unique_ptr<commands::Command> command, Control controllerKey);
-	using KeyboardKey = std::pair<KeyState, int>;
-	void AddCommand(std::unique_ptr<commands::Command> command, KeyboardKey keyboardKey);
 
 private:
-	using KeyboardCommandsMap = std::map<KeyboardKey, std::unique_ptr<commands::Command>>;
-	KeyboardCommandsMap m_KeyboardCommands{};
-	uint8_t m_CurrentKeyboardKeysState[256]{};
-	uint8_t m_PreviousKeyboardKeysState[256]{};
-
 	class PlayerControllerImpl;
 	std::unique_ptr<PlayerControllerImpl> m_PlayerControllerImpl;
-
-	void HandleKeyboardInput();
-	bool IsDownThisFrame(int button) const;
-	bool IsUpThisFrame(int button) const;
-	bool IsPressed(int button) const;
 };

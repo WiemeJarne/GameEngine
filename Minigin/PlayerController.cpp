@@ -1,7 +1,7 @@
 #include "PlayerController.h"
-#define KEY_DOWN_MASK 0x80
 #include <Windows.h>
 #include <XInput.h>
+#include "InputManager.h"
 
 class PlayerController::PlayerControllerImpl final
 {
@@ -33,7 +33,7 @@ public:
 		{
 			switch (command.first.first) //check what state the button should be for the command to be executed
 			{
-			case KeyState::down:
+			case dae::KeyState::down:
 				//check if the button is down in the current frame if so execute the command
 				if (IsDownThisFrame(command.first.second))
 				{
@@ -41,7 +41,7 @@ public:
 				}
 				break;
 
-			case KeyState::up:
+			case dae::KeyState::up:
 				//check if the button is up in the current frame if so execute the command
 				if (IsUpThisFrame(command.first.second))
 				{
@@ -49,7 +49,7 @@ public:
 				}
 				break;
 
-			case KeyState::pressed:
+			case dae::KeyState::pressed:
 				//check if the button is pressed if so execute the command
 				if (IsPressed(command.first.second))
 				{
@@ -104,66 +104,9 @@ PlayerController::~PlayerController() = default;
 void PlayerController::Update()
 {
 	m_PlayerControllerImpl->HandleControllerInput();
-	HandleKeyboardInput();
-}
-
-bool PlayerController::IsDownThisFrame(int button) const
-{
-	return (m_CurrentKeyboardKeysState[button] & KEY_DOWN_MASK) && !(m_PreviousKeyboardKeysState[button] & KEY_DOWN_MASK);
-}
-
-bool PlayerController::IsUpThisFrame(int button) const
-{
-	return !(m_CurrentKeyboardKeysState[button] & KEY_DOWN_MASK) && (m_PreviousKeyboardKeysState[button] & KEY_DOWN_MASK);
-}
-
-bool PlayerController::IsPressed(int button) const
-{
-	return (m_CurrentKeyboardKeysState[button] & KEY_DOWN_MASK);
 }
 
 void PlayerController::AddCommand(std::unique_ptr<commands::Command> command, Control controllerKey)
 {
 	m_PlayerControllerImpl->AddCommand(std::move(command), controllerKey);
-}
-
-void PlayerController::AddCommand(std::unique_ptr<commands::Command> command, KeyboardKey keyboardKey)
-{
-	m_KeyboardCommands.insert(std::pair<KeyboardKey, std::unique_ptr<commands::Command>>(keyboardKey, std::move(command)));
-}
-
-void PlayerController::HandleKeyboardInput()
-{
-	memcpy(m_PreviousKeyboardKeysState, m_CurrentKeyboardKeysState, sizeof(m_PreviousKeyboardKeysState));
-	GetKeyboardState(m_CurrentKeyboardKeysState);
-
-	for (const auto& command : m_KeyboardCommands)
-	{
-		switch (command.first.first) //check what state the button should be for the command to be executed
-		{
-		case KeyState::down:
-			//check if the button is down in the current frame if so execute the command
-			if (IsDownThisFrame(command.first.second))
-			{
-				command.second->Execute();
-			}
-			break;
-
-		case KeyState::up:
-			//check if the button is up in the current frame if so execute the command
-			if (IsUpThisFrame(command.first.second))
-			{
-				command.second->Execute();
-			}
-			break;
-
-		case KeyState::pressed:
-			//check if the button is pressed if so execute the command
-			if (IsPressed(command.first.second))
-			{
-				command.second->Execute();
-			}
-			break;
-		}
-	}
 }
