@@ -64,12 +64,12 @@ namespace dae
 		}
 
 		template<typename ComponentType>
-		std::unique_ptr<ComponentType> GetComponent() const
+		ComponentType* GetComponent() const
 		{
 			for (const auto& component : m_Components)
 			{
-				if (std::unique_ptr<ComponentType> sharedPtr = std::dynamic_pointer_cast<ComponentType>(component))
-					return sharedPtr;
+				if (auto componentPtr = dynamic_cast<ComponentType*>(component.get()))
+					return componentPtr;
 			}
 
 			return nullptr;

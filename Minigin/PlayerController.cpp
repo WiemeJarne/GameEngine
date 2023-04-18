@@ -7,8 +7,16 @@ class PlayerController::PlayerControllerImpl final
 {
 public:
 	PlayerControllerImpl(int controllerIndex)
-		: m_ControllerIndex{ controllerIndex }
-	{}
+	{
+		if (controllerIndex == -1)
+		{
+			m_ControllerIndex = dae::InputManager::GetInstance().GetAmountOfControllers();
+		}
+		else
+		{
+			m_ControllerIndex = controllerIndex;
+		}
+	}
 
 	~PlayerControllerImpl() = default;
 	PlayerControllerImpl(const PlayerControllerImpl& other) = delete;
@@ -84,7 +92,7 @@ private:
 
 	XINPUT_STATE m_PreviousState{};
 	XINPUT_STATE m_CurrentState{};
-	const int m_ControllerIndex{};
+	int m_ControllerIndex{};
 	unsigned int m_ButtonsPressedThisFrame{};
 	unsigned int m_ButtonsReleasedThisFrame{};
 	using ControllerCommandsMap = std::map<Control, std::unique_ptr<commands::Command>>;

@@ -18,7 +18,7 @@ namespace dae
 	public:
 		bool ProcessInput();
 		void AddController(std::unique_ptr<PlayerController> playerController);
-		int GetAmountOfPlayers() const { return static_cast<int>(m_Controllers.size()); }
+		int GetAmountOfControllers() const { return static_cast<int>(m_Controllers.size()); }
 
 		using KeyboardKey = std::pair<KeyState, int>;
 		void AddCommand(std::unique_ptr<commands::Command> command, KeyboardKey keyboardKey);

@@ -1,17 +1,17 @@
 #include <stdexcept>
-#include <SDL_ttf.h>
 #include "TextComponent.h"
 #include "Renderer.h"
 #include "Font.h"
 #include "TextureComponent.h"
 #include "RenderComponent.h"
 
-dae::TextComponent::TextComponent(dae::GameObject* owner, const std::string& text, std::shared_ptr<Font> font, RenderComponent* renderComponent)
-	: Component{ owner },
-	  m_needsUpdate{ true },
-	  m_text{ text },
-	  m_font{ std::move(font) },
-	  m_RenderComponent{ renderComponent }
+dae::TextComponent::TextComponent(dae::GameObject* owner, const std::string& text, std::shared_ptr<Font> font, RenderComponent* renderComponent, SDL_Color color)
+	: Component{ owner }
+	, m_needsUpdate{ true }
+	, m_text{ text }
+	, m_font{ std::move(font) }
+	, m_RenderComponent{ renderComponent }
+	, m_Color{ color }
 { 
 	CreateTextTexture();
 }
@@ -32,10 +32,14 @@ void dae::TextComponent::SetText(const std::string& text)
 	m_needsUpdate = true;
 }
 
+void dae::TextComponent::SetColor(const SDL_Color& color)
+{
+	m_Color = color;
+}
+
 void dae::TextComponent::CreateTextTexture()
 {
-	const SDL_Color color = { 255,255,255 }; // only white text is supported now
-	const auto surf = TTF_RenderText_Blended(m_font->GetFont(), m_text.c_str(), color);
+	const auto surf = TTF_RenderText_Blended(m_font->GetFont(), m_text.c_str(), m_Color);
 	if (surf == nullptr)
 	{
 		throw std::runtime_error(std::string("Render text failed: ") + SDL_GetError());
