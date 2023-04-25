@@ -10,7 +10,7 @@ namespace dae
 class PlayerPrefab final
 {
 public:
-	PlayerPrefab(const std::string& textureFilePath, int amountOfLives, bool useController);
+	PlayerPrefab(const std::string& textureFilePath, int amountOfLives, bool useController = false, float moveSpeed = 100.f);
 
 	virtual ~PlayerPrefab() = default;
 	PlayerPrefab(const PlayerPrefab&) = delete;

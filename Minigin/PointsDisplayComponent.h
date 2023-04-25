@@ -4,7 +4,7 @@
 #include "PointsComponent.h"
 #include "Observer.h"
 
-class PointsDisplayComponent : public Component, public Observer<PointsComponent>
+class PointsDisplayComponent final : public Component, public Observer<PointsComponent>
 {
 public:
 	PointsDisplayComponent(dae::GameObject* owner, PointsComponent* pPointsComponent, dae::TextComponent* pTextComponent);

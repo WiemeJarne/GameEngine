@@ -10,7 +10,7 @@
 #include "playerController.h"
 #include "InputManager.h"
 
-PlayerPrefab::PlayerPrefab(const std::string& textureFilePath, int amountOfLives, bool useController)
+PlayerPrefab::PlayerPrefab(const std::string& textureFilePath, int amountOfLives, bool useController, float moveSpeed)
 {
 	m_go = std::make_unique<dae::GameObject>();
 	auto renderComponent{ std::make_unique<RenderComponent>(m_go.get(), textureFilePath) };
@@ -20,7 +20,6 @@ PlayerPrefab::PlayerPrefab(const std::string& textureFilePath, int amountOfLives
 	auto pointsComponent{ std::make_unique<PointsComponent>(m_go.get()) };
 	m_go->AddComponent(std::move(pointsComponent));
 
-	auto moveSpeed = 100.f;
 	//create moveLeftCommand
 	auto moveLeftCommmand = std::make_unique<commands::MoveCommand>(m_go.get(), glm::vec2(-1.f, 0.f), moveSpeed);
 	//create moveRightCommand
