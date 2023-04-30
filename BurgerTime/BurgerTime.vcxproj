@@ -163,7 +163,46 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPat
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BurgerPartsCollisionManagerComponent.cpp" />
+    <ClCompile Include="BurgerPartComponent.cpp" />
+    <ClCompile Include="BurgerPartPrefab.cpp" />
     <ClCompile Include="BurgerTime.cpp" />
+    <ClCompile Include="DamageCommand.cpp" />
+    <ClCompile Include="FPSComponent.cpp" />
+    <ClCompile Include="HealthComponent.cpp" />
+    <ClCompile Include="LevelGrid.cpp" />
+    <ClCompile Include="LevelManager.cpp" />
+    <ClCompile Include="LivesDisplayComponent.cpp" />
+    <ClCompile Include="MoveCommand.cpp" />
+    <ClCompile Include="MoveComponent.cpp" />
+    <ClCompile Include="MoveInCircleComponent.cpp" />
+    <ClCompile Include="PlatePrefab.cpp" />
+    <ClCompile Include="PlayerPrefab.cpp" />
+    <ClCompile Include="PointsCommand.cpp" />
+    <ClCompile Include="PointsComponent.cpp" />
+    <ClCompile Include="PointsDisplayComponent.cpp" />
+    <ClCompile Include="TexturedGameObjectPrefab.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BurgerPartsCollisionManagerComponent.h" />
+    <ClInclude Include="BurgerPartComponent.h" />
+    <ClInclude Include="BurgerPartPrefab.h" />
+    <ClInclude Include="DamageCommand.h" />
+    <ClInclude Include="Events.h" />
+    <ClInclude Include="FPSComponent.h" />
+    <ClInclude Include="HealthComponent.h" />
+    <ClInclude Include="LevelGrid.h" />
+    <ClInclude Include="LevelManager.h" />
+    <ClInclude Include="LivesDisplayComponent.h" />
+    <ClInclude Include="MoveCommand.h" />
+    <ClInclude Include="MoveComponent.h" />
+    <ClInclude Include="MoveInCircleComponent.h" />
+    <ClInclude Include="PlatePrefab.h" />
+    <ClInclude Include="PlayerPrefab.h" />
+    <ClInclude Include="PointsCommand.h" />
+    <ClInclude Include="PointsComponent.h" />
+    <ClInclude Include="PointsDisplayComponent.h" />
+    <ClInclude Include="TexturedGameObjectPrefab.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

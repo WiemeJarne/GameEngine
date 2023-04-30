@@ -1,5 +1,4 @@
 #pragma once
-#include "Events.h"
 
 template<typename T>
 class Observer
@@ -12,5 +11,5 @@ public:
 	Observer& operator=(const Observer&) = delete;
 	Observer& operator=(Observer&&) = delete;
 
-	virtual void OnNotify(T* pData, Events event) = 0;
+	virtual void OnNotify(T* pData, int eventId) = 0;
 };

@@ -1,13 +1,15 @@
 #pragma once
 #include "Command.h"
 #include "Transform.h"
+#include "Subject.h"
+#include "MoveComponent.h"
 
 namespace commands
 {
-	class MoveCommand final : public Command
+	class MoveCommand final : public Command, public Subject<dae::GameObject>
 	{
 	public:
-		MoveCommand(dae::GameObject* go, glm::vec2 moveDirection, float moveSpeed);
+		MoveCommand(dae::GameObject* go, glm::vec2 moveDirection);
 
 		virtual ~MoveCommand() = default;
 		MoveCommand(const MoveCommand&) = delete;
@@ -18,8 +20,7 @@ namespace commands
 		void Execute() override;
 
 	private:
-		dae::GameObject* m_Go;
+		MoveComponent* m_pMoveComponent;
 		glm::vec2 m_MoveDirection{};
-		const float m_MoveSpeed{};
 	};
 }

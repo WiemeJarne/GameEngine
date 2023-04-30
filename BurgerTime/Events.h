@@ -2,5 +2,6 @@
 enum class Events
 {
 	playerLostLife,
-	playerEarnedPoint
+	playerEarnedPoint,
+	gameObjectMoved
 };

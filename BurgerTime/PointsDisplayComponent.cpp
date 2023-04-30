@@ -1,4 +1,5 @@
 #include "PointsDisplayComponent.h"
+#include "Events.h"
 
 PointsDisplayComponent::PointsDisplayComponent(dae::GameObject* owner, PointsComponent* pPointsComponent, dae::TextComponent* pTextComponent)
 	: Component(owner)
@@ -11,12 +12,8 @@ PointsDisplayComponent::PointsDisplayComponent(dae::GameObject* owner, PointsCom
 	}
 }
 
-void PointsDisplayComponent::OnNotify(PointsComponent* pData, Events event)
+void PointsDisplayComponent::OnNotify(PointsComponent* pData, int eventId)
 {
-	switch (event)
-	{
-	case Events::playerEarnedPoint:
+	if(eventId == static_cast<int>(Events::playerEarnedPoint))
 		m_pTextComponent->SetText("points: " + std::to_string(pData->GetPoints()));
-		break;
-	}
 }

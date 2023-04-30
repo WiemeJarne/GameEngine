@@ -17,7 +17,7 @@ public:
 	void Update() override {}
 	void Render() const override {}
 	void RenderImGui() override {}
-	void OnNotify(PointsComponent* pData, Events event) override;
+	void OnNotify(PointsComponent* pData, int event) override;
 
 private:
 	dae::TextComponent* m_pTextComponent{};

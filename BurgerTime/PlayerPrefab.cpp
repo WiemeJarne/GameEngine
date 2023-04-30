@@ -3,6 +3,7 @@
 #include "RenderComponent.h"
 #include "HealthComponent.h"
 #include "PointsComponent.h"
+#include "MoveComponent.h"
 #include "Command.h"
 #include "MoveCommand.h"
 #include "DamageCommand.h"
@@ -10,24 +11,27 @@
 #include "playerController.h"
 #include "InputManager.h"
 
-PlayerPrefab::PlayerPrefab(const std::string& textureFilePath, int amountOfLives, bool useController, float moveSpeed)
+PlayerPrefab::PlayerPrefab(const std::string& textureFilePath, int amountOfLives, const glm::vec2& pos, bool useController, float moveSpeed)
 {
 	m_go = std::make_unique<dae::GameObject>();
+	m_go->SetLocalPosition(pos.x, pos.y);
 	auto renderComponent{ std::make_unique<RenderComponent>(m_go.get(), textureFilePath) };
 	m_go->AddComponent(std::move(renderComponent));
 	auto healthComponent{ std::make_unique<HealthComponent>(m_go.get(), amountOfLives) };
 	m_go->AddComponent(std::move(healthComponent));
 	auto pointsComponent{ std::make_unique<PointsComponent>(m_go.get()) };
 	m_go->AddComponent(std::move(pointsComponent));
+	auto moveComponent{ std::make_unique<MoveComponent>(m_go.get(), moveSpeed) };
+	m_go->AddComponent(std::move(moveComponent));
 
 	//create moveLeftCommand
-	auto moveLeftCommmand = std::make_unique<commands::MoveCommand>(m_go.get(), glm::vec2(-1.f, 0.f), moveSpeed);
+	auto moveLeftCommmand = std::make_unique<commands::MoveCommand>(m_go.get(), glm::vec2(-1.f, 0.f));
 	//create moveRightCommand
-	auto moveRightCommmand = std::make_unique<commands::MoveCommand>(m_go.get(), glm::vec2(1.f, 0.f), moveSpeed);
+	auto moveRightCommmand = std::make_unique<commands::MoveCommand>(m_go.get(), glm::vec2(1.f, 0.f));
 	//create moveUpCommand
-	auto moveUpCommmand = std::make_unique<commands::MoveCommand>(m_go.get(), glm::vec2(0.f, -1.f), moveSpeed);
+	auto moveUpCommmand = std::make_unique<commands::MoveCommand>(m_go.get(), glm::vec2(0.f, -1.f));
 	//create moveUpCommand
-	auto moveDownCommmand = std::make_unique<commands::MoveCommand>(m_go.get(), glm::vec2(0.f, 1.f), moveSpeed);
+	auto moveDownCommmand = std::make_unique<commands::MoveCommand>(m_go.get(), glm::vec2(0.f, 1.f));
 	//create damageCommand
 	auto damageCommand{ std::make_unique<commands::DamageCommand>(m_go.get(), 1) };
 	//create pointsCommand

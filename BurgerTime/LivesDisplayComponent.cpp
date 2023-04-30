@@ -1,4 +1,5 @@
 #include "LivesDisplayComponent.h"
+#include "Events.h"
 
 LivesDisplayComponent::LivesDisplayComponent(dae::GameObject* owner, HealthComponent* pHealthComponent, dae::TextComponent* pTextComponent)
 	: Component(owner)
@@ -11,12 +12,8 @@ LivesDisplayComponent::LivesDisplayComponent(dae::GameObject* owner, HealthCompo
 	}
 }
 
-void LivesDisplayComponent::OnNotify(HealthComponent* pData, Events event)
+void LivesDisplayComponent::OnNotify(HealthComponent* pData, int eventId)
 {
-	switch (event)
-	{
-	case Events::playerLostLife:
+	if(eventId == static_cast<int>(Events::playerLostLife))
 		m_pTextComponent->SetText("lives: " + std::to_string(pData->GetHealth()));
-		break;
-	}	
 }

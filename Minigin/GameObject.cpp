@@ -7,7 +7,6 @@
 #include "TextureComponent.h"
 #include "TextComponent.h"
 #include <iostream>
-#include "MoveInCircleComponent.h"
 
 dae::GameObject::~GameObject()
 {
@@ -125,7 +124,7 @@ void dae::GameObject::SetParent(dae::GameObject* parent, bool keepWorldPos)
 
 void dae::GameObject::SetLocalPosition(float x, float y)
 {
-	m_LocalTransform.SetPosition(x, y, 0.f);
+	m_LocalTransform.SetPosition(x, y);
 
 	m_UpdateWorldPos = true;
 
@@ -137,15 +136,15 @@ void dae::GameObject::SetLocalPosition(float x, float y)
 
 void dae::GameObject::SetWorldPosition(float x, float y)
 {
-	m_WorldTransform.SetPosition(x, y, 0.f);
+	m_WorldTransform.SetPosition(x, y);
 }
 
-const glm::vec3& dae::GameObject::GetLocalPos()
+const glm::vec2& dae::GameObject::GetLocalPos()
 {
 	return m_LocalTransform.GetPosition();
 }
 
-const glm::vec3& dae::GameObject::GetWorldPos()
+const glm::vec2& dae::GameObject::GetWorldPos()
 { 
 	if (m_UpdateWorldPos)
 		UpdateWorldPos();
@@ -157,12 +156,12 @@ void dae::GameObject::UpdateWorldPos()
 {
 	if (!m_Parent)
 	{
-		m_WorldTransform.SetPosition(m_LocalTransform.GetPosition().x, m_LocalTransform.GetPosition().y, 0.f);
+		m_WorldTransform.SetPosition(m_LocalTransform.GetPosition().x, m_LocalTransform.GetPosition().y);
 	}
 	else if(m_Parent)
 	{
 		auto newWorldPos{ m_Parent->GetWorldPos() + m_LocalTransform.GetPosition()};
-		m_WorldTransform.SetPosition(newWorldPos.x, newWorldPos.y, newWorldPos.z);
+		m_WorldTransform.SetPosition(newWorldPos.x, newWorldPos.y);
 	}
 
 	m_UpdateWorldPos = false;

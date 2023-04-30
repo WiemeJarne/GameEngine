@@ -17,9 +17,8 @@ public:
 	void Update() override {}
 	void Render() const override {}
 	void RenderImGui() override {}
-	void OnNotify(HealthComponent* pData, Events event) override;
+	void OnNotify(HealthComponent* pData, int eventId) override;
 
 private:
 	dae::TextComponent* m_pTextComponent{};
-
 };

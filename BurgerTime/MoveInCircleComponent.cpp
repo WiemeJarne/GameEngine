@@ -2,6 +2,7 @@
 #include "Timer.h"
 #include "GameObject.h"
 #include <iostream>
+#include <glm/glm.hpp>
 
 MoveInCircleComponent::MoveInCircleComponent(dae::GameObject* owner, float radius, float rotationSpeed, bool clockWise)
 	: Component(owner),
@@ -16,20 +17,20 @@ void MoveInCircleComponent::Update()
 {
 	if (!m_IsInitialised) //this is not done in the contructor because the local position of the owner cann change if it gets a parent
 	{
-		glm::vec3 moveDirection{ m_Radius, 0.f, 0.f };
+		glm::vec2 moveDirection{ m_Radius, 0.f };
 	
-		glm::vec3 newPos{};
+		glm::vec2 newPos{};
 	
 		if (m_ClockWise)
 		{
-			newPos = m_Owner->GetLocalPos() - moveDirection;
+			newPos = m_pOwner->GetLocalPos() - moveDirection;
 		}
 		else
 		{
-			newPos = m_Owner->GetLocalPos() + moveDirection;
+			newPos = m_pOwner->GetLocalPos() + moveDirection;
 		}
 
-		m_Owner->SetLocalPosition(newPos.x, newPos.y);
+		m_pOwner->SetLocalPosition(newPos.x, newPos.y);
 		m_IsInitialised = true;
 	}
 	else
@@ -39,15 +40,15 @@ void MoveInCircleComponent::Update()
 		else
 			m_CurrentAngle -= m_AngularSpeed * Timer::GetInstance().GetElapsedSec();
 
-		glm::vec3 moveDirection{ std::sin(m_CurrentAngle), -std::cos(m_CurrentAngle), 0.f };
+		glm::vec2 moveDirection{ std::sin(m_CurrentAngle), -std::cos(m_CurrentAngle) };
 		moveDirection = glm::normalize(moveDirection);
 		const float radiusSquared{ std::powf(m_Radius, 2) };
 		moveDirection *= glm::sqrt(2 * radiusSquared - 2 * radiusSquared * cos(m_AngularSpeed * Timer::GetInstance().GetElapsedSec()));
 
-		glm::vec3 newPos{};
+		glm::vec2 newPos{};
 
-		newPos = m_Owner->GetLocalPos() + moveDirection;
+		newPos = m_pOwner->GetLocalPos() + moveDirection;
 
-		m_Owner->SetLocalPosition(newPos.x, newPos.y);
+		m_pOwner->SetLocalPosition(newPos.x, newPos.y);
 	}
 }

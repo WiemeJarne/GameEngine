@@ -21,26 +21,26 @@ RenderComponent::RenderComponent(dae::GameObject* owner, dae::TextureComponent* 
 
 RenderComponent::~RenderComponent()
 {
-	delete m_TextureComponent;
+	delete m_pTextureComponent;
 }
 
 void RenderComponent::Render() const
 {
-	auto pos = m_Owner->GetWorldPos();
+	auto pos = m_pOwner->GetWorldPos();
 
-	if (m_TextureComponent)
+	if (m_pTextureComponent)
 	{
-		dae::Renderer::GetInstance().RenderTexture(*m_TextureComponent, pos.x, pos.y);
+		dae::Renderer::GetInstance().RenderTexture(*m_pTextureComponent, pos.x, pos.y);
 	}
 }
 
 void RenderComponent::SetTextureComponent(const std::string& filename)
 {
-	m_TextureComponent = new dae::TextureComponent(m_Owner, filename);
+	m_pTextureComponent = new dae::TextureComponent(m_pOwner, filename);
 }
 
 void RenderComponent::SetTextureComponent(dae::TextureComponent* textureComponent)
 {
-	delete m_TextureComponent;
-	m_TextureComponent = textureComponent;
+	delete m_pTextureComponent;
+	m_pTextureComponent = textureComponent;
 }

@@ -53,6 +53,6 @@ void dae::TextComponent::CreateTextTexture()
 
 	if (m_RenderComponent)
 	{
-		m_RenderComponent->SetTextureComponent(new TextureComponent(m_Owner, texture));
+		m_RenderComponent->SetTextureComponent(new TextureComponent(m_pOwner, texture));
 	}
 }

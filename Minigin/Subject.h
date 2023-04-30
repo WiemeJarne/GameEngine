@@ -1,6 +1,5 @@
 #pragma once
 #include "Observer.h"
-#include "Events.h"
 #include <memory>
 #include <vector>
 
@@ -46,11 +45,11 @@ public:
 	}
 
 protected:
-	void Notify(T* pData, Events event)
+	void Notify(T* pData, int eventId)
 	{
 		for (int index{}; index < m_pObservers.size(); ++index)
 		{
-			m_pObservers[index]->OnNotify(pData, event);
+			m_pObservers[index]->OnNotify(pData, eventId);
 		}
 	}
 

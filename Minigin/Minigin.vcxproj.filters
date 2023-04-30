@@ -63,9 +63,6 @@
     <ClInclude Include="Component.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="FPSComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
     <ClInclude Include="RenderComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
@@ -73,9 +70,6 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="TextureComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="MoveInCircleComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="..\3rdParty\imgui-1.89.4\imconfig.h">
@@ -111,38 +105,11 @@
     <ClInclude Include="Command.h">
       <Filter>Commands</Filter>
     </ClInclude>
-    <ClInclude Include="MoveCommand.h">
-      <Filter>Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="HealthComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="DamageCommand.h">
-      <Filter>Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="PointsComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="PointsCommand.h">
-      <Filter>Commands</Filter>
-    </ClInclude>
     <ClInclude Include="Observer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Subject.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Events.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LivesDisplayComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="PointsDisplayComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerPrefab.h">
-      <Filter>Prefabs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -176,9 +143,6 @@
     <ClCompile Include="Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FPSComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
     <ClCompile Include="RenderComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
@@ -186,9 +150,6 @@
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="TextureComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="MoveInCircleComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="..\3rdParty\imgui-1.89.4\imgui.cpp">
@@ -217,30 +178,6 @@
     </ClCompile>
     <ClCompile Include="PlayerController.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MoveCommand.cpp">
-      <Filter>Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="HealthComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="DamageCommand.cpp">
-      <Filter>Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="PointsComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="PointsCommand.cpp">
-      <Filter>Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="LivesDisplayComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="PointsDisplayComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerPrefab.cpp">
-      <Filter>Prefabs</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

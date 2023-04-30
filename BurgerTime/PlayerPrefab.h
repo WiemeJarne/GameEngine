@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <glm/vec2.hpp>
 #include "Component.h"
 
 namespace dae
@@ -10,9 +11,9 @@ namespace dae
 class PlayerPrefab final
 {
 public:
-	PlayerPrefab(const std::string& textureFilePath, int amountOfLives, bool useController = false, float moveSpeed = 100.f);
+	PlayerPrefab(const std::string& textureFilePath, int amountOfLives, const glm::vec2& pos, bool useController = false, float moveSpeed = 100.f);
 
-	virtual ~PlayerPrefab() = default;
+	~PlayerPrefab() = default;
 	PlayerPrefab(const PlayerPrefab&) = delete;
 	PlayerPrefab(PlayerPrefab&&) = delete;
 	PlayerPrefab& operator=(const PlayerPrefab&) = delete;

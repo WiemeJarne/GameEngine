@@ -9,7 +9,7 @@ namespace dae
 class Component
 {
 public:
-	Component(dae::GameObject* owner) : m_Owner{ owner } {};
+	Component(dae::GameObject* owner) : m_pOwner{ owner } {};
 
 	virtual ~Component() = default;
 	Component(const Component&) = delete;
@@ -22,5 +22,5 @@ public:
 	virtual void RenderImGui() = 0;
 
 protected:
-	dae::GameObject* m_Owner;
+	dae::GameObject* m_pOwner;
 };

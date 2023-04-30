@@ -26,10 +26,11 @@ public:
 	void Update() override {}
 	void Render() const override;
 	void RenderImGui() override {}
+	dae::TextureComponent* GetTextureComponent() const { return m_pTextureComponent; }
 
 	void SetTextureComponent(const std::string& filename);
 	void SetTextureComponent(dae::TextureComponent* textureComponent);
 
 private:
-	dae::TextureComponent* m_TextureComponent;
+	dae::TextureComponent* m_pTextureComponent;
 };

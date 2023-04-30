@@ -28,10 +28,10 @@ namespace dae
 		GameObject* GetChildAt(int index) const { return m_Children[index]; }
 
 		void SetLocalPosition(float x, float y);
-		const glm::vec3& GetLocalPos();
+		const glm::vec2& GetLocalPos();
 
 		void SetWorldPosition(float x, float y);
-		const glm::vec3& GetWorldPos();
+		const glm::vec2& GetWorldPos();
 		void UpdateWorldPos();
 		
 		void AddComponent(std::unique_ptr<Component> component);
