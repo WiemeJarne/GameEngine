@@ -29,8 +29,11 @@ BurgerPartComponent::BurgerPartComponent(dae::GameObject* owner, float fallSpeed
 
 void BurgerPartComponent::Update()
 {
-	//when all the parts have been walked over the burgerPart has to fall
-	if (m_FirstQuarterWalkedOver && m_SecondWalkedOver && m_ThirdWalkedOver && m_FourthWalkedOver)
+	if (m_HasReachedPlate)
+		return;
+
+	//when all the parts have been walked over or m_StartFalling is true because another burgerpart hit this one the burgerPart has to fall
+	if ((m_FirstQuarterWalkedOver && m_SecondWalkedOver && m_ThirdWalkedOver && m_FourthWalkedOver || m_StartFalling))
 	{
 		//get the pos of the owner of this component
 		auto ownerPos{ m_pOwner->GetLocalPos() };
@@ -69,6 +72,7 @@ void BurgerPartComponent::Update()
 			if (abs(ownerPos.y - m_pCell->middlePos.y) < 0.3f) //the 0.3f is because of the speed it is possible that ownerPos.y will never be close enough to m_ToGoYValue
 			{
 				m_ShouldFallUntilPlatform = false;
+				m_StartFalling = false;
 				m_FirstQuarterWalkedOver = false;
 				m_SecondWalkedOver = false;
 				m_ThirdWalkedOver = false;

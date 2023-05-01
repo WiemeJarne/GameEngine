@@ -298,6 +298,8 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene)
 
 			player1MoveComponent->AddObserver(burgerPartComponent);
 
+			burgerPartCollisionManagerComponent->AddBurgerPartComponent(burgerPartComponent);
+
 			scene.Add(std::move(burgerPartGo));
 		}
 		if (command == 'l')
@@ -314,6 +316,8 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene)
 			auto burgerPartComponent{ burgerPartGo->GetComponent<BurgerPartComponent>() };
 
 			player1MoveComponent->AddObserver(burgerPartComponent);
+
+			burgerPartCollisionManagerComponent->AddBurgerPartComponent(burgerPartComponent);
 
 			scene.Add(std::move(burgerPartGo));
 		}
@@ -332,6 +336,8 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene)
 
 			player1MoveComponent->AddObserver(burgerPartComponent);
 
+			burgerPartCollisionManagerComponent->AddBurgerPartComponent(burgerPartComponent);
+
 			scene.Add(std::move(burgerPartGo));
 		}
 		if (command == 'c')
@@ -348,6 +354,8 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene)
 			auto burgerPartComponent{ burgerPartGo->GetComponent<BurgerPartComponent>() };
 
 			player1MoveComponent->AddObserver(burgerPartComponent);
+
+			burgerPartCollisionManagerComponent->AddBurgerPartComponent(burgerPartComponent);
 
 			scene.Add(std::move(burgerPartGo));
 		}
@@ -366,6 +374,8 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene)
 
 			player1MoveComponent->AddObserver(burgerPartComponent);
 
+			burgerPartCollisionManagerComponent->AddBurgerPartComponent(burgerPartComponent);
+
 			scene.Add(std::move(burgerPartGo));
 		}
 		if (command == 'b')
@@ -382,6 +392,8 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene)
 			auto burgerPartComponent{ burgerPartGo->GetComponent<BurgerPartComponent>() };
 
 			player1MoveComponent->AddObserver(burgerPartComponent);
+
+			burgerPartCollisionManagerComponent->AddBurgerPartComponent(burgerPartComponent);
 
 			scene.Add(std::move(burgerPartGo));
 		}

@@ -22,4 +22,6 @@ public:
 
 private:
 	std::vector<BurgerPartComponent*> m_BurgerPartComponents{};
+
+	bool AreBurgerpartsOverlapping(const glm::vec2& part1TopLeftPos, float part1Width, float part1Height, const glm::vec2& part2TopLeftPos, float part2Width, float part2Height);
 };
