@@ -1,9 +1,0 @@
-short platform with ladder under: _
-short platform with no ladder under: -
-long platform with ladder under: # (this is a cell with the width of 2)
-long platform with no ladder under: @ (this is a cell with the width of 2)
-ladder: l
-ladder spreading over 2 cells (half on each cell): L
-plate: p
-empty: /
-doubleEmpty: \ (this is a cell with the width of 2)
