@@ -35,7 +35,7 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene)
 	//read the file until the end
 	while (!inputFile.eof())
 	{
-		command = inputFile.get();
+		command = static_cast<char>(inputFile.get());
 
 		if (command == '\n')
 			continue;
@@ -278,7 +278,7 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene)
 
 	while (!inputFile.eof())
 	{
-		command = inputFile.get();
+		command = static_cast<char>(inputFile.get());
 
 		if (command == '\n')
 			continue;

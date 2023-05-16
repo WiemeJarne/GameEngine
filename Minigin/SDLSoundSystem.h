@@ -1,9 +1,20 @@
 #pragma once
-#include "SoundSystem.h"
+#include "SoundServiceLocator.h"
+#include <memory>
 
-class SDLSoundSystem : public SoundSystem
+namespace dae
 {
-public:
-	void Play(const soundId soundId, const float volume) override;
-};
+	class SDLSoundSystem final : public SoundSystem
+	{
+	public:
+		SDLSoundSystem();
 
+		void AddSound(const std::string& path) override;
+		void Play(const soundId soundId, const int volume) override;
+
+	private:
+		class SDLSoundSystemImpl;
+
+		std::unique_ptr<SDLSoundSystemImpl> m_pImpl;
+	};
+}

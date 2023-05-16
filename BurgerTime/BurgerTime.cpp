@@ -32,6 +32,8 @@
 #include <vector>
 #include "PlatformPrefab.h"
 #include "LevelManager.h"
+#include "PlaySoundCommand.h"
+#include "SDLSoundSystem.h"
 
 void load()
 {
@@ -39,16 +41,24 @@ void load()
 
 	LevelManager::GetInstance().LoadLevel(1, scene);
 
-	std::cout << "controls: \n";
-	std::cout << "\tMr. hotdog:\n";
-	std::cout << "\t\t moving: dPad\n";
-	std::cout << "\t\t take damamge: right bumper\n";
-	std::cout << "\t\t gain a point: A\n";
-	std::cout << "\tPeter Pepper:\n";
-	std::cout << "\t\t moving: WASD\n";
-	std::cout << "\t\t take damamge: spacebar\n";
-	std::cout << "\t\t gain a point: p\n";
-	std::cout << "green text is for Mr hotdog and yellow text is for Peter Pepper\n";
+	//std::cout << "controls: \n";
+	//std::cout << "\tMr. hotdog:\n";
+	//std::cout << "\t\t moving: dPad\n";
+	//std::cout << "\t\t take damamge: right bumper\n";
+	//std::cout << "\t\t gain a point: A\n";
+	//std::cout << "\tPeter Pepper:\n";
+	//std::cout << "\t\t moving: WASD\n";
+	//std::cout << "\t\t take damamge: spacebar\n";
+	//std::cout << "\t\t gain a point: p\n";
+	//std::cout << "green text is for Mr hotdog and yellow text is for Peter Pepper\n";
+
+	std::cout << "press P to play a sound\n";
+
+	auto pSDLSoundSystem{ new dae::SDLSoundSystem() };
+	pSDLSoundSystem->AddSound("../Data/sound/LoseLife.wav");
+	auto playSoundCommand = std::make_unique<commands::PlaySoundCommand>(pSDLSoundSystem);
+
+	dae::InputManager::GetInstance().AddCommand(std::move(playSoundCommand), dae::InputManager::KeyboardKey(dae::KeyState::pressed, 'P'));
 }
 
 int main(int, char* []) {

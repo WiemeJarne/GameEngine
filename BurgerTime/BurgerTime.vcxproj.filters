@@ -81,6 +81,9 @@
     <ClCompile Include="BurgerPartsCollisionManagerComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PlaySoundCommand.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PointsCommand.h">
@@ -139,6 +142,9 @@
     </ClInclude>
     <ClInclude Include="BurgerPartsCollisionManagerComponent.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlaySoundCommand.h">
+      <Filter>Commands</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -111,7 +111,7 @@
     <ClInclude Include="Subject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SoundSystem.h">
+    <ClInclude Include="SoundServiceLocator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SDLSoundSystem.h">
@@ -186,6 +186,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SDLSoundSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundServiceLocator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
