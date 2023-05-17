@@ -56,17 +56,17 @@ Cell* LevelGrid::GetCell(const glm::vec2& pos)
 	//loop over all the cells and check in which one the pos is in
 	for (const auto& cell : m_Cells)
 	{
-		if (pos.y < cell->middlePos.y + m_CellSideLenght / 2.f
-			&& pos.y > cell->middlePos.y - m_CellSideLenght / 2.f)
+		if (pos.y <= cell->middlePos.y + m_CellSideLenght / 2.f
+			&& pos.y >= cell->middlePos.y - m_CellSideLenght / 2.f)
 		{
 			if (cell->cellKind == CellKind::longEmpty || cell->cellKind == CellKind::longFloor || cell->cellKind == CellKind::longGoDown || cell->cellKind == CellKind::longGoUp || cell->cellKind == CellKind::longGoUpAndDown || cell->cellKind == CellKind::plate)
 			{
-				if (pos.x < cell->middlePos.x + m_CellSideLenght
-					&& pos.x > cell->middlePos.x - m_CellSideLenght)
+				if (pos.x <= cell->middlePos.x + m_CellSideLenght
+					&& pos.x >= cell->middlePos.x - m_CellSideLenght)
 					return cell.get();
 			}
-			else if (pos.x < cell->middlePos.x + m_CellSideLenght / 2.f
-					&& pos.x >cell->middlePos.x - m_CellSideLenght / 2.f)
+			else if (pos.x <= cell->middlePos.x + m_CellSideLenght / 2.f
+					&& pos.x >= cell->middlePos.x - m_CellSideLenght / 2.f)
 				return cell.get();
 		}
 	}
