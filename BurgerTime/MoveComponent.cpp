@@ -36,7 +36,7 @@ void MoveComponent::Move(const glm::vec2& moveDirection)
 		m_HasSnappedToPlatform = false;
 	}
 		
-	const float cellSideLenght{ LevelGrid::GetInstance().GetCellSideLenght() };
+	//const float cellSideLenght{ LevelGrid::GetInstance().GetCellSideLenght() };
 
 	//if gameObject is on a shortFloor or longFloor or shorGoDown or longGoDown align his feet with the platform
 	switch (pCell->cellKind)
