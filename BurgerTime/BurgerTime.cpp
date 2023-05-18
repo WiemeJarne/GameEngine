@@ -39,7 +39,7 @@ void load()
 {
 	auto& scene = dae::SceneManager::GetInstance().CreateScene("Demo");
 
-	LevelManager::GetInstance().LoadLevel(1, scene);
+	LevelManager::GetInstance().LoadLevel(3, scene);
 
 	//std::cout << "controls: \n";
 	//std::cout << "\tMr. hotdog:\n";

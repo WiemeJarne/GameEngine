@@ -1,11 +1,12 @@
 #pragma once
 #include "Component.h"
 #include "LevelGrid.h"
-#include "Observer.h"
 #include "GameObject.h"
+#include "EventListener.h"
 #include <glm/vec2.hpp>
+#include <any>
 
-class BurgerPartComponent : public Component, public Observer<dae::GameObject>
+class BurgerPartComponent : public Component, public dae::EventListener
 {
 public:
 	BurgerPartComponent(dae::GameObject* owner, float fallSpeed);
@@ -18,13 +19,13 @@ public:
 	void Update() override;
 	void Render() const override {}
 	void RenderImGui() override {}
-	void OnNotify(dae::GameObject* go, int eventId) override;
 	bool GetHasReachedPlate() const { return m_HasReachedPlate; }
 	const glm::vec2& GetTopLeftPos() const { return m_pOwner->GetLocalPos(); }
 	float GetWidth() const { return m_Width; }
 	float GetHeight() const { return m_Height; }
 	void SetHasReachedPlate(bool hasReachedPlate) { m_HasReachedPlate = hasReachedPlate; }
 	void SetStartFalling(bool startFalling) { m_StartFalling = startFalling; }
+	void OnNotify(std::any data, int eventId, bool isEngineEvent) override;
 
 private:
 	float m_Width{};
@@ -40,4 +41,7 @@ private:
 	bool m_StartFalling{};
 	float m_ToGoYValue{};
 	bool m_HasReachedPlate{};
+
+	void CalculateWalkedOver(dae::GameObject* pGameObject);
+	void CollidedWithOtherBurgerPart(dae::GameObject* pGameObject);
 };

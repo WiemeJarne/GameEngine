@@ -49,18 +49,15 @@ namespace dae
 		}
 
 		template<typename ComponentType>
-		bool HasComponent()
+		bool HasComponent() const
 		{
-			auto iterator = std::find_if(m_Components.begin(), m_Components.end(),
-				[](const std::unique_ptr<Component>& component)
-				{
-					return dynamic_cast<ComponentType*>(component.get()) != nullptr;
-				});
+			for (const auto& pComponent : m_Components)
+			{
+				if (dynamic_cast<ComponentType*>(pComponent.get()))
+					return true;
+			}
 
-			if (iterator == m_Components.end())
-				return false;
-
-			return true;
+			return false;
 		}
 
 		template<typename ComponentType>

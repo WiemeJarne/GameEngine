@@ -3,6 +3,10 @@
 #include "LevelGrid.h"
 #include "Timer.h"
 #include "RenderComponent.h"
+#include "EventQueue.h"
+#include "CollisionManager.h"
+#include "PointsComponent.h"
+#include "EngineEvents.h"
 #include <iostream>
 
 BurgerPartComponent::BurgerPartComponent(dae::GameObject* owner, float fallSpeed)
@@ -25,6 +29,8 @@ BurgerPartComponent::BurgerPartComponent(dae::GameObject* owner, float fallSpeed
 		m_Width = static_cast<float>(textureSize.x);
 		m_Height = static_cast<float>(textureSize.y);
 	}
+
+	dae::EventQueue::GetInstance().AddListener(this);
 }
 
 void BurgerPartComponent::Update()
@@ -89,62 +95,107 @@ void BurgerPartComponent::Update()
 	}
 }
 
-void BurgerPartComponent::OnNotify(dae::GameObject* go, int eventId)
+void BurgerPartComponent::OnNotify(std::any data, int eventId, bool isEngineEvent)
 {
-	if (eventId == static_cast<int>(Events::gameObjectMoved))
+	if (!isEngineEvent)
+		return;
+
+	if (eventId != static_cast<int>(dae::EngineEvents::collisionEvent))
+	return;
+
+	dae::CollidedGameObjects collidedGameObjects{};
+
+	if(data.type() == typeid(dae::CollidedGameObjects))
+	{ 
+		collidedGameObjects = std::any_cast<dae::CollidedGameObjects>(data);
+	}
+	else return;
+
+	//check if the triggered object is this component parent if not return
+	if (collidedGameObjects.pTriggered != m_pOwner)
+		return;
+
+	//check if the trigger object is a player this is done by checking if the gameObject has a pointsComponent
+	if (collidedGameObjects.pOther->HasComponent<PointsComponent>())
+		CalculateWalkedOver(collidedGameObjects.pOther);
+
+	//if pData is not a player check if it is another burger part by checking if the gameObject has a BurgerPartComponent
+	else if (collidedGameObjects.pOther->HasComponent<BurgerPartComponent>())
+		CollidedWithOtherBurgerPart(collidedGameObjects.pOther);
+}
+
+void BurgerPartComponent::CalculateWalkedOver(dae::GameObject* pGameObject)
+{
+	//get the pos of the owner of this component
+	auto ownerPos{ m_pOwner->GetLocalPos() };
+
+	//calculate the middle of the owner of this component on x-axis only (this is to find the correct cell the owner of the gameObject is in
+	auto ownerXMiddlePos{ ownerPos };
+	ownerXMiddlePos.x += m_Width / 2.f;
+
+	//get the pos of the given game object
+	auto goPos{ pGameObject->GetLocalPos() };
+
+	//calculate the middle of the given GameObject
+	goPos.x += 8.f;
+
+	//get the cell the owner of this component is in
+	auto pOwnerCell{ LevelGrid::GetInstance().GetCell(ownerXMiddlePos) };
+
+	//get the cell the given game object is is
+	auto pGoCell{ LevelGrid::GetInstance().GetCell(goPos) };
+
+	if (!pOwnerCell || !pGoCell)
+		return;
+
+	//if they are not in the same row they don't thouch each other so return
+	if (pOwnerCell->rowNr != pGoCell->rowNr)
+		return;
+
+	//if they are in the same row check how far the given gameObject is in the first quarter of this gameObject
+	if (goPos.x > ownerPos.x && goPos.x < ownerPos.x + m_Width / 4.f)
 	{
-		//get the pos of the owner of this component
-		auto ownerPos{ m_pOwner->GetLocalPos() };
+		m_FirstQuarterWalkedOver = true;
+		return;
+	}
 
-		//calculate the middle of the owner of this component on x-axis only (this is to find the correct cell the owner of the gameObject is in
-		auto ownerXMiddlePos{ ownerPos };
-		ownerXMiddlePos.x += m_Width / 2.f;
+	//check if the given gameObject is in the second quarter of this gameObject
+	if (goPos.x > ownerPos.x + m_Width / 4.f && goPos.x < ownerPos.x + m_Width / 2.f)
+	{
+		m_SecondWalkedOver = true;
+		return;
+	}
 
-		//get the pos of the given game object
-		auto goPos{ go->GetLocalPos() };
+	//check if the given gameObject is in the third quarter of this gameObject
+	if (goPos.x > ownerPos.x + m_Width / 2.f && goPos.x < ownerPos.x + 3 * m_Width / 4.f)
+	{
+		m_ThirdWalkedOver = true;
+		return;
+	}
 
-		//calculate the middle of the given GameObject
-		goPos.x += 8.f;
+	//check if the given gameObject is in the fourth quarter of this gameObject
+	if (goPos.x > ownerPos.x + 3 * m_Width / 4.f && goPos.x < ownerPos.x + m_Width)
+	{
+		m_FourthWalkedOver = true;
+		return;
+	}
+}
 
-		//get the cell the owner of this component is in
-		auto pOwnerCell{ LevelGrid::GetInstance().GetCell(ownerXMiddlePos) };
+void BurgerPartComponent::CollidedWithOtherBurgerPart(dae::GameObject* pGameObject)
+{
+	//get the burgerPartComponent of the colliding gameObject
+	auto pOtherBurgerPartComponent{ pGameObject->GetComponent<BurgerPartComponent>() };
 
-		//get the cell the given game object is is
-		auto pGoCell{ LevelGrid::GetInstance().GetCell(goPos) };
-
-		if (!pOwnerCell || !pGoCell)
-			return;
-
-		//if they are not in the same row they don't thouch each other so return
-		if (pOwnerCell->rowNr != pGoCell->rowNr)
-			return;
-
-		//if they are in the same row check how far the given gameObject is in the first quarter of this gameObject
-		if (goPos.x > ownerPos.x && goPos.x < ownerPos.x + m_Width / 4.f)
-		{
-			m_FirstQuarterWalkedOver = true;
-			return;
-		}
-
-		//check if the given gameObject is in the second quarter of this gameObject
-		if (goPos.x > ownerPos.x + m_Width / 4.f && goPos.x < ownerPos.x + m_Width / 2.f)
-		{
-			m_SecondWalkedOver = true;
-			return;
-		}
-
-		//check if the given gameObject is in the third quarter of this gameObject
-		if (goPos.x > ownerPos.x + m_Width / 2.f && goPos.x < ownerPos.x + 3 * m_Width / 4.f)
-		{
-			m_ThirdWalkedOver = true;
-			return;
-		}
-		
-		//check if the given gameObject is in the fourth quarter of this gameObject
-		if (goPos.x > ownerPos.x + 3 * m_Width / 4.f && goPos.x < ownerPos.x + m_Width)
-		{
-			m_FourthWalkedOver = true;
-			return;
-		}
+	//check if this burgerPart is above the other burgerPart
+	if (m_pOwner->GetLocalPos().y < pGameObject->GetLocalPos().y)
+	{
+		//check if the other bugerPart has reached a plate
+		if (pOtherBurgerPartComponent->GetHasReachedPlate())
+			m_HasReachedPlate = true; //if so then is object also reached a plate
+	}
+	else //if this burgerPart is not above the other burgerPart (so it is below) then start with falling unless this burgerPart already is on a plate
+	{
+		if(!m_HasReachedPlate)
+			m_StartFalling = true;
 	}
 }

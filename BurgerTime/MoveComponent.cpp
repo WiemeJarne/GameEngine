@@ -69,10 +69,15 @@ void MoveComponent::Move(const glm::vec2& moveDirection)
 
 		case CellKind::shortGoUp:
 		case CellKind::shortGoUpAndDown:
-		case CellKind::longGoUp:
-		case CellKind::longGoUpAndDown:
 		case CellKind::ladder:
 			canMove = true;
+			break;
+
+		//if the cell the gameObject is in is a longGoUp or longGoUpAndDown make sure the middle of the middle gameObject is above the ladder so only check x
+		case CellKind::longGoUp:
+		case CellKind::longGoUpAndDown:
+			if (ownerMiddlePos.x >= pCell->middlePos.x - cellSideLenght / 2.f && ownerMiddlePos.x <= pCell->middlePos.x + cellSideLenght / 2.f)
+				canMove = true;
 			break;
 		}
 	}
@@ -93,10 +98,15 @@ void MoveComponent::Move(const glm::vec2& moveDirection)
 
 		case CellKind::shortGoDown:
 		case CellKind::shortGoUpAndDown:
-		case CellKind::longGoDown:
-		case CellKind::longGoUpAndDown:
 		case CellKind::ladder:
 			canMove = true;
+			break;
+
+		//if the cell the gameObject is in is a longGoDown or longGoUpAndDown make sure the middle of the middle gameObject is above the ladder so only check x
+		case CellKind::longGoDown:
+		case CellKind::longGoUpAndDown:
+			if (ownerMiddlePos.x >= pCell->middlePos.x - cellSideLenght / 2.f && ownerMiddlePos.x <= pCell->middlePos.x + cellSideLenght / 2.f)
+				canMove = true;
 			break;
 		}
 	}

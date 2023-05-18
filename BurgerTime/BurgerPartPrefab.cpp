@@ -3,6 +3,7 @@
 #include "BurgerPartComponent.h"
 #include "RenderComponent.h"
 #include "LevelGrid.h"
+#include "CollisionBoxComponent.h"
 
 BurgerPartPrefab::BurgerPartPrefab(const std::string& textureFilePath, const glm::vec2& cellTopLeftPos)
 {
@@ -16,6 +17,10 @@ BurgerPartPrefab::BurgerPartPrefab(const std::string& textureFilePath, const glm
 	{
 		pos.y += LevelGrid::GetInstance().GetCellSideLenght() - renderComponent->GetTextureComponent()->GetSize().y;
 		m_go->SetLocalPosition(cellTopLeftPos.x, cellTopLeftPos.y);
+
+		auto textureSize{ renderComponent->GetTextureComponent()->GetSize() };
+		auto collisionBoxComponent{ std::make_unique<dae::CollisionBoxComponent>(m_go.get(), static_cast<float>(textureSize.x), static_cast<float>(textureSize.y)) };
+		m_go->AddComponent(std::move(collisionBoxComponent));
 	}
 
 	m_go->SetLocalPosition(pos.x, pos.y);

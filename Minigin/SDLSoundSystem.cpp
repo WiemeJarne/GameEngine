@@ -47,7 +47,7 @@ public:
 			std::unique_lock lock(m_SoundMutex);
 			m_SoundQueueCondition.wait(lock);
 
-			while (!m_SoundQueue.empty())
+			while (m_Continue && !m_SoundQueue.empty())
 			{
 				auto& sound{ m_SoundQueue.front() };
 				Play(sound.first, sound.second);

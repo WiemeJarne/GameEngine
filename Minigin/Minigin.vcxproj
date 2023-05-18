@@ -221,8 +221,13 @@ xcopy "$(SolutionDir)3rdParty\steamworks\steam_appid.txt" "$(OutputPath)"  /Y</C
     <ClInclude Include="..\3rdParty\imgui-1.89.4\imstb_rectpack.h" />
     <ClInclude Include="..\3rdParty\imgui-1.89.4\imstb_textedit.h" />
     <ClInclude Include="..\3rdParty\imgui-1.89.4\imstb_truetype.h" />
+    <ClInclude Include="CollisionBoxComponent.h" />
+    <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="Command.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="EngineEvents.h" />
+    <ClInclude Include="EventListener.h" />
+    <ClInclude Include="EventQueue.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="InputManager.h" />
@@ -252,6 +257,9 @@ xcopy "$(SolutionDir)3rdParty\steamworks\steam_appid.txt" "$(OutputPath)"  /Y</C
     <ClCompile Include="..\3rdParty\imgui-1.89.4\imgui_plot.cpp" />
     <ClCompile Include="..\3rdParty\imgui-1.89.4\imgui_tables.cpp" />
     <ClCompile Include="..\3rdParty\imgui-1.89.4\imgui_widgets.cpp" />
+    <ClCompile Include="CollisionBoxComponent.cpp" />
+    <ClCompile Include="CollisionManager.cpp" />
+    <ClCompile Include="EventQueue.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="InputManager.cpp" />

@@ -10,6 +10,8 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include "Timer.h"
+#include "EventQueue.h"
+#include "CollisionManager.h"
 #include <iostream>
 
 SDL_Window* g_window{};
@@ -84,9 +86,11 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	const float desiredFPS{ 144.f };
 	std::chrono::duration<long long, std::milli> msPerFrame{ static_cast<long long>(1000.f / desiredFPS) };
 
-	auto& renderer = Renderer::GetInstance();
-	auto& sceneManager = SceneManager::GetInstance();
 	auto& input = InputManager::GetInstance();
+	auto& sceneManager = SceneManager::GetInstance();
+	auto& renderer = Renderer::GetInstance();
+	auto& eventQueue = EventQueue::GetInstance();
+	auto& collisionManager = CollisionManager::GetInstance();
 
 	// todo: this update loop could use some work.
 	Timer::GetInstance().Start();
@@ -98,6 +102,8 @@ void dae::Minigin::Run(const std::function<void()>& load)
 		doContinue = input.ProcessInput();
 		sceneManager.Update();
 		renderer.Render();
+		eventQueue.Update();
+		collisionManager.Update();
 
 		Timer::GetInstance().Update();
 

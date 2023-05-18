@@ -72,17 +72,14 @@
     <ClCompile Include="TexturedGameObjectPrefab.cpp">
       <Filter>Prefabs</Filter>
     </ClCompile>
-    <ClCompile Include="BurgerPartComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="BurgerPartPrefab.cpp">
       <Filter>Prefabs</Filter>
     </ClCompile>
-    <ClCompile Include="BurgerPartsCollisionManagerComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PlaySoundCommand.cpp">
       <Filter>Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="BurgerPartComponent.cpp">
+      <Filter>Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -134,17 +131,14 @@
     <ClInclude Include="TexturedGameObjectPrefab.h">
       <Filter>Prefabs</Filter>
     </ClInclude>
-    <ClInclude Include="BurgerPartComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="BurgerPartPrefab.h">
       <Filter>Prefabs</Filter>
     </ClInclude>
-    <ClInclude Include="BurgerPartsCollisionManagerComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PlaySoundCommand.h">
       <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="BurgerPartComponent.h">
+      <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

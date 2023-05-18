@@ -171,7 +171,6 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPat
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BurgerPartsCollisionManagerComponent.cpp" />
     <ClCompile Include="BurgerPartComponent.cpp" />
     <ClCompile Include="BurgerPartPrefab.cpp" />
     <ClCompile Include="BurgerTime.cpp" />
@@ -193,7 +192,6 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPat
     <ClCompile Include="TexturedGameObjectPrefab.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BurgerPartsCollisionManagerComponent.h" />
     <ClInclude Include="BurgerPartComponent.h" />
     <ClInclude Include="BurgerPartPrefab.h" />
     <ClInclude Include="DamageCommand.h" />
