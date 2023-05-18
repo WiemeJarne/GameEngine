@@ -31,6 +31,9 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene)
 	int currentCollIndex{};
 	const glm::vec2 levelTopLeftPos{ 0.f, 32.f };
 
+	int playerStartRow{};
+	int playerStartColumn{};
+
 	//read the file until the end
 	while (!inputFile.eof())
 	{
@@ -38,6 +41,13 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene)
 
 		if (command == '\n')
 			continue;
+
+		if (std::isupper(command))
+		{
+			playerStartRow = currentRowIndex;
+			playerStartColumn = currentCollIndex;
+			command = static_cast<char>(std::tolower(command));
+		}
 
 		if (command == 'f')
 		{
@@ -255,7 +265,7 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene)
 	inputFile.close();
 
 	//spawn player at row 8 collumn 5
-	glm::vec2 playerPos{ cellSidesLenght * 6 + levelTopLeftPos.x, cellSidesLenght * 8 + levelTopLeftPos.y };
+	glm::vec2 playerPos{ 1.5 * cellSidesLenght * playerStartColumn + 8.f, cellSidesLenght * playerStartRow };
 	playerPos.y += cellSidesLenght + 10.f;
 	auto player{ std::make_unique<PlayerPrefab>("PeterPepperFrontFacing.png", 3, playerPos) };
 	player1 = player->GetGameObject();

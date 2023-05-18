@@ -25,6 +25,8 @@ void MoveComponent::Move(const glm::vec2& moveDirection)
 	//get the cell the gameObject is in
 	auto pCell = LevelGrid::GetInstance().GetCell(ownerMiddlePos);
 
+	const float cellSideLenght{ LevelGrid::GetInstance().GetCellSideLenght() };
+
 	if (!pCell)
 	{
 		canMove = true;
@@ -127,7 +129,7 @@ void MoveComponent::Move(const glm::vec2& moveDirection)
 		case CellKind::longGoDown:
 		case CellKind::longGoUpAndDown:
 			if ((!pCell->pLeftNeighbor || pCell->pLeftNeighbor->cellKind == CellKind::shortEmpty
-				|| pCell->pLeftNeighbor->cellKind == CellKind::longEmpty) && ownerMiddlePos.x < pCell->middlePos.x)
+				|| pCell->pLeftNeighbor->cellKind == CellKind::longEmpty || pCell->pLeftNeighbor->cellKind == CellKind::plate) && ownerMiddlePos.x < pCell->middlePos.x)
 			{
 				canMove = false;
 			}
@@ -156,7 +158,7 @@ void MoveComponent::Move(const glm::vec2& moveDirection)
 		case CellKind::longGoDown:
 		case CellKind::longGoUpAndDown:
 			if ((!pCell->pRightNeighbor || pCell->pRightNeighbor->cellKind == CellKind::shortEmpty
-				|| pCell->pRightNeighbor->cellKind == CellKind::longEmpty) && ownerMiddlePos.x > pCell->middlePos.x)
+				|| pCell->pRightNeighbor->cellKind == CellKind::longEmpty || pCell->pRightNeighbor->cellKind == CellKind::plate) && ownerMiddlePos.x > pCell->middlePos.x)
 			{
 				canMove = false;
 			}
