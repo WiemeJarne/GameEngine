@@ -34,12 +34,14 @@
 #include "LevelManager.h"
 #include "PlaySoundCommand.h"
 #include "SDLSoundSystem.h"
+#include "ButtonComponent.h"
+#include "TexturedGameObjectPrefab.h"
 
 void load()
 {
 	auto& scene = dae::SceneManager::GetInstance().CreateScene("Demo");
 
-	LevelManager::GetInstance().LoadLevel(3, scene);
+	
 
 	//std::cout << "controls: \n";
 	//std::cout << "\tMr. hotdog:\n";
@@ -59,6 +61,11 @@ void load()
 	auto playSoundCommand = std::make_unique<commands::PlaySoundCommand>(pSDLSoundSystem);
 
 	dae::InputManager::GetInstance().AddCommand(std::move(playSoundCommand), dae::InputManager::KeyboardKey(dae::KeyState::pressed, 'P'));
+
+	auto testButton{ std::make_unique<TexturedGameObjectPrefab>("cheese.png")->GetGameObject() };
+	auto onclick = [&]() { std::cout << "button clicked!\n"; LevelManager::GetInstance().LoadLevel(1, scene); };
+	testButton->AddComponent(std::make_unique<dae::ButtonComponent>(testButton.get(), glm::vec2(0.f, 0.f), 64.f, 14.f, onclick));
+	scene.Add(std::move(testButton));
 }
 
 int main(int, char* []) {

@@ -11,10 +11,19 @@ bool dae::InputManager::ProcessInput()
 			return false;
 		}
 		if (e.type == SDL_KEYDOWN) {
+			
+		}
+		if (e.type == SDL_MOUSEBUTTONUP) {
 
 		}
 		if (e.type == SDL_MOUSEBUTTONDOWN) {
-			
+			if (e.button.button == SDL_BUTTON_LEFT)
+			{
+				for (auto& button : m_pButtons)
+				{
+					button->OnMouseClick(glm::vec2(static_cast<float>(e.button.x), static_cast<float>(e.button.y)));
+				}
+			}
 		}
 		// etc...
 		ImGui_ImplSDL2_ProcessEvent(&e);
@@ -38,6 +47,11 @@ void dae::InputManager::AddController(std::unique_ptr<PlayerController> playerCo
 void dae::InputManager::AddCommand(std::unique_ptr<commands::Command> command, KeyboardKey keyboardKey)
 {
 	m_KeyboardCommands.insert(std::pair<KeyboardKey, std::unique_ptr<commands::Command>>(keyboardKey, std::move(command)));
+}
+
+void dae::InputManager::AddButton(ButtonComponent* pButtomComponent)
+{
+	m_pButtons.push_back(pButtomComponent);
 }
 
 void dae::InputManager::HandleKeyboardInput()

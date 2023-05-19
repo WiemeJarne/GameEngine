@@ -221,6 +221,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\steam_appid.txt" "$(OutputPath)"  /Y</C
     <ClInclude Include="..\3rdParty\imgui-1.89.4\imstb_rectpack.h" />
     <ClInclude Include="..\3rdParty\imgui-1.89.4\imstb_textedit.h" />
     <ClInclude Include="..\3rdParty\imgui-1.89.4\imstb_truetype.h" />
+    <ClInclude Include="ButtonComponent.h" />
     <ClInclude Include="CollisionBoxComponent.h" />
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="Command.h" />
@@ -257,6 +258,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\steam_appid.txt" "$(OutputPath)"  /Y</C
     <ClCompile Include="..\3rdParty\imgui-1.89.4\imgui_plot.cpp" />
     <ClCompile Include="..\3rdParty\imgui-1.89.4\imgui_tables.cpp" />
     <ClCompile Include="..\3rdParty\imgui-1.89.4\imgui_widgets.cpp" />
+    <ClCompile Include="ButtonComponent.cpp" />
     <ClCompile Include="CollisionBoxComponent.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="EventQueue.cpp" />

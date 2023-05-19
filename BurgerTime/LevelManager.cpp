@@ -10,6 +10,9 @@
 #include "TextureComponent.h"
 #include "RenderComponent.h"
 #include "BurgerPartPrefab.h"
+#include "EnemyAIComponent.h"
+#include "CollisionBoxComponent.h"
+#include "EnemyManager.h"
 
 void LevelManager::LoadLevel(int levelNr, dae::Scene& scene)
 {
@@ -264,8 +267,7 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene)
 
 	inputFile.close();
 
-	//spawn player at row 8 collumn 5
-	glm::vec2 playerPos{ 1.5 * cellSidesLenght * playerStartColumn + 8.f, cellSidesLenght * playerStartRow };
+	glm::vec2 playerPos{ 1.5f * cellSidesLenght * playerStartColumn + 8.f, cellSidesLenght * playerStartRow };
 	playerPos.y += cellSidesLenght + 10.f;
 	auto player{ std::make_unique<PlayerPrefab>("PeterPepperFrontFacing.png", 3, playerPos) };
 	player1 = player->GetGameObject();
@@ -377,5 +379,20 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene)
 		}
 	}
 
+	auto enemyManager{ std::make_unique<dae::GameObject>() };
+	enemyManager->AddComponent(std::make_unique<EnemyManagerComponent>(enemyManager.get()));
+
+	//add an enemy FOR TESTING
+	auto enemy{ new dae::GameObject() };
+	enemy->SetLocalPosition(1.5f * cellSidesLenght * 5 + 8.f, cellSidesLenght * 5);
+	enemy->AddComponent(std::make_unique<RenderComponent>(enemy, "MrHotDog.png"));
+	enemy->AddComponent(std::make_unique<EnemyAIComponent>(enemy, 1.f));
+	auto enemySize{ enemy->GetComponent<RenderComponent>()->GetTextureComponent()->GetSize() };
+	enemy->AddComponent(std::make_unique<dae::CollisionBoxComponent>(enemy, static_cast<float>(enemySize.x), static_cast<float>(enemySize.y)));
+	enemy->AddComponent(std::make_unique<HealthComponent>(enemy, 1, false));
+
+	enemy->SetParent(enemyManager.get(), false);
+
+	scene.Add(std::move(enemyManager));
 	scene.Add(std::move(player1));
 }

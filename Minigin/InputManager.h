@@ -2,6 +2,7 @@
 #include "Singleton.h"
 #include <vector>
 #include "PlayerController.h"
+#include "ButtonComponent.h"
 #define KEY_DOWN_MASK 0x80
 
 namespace dae
@@ -22,6 +23,7 @@ namespace dae
 
 		using KeyboardKey = std::pair<KeyState, int>;
 		void AddCommand(std::unique_ptr<commands::Command> command, KeyboardKey keyboardKey);
+		void AddButton(ButtonComponent* pButtomComponent);
 
 	private:
 		std::vector<std::unique_ptr<PlayerController>> m_Controllers{};
@@ -29,6 +31,7 @@ namespace dae
 		KeyboardCommandsMap m_KeyboardCommands{};
 		uint8_t m_CurrentKeyboardKeysState[256]{};
 		uint8_t m_PreviousKeyboardKeysState[256]{};
+		std::vector<ButtonComponent*> m_pButtons{};
 
 		void HandleKeyboardInput();
 		bool IsDownThisFrame(int button) const;

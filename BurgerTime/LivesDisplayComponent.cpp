@@ -7,7 +7,6 @@ LivesDisplayComponent::LivesDisplayComponent(dae::GameObject* owner, HealthCompo
 {	
 	if (m_pTextComponent && pHealthComponent)
 	{
-		pHealthComponent->AddObserver(this);
 		m_pTextComponent->SetText("lives: " + std::to_string(pHealthComponent->GetHealth()));
 	}
 }

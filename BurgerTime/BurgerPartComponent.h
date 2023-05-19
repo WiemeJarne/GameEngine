@@ -19,12 +19,13 @@ public:
 	void Update() override;
 	void Render() const override {}
 	void RenderImGui() override {}
+	bool GetIsFalling() const { return m_IsFalling; }
 	bool GetHasReachedPlate() const { return m_HasReachedPlate; }
 	const glm::vec2& GetTopLeftPos() const { return m_pOwner->GetLocalPos(); }
 	float GetWidth() const { return m_Width; }
 	float GetHeight() const { return m_Height; }
 	void SetHasReachedPlate(bool hasReachedPlate) { m_HasReachedPlate = hasReachedPlate; }
-	void SetStartFalling(bool startFalling) { m_StartFalling = startFalling; }
+	void SetIsFalling(bool startFalling) { m_IsFalling = startFalling; }
 	void OnNotify(std::any data, int eventId, bool isEngineEvent) override;
 
 private:
@@ -38,7 +39,7 @@ private:
 	bool m_ThirdWalkedOver{};
 	bool m_FourthWalkedOver{};
 	bool m_ShouldFallUntilPlatform{};
-	bool m_StartFalling{};
+	bool m_IsFalling{};
 	float m_ToGoYValue{};
 	bool m_HasReachedPlate{};
 

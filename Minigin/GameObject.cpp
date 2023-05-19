@@ -193,16 +193,19 @@ void dae::GameObject::AddChild(dae::GameObject* pChild)
 
 void dae::GameObject::RemoveChild(dae::GameObject* pChild)
 {
-	auto iterator = std::find_if(m_Children.begin(), m_Children.end(),
-		[pChild](const GameObject* child)
-		{
-			return child == pChild;
-		});
+	//auto iterator = std::find_if(m_Children.begin(), m_Children.end(),
+	//	[pChild](const GameObject* child)
+	//	{
+	//		return child == pChild;
+	//	});
+	//
+	//if (iterator != m_Children.end())
+	//{
+	//	m_Children.erase(iterator);
+	//}
+
+	m_Children.erase(std::remove_if(m_Children.begin(), m_Children.end(), [&](GameObject* otherChild) {return pChild == otherChild; }), m_Children.end());
 	
-	if (iterator != m_Children.end())
-	{
-		m_Children.erase(iterator);
-	}
-	
-	pChild->SetParent(nullptr, false);
+	pChild->m_Parent = nullptr;
+	//pChild->SetParent(nullptr, false);
 }

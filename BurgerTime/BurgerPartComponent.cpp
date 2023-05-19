@@ -39,8 +39,10 @@ void BurgerPartComponent::Update()
 		return;
 
 	//when all the parts have been walked over or m_StartFalling is true because another burgerpart hit this one the burgerPart has to fall
-	if ((m_FirstQuarterWalkedOver && m_SecondWalkedOver && m_ThirdWalkedOver && m_FourthWalkedOver || m_StartFalling))
+	if ((m_FirstQuarterWalkedOver && m_SecondWalkedOver && m_ThirdWalkedOver && m_FourthWalkedOver || m_IsFalling))
 	{
+		m_IsFalling = true;
+
 		//get the pos of the owner of this component
 		auto ownerPos{ m_pOwner->GetLocalPos() };
 
@@ -78,11 +80,12 @@ void BurgerPartComponent::Update()
 			if (abs(ownerPos.y - m_pCell->middlePos.y) < 0.3f) //the 0.3f is because of the speed it is possible that ownerPos.y will never be close enough to m_ToGoYValue
 			{
 				m_ShouldFallUntilPlatform = false;
-				m_StartFalling = false;
+				m_IsFalling = false;
 				m_FirstQuarterWalkedOver = false;
 				m_SecondWalkedOver = false;
 				m_ThirdWalkedOver = false;
 				m_FourthWalkedOver = false;
+				m_IsFalling = false;
 				return;
 			}
 		}
@@ -196,6 +199,6 @@ void BurgerPartComponent::CollidedWithOtherBurgerPart(dae::GameObject* pGameObje
 	else //if this burgerPart is not above the other burgerPart (so it is below) then start with falling unless this burgerPart already is on a plate
 	{
 		if(!m_HasReachedPlate)
-			m_StartFalling = true;
+			m_IsFalling = true;
 	}
 }
