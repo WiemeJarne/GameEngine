@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include "Command.h"
+#include "ThumbstickCommand.h"
 #include <map>
 
 namespace dae
@@ -28,8 +29,6 @@ public:
 		dPadRight = 0x0008,
 		start = 0x0010,
 		back = 0x0020,
-		tumbStickLeft = 0x0040,
-		tumbStickRight = 0x0080,
 		shoulderLeft = 0x0100,
 		shoulderRight = 0x0200,
 		A = 0x1000,
@@ -38,10 +37,18 @@ public:
 		Y = 0x8000
 	};
 
+	enum class ControllerAxis : unsigned int
+	{
+		tumbStickLeft = 0x0040,
+		tumbStickRight = 0x0080
+	};
+
 	void Update();
 	
 	using Control = std::pair<dae::KeyState, ControllerKey>;
 	void AddCommand(std::unique_ptr<commands::Command> command, Control controllerKey);
+	void AddCommand(std::unique_ptr<commands::ThumbstickCommand> command, ControllerAxis controllerAxis);
+	void InvertThumbstickLeftYAxis();
 
 private:
 	class PlayerControllerImpl;

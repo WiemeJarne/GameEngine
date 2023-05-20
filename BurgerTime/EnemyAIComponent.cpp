@@ -126,6 +126,6 @@ void EnemyAIComponent::OnNotify(std::any data, int eventId, bool isEngineEvent)
 	if (isEngineEvent)
 		return;
 
-	if (eventId == static_cast<int>(Events::playerMoved))
+	if (eventId == static_cast<int>(Event::playerMoved))
 		m_PlayerMiddlePos = std::any_cast<glm::vec2>(data);
 }

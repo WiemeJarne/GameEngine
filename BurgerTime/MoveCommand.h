@@ -6,7 +6,7 @@
 
 namespace commands
 {
-	class MoveCommand final : public Command, public Subject<dae::GameObject>
+	class MoveCommand final : public Command
 	{
 	public:
 		MoveCommand(dae::GameObject* go, glm::vec2 moveDirection);

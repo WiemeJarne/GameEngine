@@ -27,12 +27,6 @@
     <ClCompile Include="BurgerTime.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DamageCommand.cpp">
-      <Filter>Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="PointsCommand.cpp">
-      <Filter>Commands</Filter>
-    </ClCompile>
     <ClCompile Include="FPSComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
@@ -52,9 +46,6 @@
       <Filter>Prefabs</Filter>
     </ClCompile>
     <ClCompile Include="PointsComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="PointsDisplayComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="LevelManager.cpp">
@@ -87,14 +78,11 @@
     <ClCompile Include="EnemyManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ThumbstickMoveCommand.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PointsCommand.h">
-      <Filter>Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="DamageCommand.h">
-      <Filter>Commands</Filter>
-    </ClInclude>
     <ClInclude Include="MoveInCircleComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
@@ -114,9 +102,6 @@
       <Filter>Prefabs</Filter>
     </ClInclude>
     <ClInclude Include="PointsComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="PointsDisplayComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="LevelManager.h">
@@ -151,6 +136,9 @@
     </ClInclude>
     <ClInclude Include="EnemyManager.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ThumbstickMoveCommand.h">
+      <Filter>Commands</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -5,14 +5,26 @@
 #include "TextureComponent.h"
 #include "RenderComponent.h"
 
-dae::TextComponent::TextComponent(dae::GameObject* owner, const std::string& text, std::shared_ptr<Font> font, RenderComponent* renderComponent, SDL_Color color)
+dae::TextComponent::TextComponent(dae::GameObject* owner, const std::string& text, std::shared_ptr<Font> font, SDL_Color color)
 	: Component{ owner }
 	, m_needsUpdate{ true }
 	, m_text{ text }
 	, m_font{ std::move(font) }
-	, m_RenderComponent{ renderComponent }
 	, m_Color{ color }
 { 
+	auto renderComponent = owner->GetComponent<RenderComponent>();
+
+	if (renderComponent)
+	{
+		m_pRenderComponent = renderComponent;
+	}
+	else
+	{
+		auto newRenderComponent{ std::make_unique<RenderComponent>(owner) };
+		m_pRenderComponent = newRenderComponent.get();
+		owner->AddComponent(std::move(newRenderComponent));
+	}
+
 	CreateTextTexture();
 }
 
@@ -51,8 +63,8 @@ void dae::TextComponent::CreateTextTexture()
 	}
 	SDL_FreeSurface(surf);
 
-	if (m_RenderComponent)
+	if (m_pRenderComponent)
 	{
-		m_RenderComponent->SetTextureComponent(new TextureComponent(m_pOwner, texture));
+		m_pRenderComponent->SetTextureComponent(new TextureComponent(m_pOwner, texture));
 	}
 }

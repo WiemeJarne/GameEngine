@@ -7,6 +7,8 @@
 #include "CollisionManager.h"
 #include "PointsComponent.h"
 #include "EngineEvents.h"
+#include "Events.h"
+#include "EnemyAIComponent.h"
 #include <iostream>
 
 BurgerPartComponent::BurgerPartComponent(dae::GameObject* owner, float fallSpeed)
@@ -68,6 +70,7 @@ void BurgerPartComponent::Update()
 				//if so keep moving until the bottom is at the platform
 				m_ShouldFallUntilPlatform = true;
 				m_ToGoYValue = m_pCell->middlePos.y;
+				dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartDropped1Level), false);
 				break;
 			}
 		}
@@ -119,11 +122,12 @@ void BurgerPartComponent::OnNotify(std::any data, int eventId, bool isEngineEven
 		return;
 
 	//check if the trigger object is a player this is done by checking if the gameObject has a pointsComponent
-	if (collidedGameObjects.pOther->HasComponent<PointsComponent>())
+	bool hasOtherBurgerPartComponent{ collidedGameObjects.pOther->HasComponent<BurgerPartComponent>() };
+	if (!collidedGameObjects.pOther->HasComponent<EnemyAIComponent>() && !hasOtherBurgerPartComponent)
 		CalculateWalkedOver(collidedGameObjects.pOther);
 
 	//if pData is not a player check if it is another burger part by checking if the gameObject has a BurgerPartComponent
-	else if (collidedGameObjects.pOther->HasComponent<BurgerPartComponent>())
+	else if (hasOtherBurgerPartComponent)
 		CollidedWithOtherBurgerPart(collidedGameObjects.pOther);
 }
 

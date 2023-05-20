@@ -1,7 +1,8 @@
 #pragma once
-enum class Events
+enum class Event
 {
 	playerLostLife,
 	playerEarnedPoint,
-	playerMoved
+	playerMoved,
+	burgerPartDropped1Level
 };

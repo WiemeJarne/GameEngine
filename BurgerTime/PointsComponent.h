@@ -1,8 +1,9 @@
 #pragma once
 #include "Component.h"
-#include "Subject.h"
+#include "EventListener.h"
+#include "TextComponent.h"
 
-class PointsComponent : public Component, public Subject<PointsComponent>
+class PointsComponent : public Component, public dae::EventListener
 {
 public:
 	PointsComponent() = default;
@@ -16,9 +17,10 @@ public:
 	void Update() override {}
 	void Render() const override {}
 	void RenderImGui() override {}
-	void AddPoints(int amount);
+	void OnNotify(std::any data, int eventId, bool isEngineEvent) override;
 	int GetPoints() const { return m_AmountOfPoints; }
 
 private:
 	int m_AmountOfPoints{};
+	dae::TextComponent* m_pTextComponent{};
 };

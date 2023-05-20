@@ -13,6 +13,6 @@ LivesDisplayComponent::LivesDisplayComponent(dae::GameObject* owner, HealthCompo
 
 void LivesDisplayComponent::OnNotify(HealthComponent* pData, int eventId)
 {
-	if(eventId == static_cast<int>(Events::playerLostLife))
+	if(eventId == static_cast<int>(Event::playerLostLife))
 		m_pTextComponent->SetText("lives: " + std::to_string(pData->GetHealth()));
 }

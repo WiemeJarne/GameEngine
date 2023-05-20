@@ -43,7 +43,7 @@ bool MoveComponent::Move(const glm::vec2& moveDirection)
 
 		if (m_IsPlayer)
 		{
-			dae::EventQueue::GetInstance().AddEvent(std::any(ownerMiddlePos), static_cast<int>(Events::playerMoved), false);
+			dae::EventQueue::GetInstance().AddEvent(std::any(ownerMiddlePos), static_cast<int>(Event::playerMoved), false);
 		}
 
 		return true;
@@ -103,7 +103,7 @@ bool MoveComponent::Move(const glm::vec2& moveDirection)
 
 		if (m_IsPlayer)
 		{
-			dae::EventQueue::GetInstance().AddEvent(std::any(ownerMiddlePos), static_cast<int>(Events::playerMoved), false);
+			dae::EventQueue::GetInstance().AddEvent(std::any(ownerMiddlePos), static_cast<int>(Event::playerMoved), false);
 		}
 	}
 

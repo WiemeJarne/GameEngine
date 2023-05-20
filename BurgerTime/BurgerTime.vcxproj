@@ -175,7 +175,6 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPat
     <ClCompile Include="BurgerPartComponent.cpp" />
     <ClCompile Include="BurgerPartPrefab.cpp" />
     <ClCompile Include="BurgerTime.cpp" />
-    <ClCompile Include="DamageCommand.cpp" />
     <ClCompile Include="EnemyAIComponent.cpp" />
     <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="FPSComponent.cpp" />
@@ -189,15 +188,13 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPat
     <ClCompile Include="PlatePrefab.cpp" />
     <ClCompile Include="PlayerPrefab.cpp" />
     <ClCompile Include="PlaySoundCommand.cpp" />
-    <ClCompile Include="PointsCommand.cpp" />
     <ClCompile Include="PointsComponent.cpp" />
-    <ClCompile Include="PointsDisplayComponent.cpp" />
     <ClCompile Include="TexturedGameObjectPrefab.cpp" />
+    <ClCompile Include="ThumbstickMoveCommand.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BurgerPartComponent.h" />
     <ClInclude Include="BurgerPartPrefab.h" />
-    <ClInclude Include="DamageCommand.h" />
     <ClInclude Include="EnemyAIComponent.h" />
     <ClInclude Include="EnemyManager.h" />
     <ClInclude Include="Events.h" />
@@ -212,10 +209,9 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPat
     <ClInclude Include="PlatePrefab.h" />
     <ClInclude Include="PlayerPrefab.h" />
     <ClInclude Include="PlaySoundCommand.h" />
-    <ClInclude Include="PointsCommand.h" />
     <ClInclude Include="PointsComponent.h" />
-    <ClInclude Include="PointsDisplayComponent.h" />
     <ClInclude Include="TexturedGameObjectPrefab.h" />
+    <ClInclude Include="ThumbstickMoveCommand.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

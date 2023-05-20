@@ -15,6 +15,7 @@ namespace dae
 		void Update();
 		void Render() const;
 		void RenderImGui();
+		void RemoveScene(Scene* scene);
 
 	private:
 		friend class Singleton<SceneManager>;

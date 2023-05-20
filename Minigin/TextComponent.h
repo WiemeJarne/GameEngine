@@ -15,7 +15,7 @@ namespace dae
 	class TextComponent final : public Component
 	{
 	public:
-		TextComponent(dae::GameObject* owner, const std::string& text, std::shared_ptr<Font> font, RenderComponent* renderComponent, SDL_Color color = { 255, 255, 255 });
+		TextComponent(dae::GameObject* owner, const std::string& text, std::shared_ptr<Font> font, SDL_Color color = { 255, 255, 255 });
 		~TextComponent() = default;
 		TextComponent(const TextComponent& other) = delete;
 		TextComponent(TextComponent&& other) = delete;
@@ -33,7 +33,7 @@ namespace dae
 		bool m_needsUpdate;
 		std::string m_text;
 		std::shared_ptr<Font> m_font;
-		RenderComponent* m_RenderComponent;
+		RenderComponent* m_pRenderComponent;
 		SDL_Color m_Color;
 
 		void CreateTextTexture();
