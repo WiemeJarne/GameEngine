@@ -9,6 +9,7 @@ namespace dae
 	{
 	public:
 		CollisionBoxComponent(GameObject* pOwner, float width, float height);
+		~CollisionBoxComponent();
 
 		void Update() override {}
 		void Render() const override {}

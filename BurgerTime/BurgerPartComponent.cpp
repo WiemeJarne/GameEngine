@@ -35,6 +35,11 @@ BurgerPartComponent::BurgerPartComponent(dae::GameObject* owner, float fallSpeed
 	dae::EventQueue::GetInstance().AddListener(this);
 }
 
+BurgerPartComponent::~BurgerPartComponent()
+{
+	dae::EventQueue::GetInstance().RemoveListener(this);
+}
+
 void BurgerPartComponent::Update()
 {
 	if (m_HasReachedPlate)
@@ -63,6 +68,7 @@ void BurgerPartComponent::Update()
 			{
 			case CellKind::plate:
 				m_HasReachedPlate = true;
+				dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartReachedPlate), false);
 			case CellKind::longFloor:
 			case CellKind::longGoDown:
 			case CellKind::longGoUp:
@@ -197,8 +203,12 @@ void BurgerPartComponent::CollidedWithOtherBurgerPart(dae::GameObject* pGameObje
 	if (m_pOwner->GetLocalPos().y < pGameObject->GetLocalPos().y)
 	{
 		//check if the other bugerPart has reached a plate
-		if (pOtherBurgerPartComponent->GetHasReachedPlate())
+		if (pOtherBurgerPartComponent->GetHasReachedPlate() && m_HasReachedPlate != true)
+		{
 			m_HasReachedPlate = true; //if so then is object also reached a plate
+			dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartReachedPlate), false);
+			dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartDropped1Level), false);
+		}
 	}
 	else //if this burgerPart is not above the other burgerPart (so it is below) then start with falling unless this burgerPart already is on a plate
 	{

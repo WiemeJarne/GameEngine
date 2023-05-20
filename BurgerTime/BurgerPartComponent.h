@@ -10,7 +10,7 @@ class BurgerPartComponent : public Component, public dae::EventListener
 {
 public:
 	BurgerPartComponent(dae::GameObject* owner, float fallSpeed);
-	~BurgerPartComponent() = default;
+	~BurgerPartComponent();
 	BurgerPartComponent(const BurgerPartComponent& other) = delete;
 	BurgerPartComponent(BurgerPartComponent&& other) = delete;
 	BurgerPartComponent& operator=(const BurgerPartComponent& other) = delete;

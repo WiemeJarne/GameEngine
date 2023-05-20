@@ -23,6 +23,11 @@ PointsComponent::PointsComponent(dae::GameObject* owner)
 	dae::EventQueue::GetInstance().AddListener(this);
 }
 
+PointsComponent::~PointsComponent()
+{
+	dae::EventQueue::GetInstance().RemoveListener(this);
+}
+
 void PointsComponent::OnNotify(std::any data, int eventId, bool isEngineEvent)
 {
 	if (isEngineEvent)

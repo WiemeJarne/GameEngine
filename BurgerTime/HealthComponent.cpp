@@ -14,6 +14,11 @@ HealthComponent::HealthComponent(dae::GameObject* owner, int amountOfLives, bool
 	dae::EventQueue::GetInstance().AddListener(this);
 }
 
+HealthComponent::~HealthComponent()
+{
+	dae::EventQueue::GetInstance().RemoveListener(this);
+}
+
 void HealthComponent::Update()
 {
 	if (m_AmountOfLives <= 0)

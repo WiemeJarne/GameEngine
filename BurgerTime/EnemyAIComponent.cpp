@@ -19,6 +19,11 @@ EnemyAIComponent::EnemyAIComponent(dae::GameObject* pOwner, float moveSpeed)
 	dae::EventQueue::GetInstance().AddListener(this);
 }
 
+EnemyAIComponent::~EnemyAIComponent()
+{
+	dae::EventQueue::GetInstance().RemoveListener(this);
+}
+
 void EnemyAIComponent::Update()
 {
 	//constexpr float epsilon{ 0.1f };

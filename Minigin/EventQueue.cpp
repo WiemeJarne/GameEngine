@@ -24,7 +24,8 @@ void dae::EventQueue::AddListener(EventListener* pObserver)
 
 void dae::EventQueue::RemoveListener(EventListener* pObserver)
 {
-	m_Listeners.erase(std::remove_if(m_Listeners.begin(), m_Listeners.end(), [&](EventListener* pOtherObserver) {return pObserver == pOtherObserver; }), m_Listeners.end());
+	if(!m_Listeners.empty())
+		m_Listeners.erase(std::remove_if(m_Listeners.begin(), m_Listeners.end(), [&](EventListener* pOtherObserver) {return pObserver == pOtherObserver; }), m_Listeners.end());
 }
 
 bool dae::EventQueue::PollEvent(std::tuple<std::any, int, bool>& event)

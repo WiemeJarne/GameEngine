@@ -4,5 +4,6 @@ enum class Event
 	playerLostLife,
 	playerEarnedPoint,
 	playerMoved,
-	burgerPartDropped1Level
+	burgerPartDropped1Level,
+	burgerPartReachedPlate
 };

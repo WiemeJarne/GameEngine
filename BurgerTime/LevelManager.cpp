@@ -14,12 +14,26 @@
 #include "CollisionBoxComponent.h"
 #include "EnemyManager.h"
 #include "PointsComponent.h"
+#include "Events.h"
+#include "EventQueue.h"
+#include "InputManager.h"
+#include <iostream>
 
-void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode )
+void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode)
 {
+	if (!m_HasBeenInitialized)
+	{
+		m_HasBeenInitialized = true;
+		dae::EventQueue::GetInstance().AddListener(this);
+	}
+
+	m_LevelNr = levelNr;
+	m_GameMode = gameMode;
+
 	dae::SceneManager::GetInstance().RemoveScene(&scene);
 
 	auto& levelScene = dae::SceneManager::GetInstance().CreateScene("levelScene");
+	m_CurrentScene = &levelScene;
 
 	//open the input file
 	std::string filePath{ "../Data/level" + std::to_string(levelNr) + ".txt" };
@@ -309,6 +323,8 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode )
 			auto burgerPartGo{ std::move(burgerPartPrefab->GetGameObject()) };
 
 			levelScene.Add(std::move(burgerPartGo));
+
+			++m_AmountOfBurgerPartsInCurrentLevel;
 		}
 		if (command == 'l')
 		{
@@ -322,6 +338,8 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode )
 			auto burgerPartGo{ std::move(burgerPartPrefab->GetGameObject()) };
 
 			levelScene.Add(std::move(burgerPartGo));
+
+			++m_AmountOfBurgerPartsInCurrentLevel;
 		}
 		if (command == 't')
 		{
@@ -335,6 +353,8 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode )
 			auto burgerPartGo{ std::move(burgerPartPrefab->GetGameObject()) };
 
 			levelScene.Add(std::move(burgerPartGo));
+
+			++m_AmountOfBurgerPartsInCurrentLevel;
 		}
 		if (command == 'c')
 		{
@@ -348,6 +368,8 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode )
 			auto burgerPartGo{ std::move(burgerPartPrefab->GetGameObject()) };
 
 			levelScene.Add(std::move(burgerPartGo));
+
+			++m_AmountOfBurgerPartsInCurrentLevel;
 		}
 		if (command == 'p')
 		{
@@ -361,6 +383,8 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode )
 			auto burgerPartGo{ std::move(burgerPartPrefab->GetGameObject()) };
 
 			levelScene.Add(std::move(burgerPartGo));
+
+			++m_AmountOfBurgerPartsInCurrentLevel;
 		}
 		if (command == 'b')
 		{
@@ -374,6 +398,8 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode )
 			auto burgerPartGo{ std::move(burgerPartPrefab->GetGameObject()) };
 
 			levelScene.Add(std::move(burgerPartGo));
+
+			++m_AmountOfBurgerPartsInCurrentLevel;
 		}
 
 		++currentCollIndex;
@@ -405,4 +431,32 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode )
 	auto pointScreen{ std::make_unique<dae::GameObject>() };
 	pointScreen->AddComponent(std::make_unique<PointsComponent>(pointScreen.get()));
 	levelScene.Add(std::move(pointScreen));
+}
+
+void LevelManager::OnNotify(std::any data, int eventId, bool isEngineEvent)
+{
+	if (isEngineEvent)
+		return;
+
+	Event event{ static_cast<Event>(eventId) };
+
+	switch (event)
+	{
+	case Event::burgerPartReachedPlate:
+		++m_AmountOfBurgerParsReachedPlate;
+		if (m_AmountOfBurgerParsReachedPlate == m_AmountOfBurgerPartsInCurrentLevel)
+		{
+			++m_LevelNr;
+
+			if (m_LevelNr > 3)
+				m_LevelNr = 1;
+
+			dae::InputManager::GetInstance().Reset();
+			LevelGrid::GetInstance().Reset();
+			LoadLevel(m_LevelNr, *m_CurrentScene, m_GameMode);
+		}
+		break;
+	}
+
+	
 }

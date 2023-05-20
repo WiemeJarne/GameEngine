@@ -6,7 +6,7 @@ class HealthComponent : public Component, public dae::EventListener
 {
 public:
 	HealthComponent(dae::GameObject* owner, int amountOfLives, bool isPlayer = true);
-	~HealthComponent() = default;
+	~HealthComponent();
 	HealthComponent(const HealthComponent& other) = delete;
 	HealthComponent(HealthComponent&& other) = delete;
 	HealthComponent& operator=(const HealthComponent& other) = delete;

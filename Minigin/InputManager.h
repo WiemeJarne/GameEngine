@@ -24,6 +24,7 @@ namespace dae
 		using KeyboardKey = std::pair<KeyState, int>;
 		void AddCommand(std::unique_ptr<commands::Command> command, KeyboardKey keyboardKey);
 		void AddButton(ButtonComponent* pButtomComponent);
+		void Reset(); //remoes all the buttons and commands
 
 	private:
 		std::vector<std::unique_ptr<PlayerController>> m_Controllers{};

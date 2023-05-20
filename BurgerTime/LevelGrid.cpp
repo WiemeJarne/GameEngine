@@ -95,3 +95,8 @@ bool LevelGrid::CheckForRightNeighbor(Cell* pCell, Cell* pOtherCell, float dista
 
 	return false;
 }
+
+void LevelGrid::Reset()
+{
+	m_Cells.clear();
+}

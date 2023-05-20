@@ -8,7 +8,7 @@ class PointsComponent : public Component, public dae::EventListener
 public:
 	PointsComponent() = default;
 	PointsComponent(dae::GameObject* owner);
-	~PointsComponent() = default;
+	~PointsComponent();
 	PointsComponent(const PointsComponent& other) = delete;
 	PointsComponent(PointsComponent&& other) = delete;
 	PointsComponent& operator=(const PointsComponent& other) = delete;

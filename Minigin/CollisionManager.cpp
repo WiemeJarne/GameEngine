@@ -35,8 +35,12 @@ void dae::CollisionManager::AddCollider(CollisionBoxComponent* pCollisionBoxComp
 
 void dae::CollisionManager::RemoveCollider(CollisionBoxComponent* pCollisionBoxComponent)
 {
-	m_CollisionBoxComponents.erase(std::remove_if(m_CollisionBoxComponents.begin(), m_CollisionBoxComponents.end()
+	if (!m_CollisionBoxComponents.empty())
+	{
+		m_CollisionBoxComponents.erase(std::remove_if(m_CollisionBoxComponents.begin(), m_CollisionBoxComponents.end()
 		, [&](CollisionBoxComponent* pOtherCollisionBoxComponent) {return pCollisionBoxComponent == pOtherCollisionBoxComponent; }), m_CollisionBoxComponents.end());
+
+	}
 }
 
 bool dae::CollisionManager::AreColliding(const glm::vec2& collider1TopLeft, float collider1With, float collider1Height, const glm::vec2& collider2TopLeft, float collider2Width, float collider2Height)

@@ -8,6 +8,7 @@ class EnemyAIComponent final : public Component, public dae::EventListener
 {
 public:
 	EnemyAIComponent(dae::GameObject* pOwner, float moveSpeed);
+	~EnemyAIComponent();
 
 	void Update() override;
 	void Render() const override {}

@@ -10,6 +10,11 @@ dae::CollisionBoxComponent::CollisionBoxComponent(dae::GameObject* pOwner, float
 	CollisionManager::GetInstance().AddCollider(this);
 }
 
+dae::CollisionBoxComponent::~CollisionBoxComponent()
+{
+	CollisionManager::GetInstance().RemoveCollider(this);
+}
+
 const glm::vec2& dae::CollisionBoxComponent::GetTopLeftPos() const
 { 
 	return m_pOwner->GetLocalPos(); 

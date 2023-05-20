@@ -48,6 +48,7 @@ public:
 	void AddCell(const glm::vec2& topLeftPos, CellKind cellKind, int rowNr, int collNr);
 	Cell* GetCell(const glm::vec2& pos); //returns the cell where the given pos is in
 	float GetCellSideLenght() const { return m_CellSideLenght; }
+	void Reset(); //removes all cells
 
 private:
 	std::vector<std::unique_ptr<Cell>> m_Cells;

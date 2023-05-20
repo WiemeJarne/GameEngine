@@ -104,3 +104,9 @@ bool dae::InputManager::IsPressed(int button) const
 {
 	return (m_CurrentKeyboardKeysState[button] & KEY_DOWN_MASK);
 }
+
+void dae::InputManager::Reset()
+{
+	m_KeyboardCommands.clear();
+	m_Controllers.clear();
+}
