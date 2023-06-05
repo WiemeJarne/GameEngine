@@ -2,9 +2,9 @@
 #include "GameObject.h"
 #include "RenderComponent.h"
 
-TexturedGameObjectPrefab::TexturedGameObjectPrefab(const std::string& textureFilePath, glm::vec2 pos)
+TexturedGameObjectPrefab::TexturedGameObjectPrefab(dae::Scene* pScene, const std::string& textureFilePath, glm::vec2 pos)
 {
-	m_go = std::make_unique<dae::GameObject>();
+	m_go = std::make_unique<dae::GameObject>(pScene);
 
 	m_go->SetLocalPosition(pos.x, pos.y);
 

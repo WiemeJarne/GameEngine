@@ -4,6 +4,7 @@
 #include "Events.h"
 #include "EventQueue.h"
 #include "RenderComponent.h"
+#include "LevelManager.h"
 
 MoveComponent::MoveComponent(dae::GameObject* owner, float moveSpeed, bool isPlayer)
 	: Component(owner)
@@ -31,10 +32,13 @@ bool MoveComponent::Move(const glm::vec2& moveDirection)
 	ownerMiddlePos.x += m_OwnerWidth / 2.f;
 	ownerMiddlePos.y += m_OwnerHeight / 2.f;
 
-	//get the cell the gameObject is in
-	auto pCell = LevelGrid::GetInstance().GetCell(ownerMiddlePos);
+	//get the active grid
+	auto pActiveGrid{ LevelManager::GetInstance().GetActiveLevelGrid() };
 
-	const float cellSideLenght{ LevelGrid::GetInstance().GetCellSideLenght() };
+	//get the cell the gameObject is in
+	auto pCell = pActiveGrid->GetCell(ownerMiddlePos);
+
+	const float cellSideLenght{ pActiveGrid->GetCellSideLenght() };
 
 	if (!pCell)
 	{

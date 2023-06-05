@@ -2,6 +2,7 @@
 #include <string>
 #include "Component.h"
 #include <glm/vec2.hpp>
+#include "Scene.h"
 
 namespace dae
 {
@@ -11,7 +12,7 @@ namespace dae
 class PlatePrefab final
 {
 public:
-	PlatePrefab(glm::vec2 pos = { 0.f , 0.f });
+	PlatePrefab(dae::Scene* pScene, glm::vec2 pos = { 0.f , 0.f });
 
 	virtual ~PlatePrefab() = default;
 	PlatePrefab(const PlatePrefab&) = delete;

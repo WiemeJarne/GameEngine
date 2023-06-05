@@ -8,12 +8,16 @@
 #include "TextComponent.h"
 #include <iostream>
 
+dae::GameObject::GameObject(Scene* pScene)
+	: m_pScene{ pScene }
+{}
+
 dae::GameObject::~GameObject()
 {
-	for (auto& child : m_Children)
-	{
-		delete child;
-	}
+	//for (auto& child : m_Children)
+	//{
+	//	delete child;
+	//}
 }
 
 void dae::GameObject::Update()
@@ -83,7 +87,7 @@ void dae::GameObject::SetParent(dae::GameObject* parent, bool keepWorldPos)
 	//check if the passed trough parent isn't a direct child of this gameObject
 	for (const auto& child : m_Children)
 	{
-		if (parent == child)
+		if (parent == child.get())
 			return;
 	}
 
@@ -110,16 +114,36 @@ void dae::GameObject::SetParent(dae::GameObject* parent, bool keepWorldPos)
 		}
 	}
 
+	std::shared_ptr<GameObject> sharedPtr{};
+	bool wasOnScene{};
+
 	//remove this gameObject as a child from the previous parent
 	if (m_Parent)
-		m_Parent->RemoveChild(this);
+	{
+		sharedPtr = m_Parent->RemoveChild(this);
+	}
+	else
+	{
+		sharedPtr = m_pScene->GetSharedPtr(this);
+		wasOnScene = true;
+	}
 
 	//assign the new parent
 	m_Parent = parent;
 
 	//add this gameObject as a child of the new parent
 	if (m_Parent)
-		m_Parent->AddChild(this);
+	{
+		m_Parent->AddChild(sharedPtr);
+
+		if (wasOnScene)
+		{
+			//remove this object from the scene
+			m_pScene->Remove(sharedPtr);
+		}
+	}
+	else //if the given parent is nullptr add it to the scene
+		m_pScene->Add(sharedPtr);
 }
 
 void dae::GameObject::SetLocalPosition(float x, float y)
@@ -180,7 +204,7 @@ void dae::GameObject::EraseComponentsMarkedForDelete()
 	m_ComponentToDeleteIterators.clear();
 }
 
-void dae::GameObject::AddChild(dae::GameObject* pChild)
+void dae::GameObject::AddChild(std::shared_ptr<dae::GameObject> pChild)
 {
 	for (const auto& child : m_Children)
 	{
@@ -191,21 +215,20 @@ void dae::GameObject::AddChild(dae::GameObject* pChild)
 	m_Children.push_back(pChild);
 }
 
-void dae::GameObject::RemoveChild(dae::GameObject* pChild)
+std::shared_ptr<dae::GameObject> dae::GameObject::RemoveChild(dae::GameObject* pChild)
 {
-	//auto iterator = std::find_if(m_Children.begin(), m_Children.end(),
-	//	[pChild](const GameObject* child)
-	//	{
-	//		return child == pChild;
-	//	});
-	//
-	//if (iterator != m_Children.end())
-	//{
-	//	m_Children.erase(iterator);
-	//}
+	std::shared_ptr<dae::GameObject> sharedPtrChild{};
 
-	m_Children.erase(std::remove_if(m_Children.begin(), m_Children.end(), [&](GameObject* otherChild) {return pChild == otherChild; }), m_Children.end());
-	
-	pChild->m_Parent = nullptr;
-	//pChild->SetParent(nullptr, false);
+	for (const auto& child : m_Children)
+	{
+		if (child.get() == pChild)
+		{
+			sharedPtrChild = child;
+			m_Children.erase(std::remove(m_Children.begin(), m_Children.end(), child), m_Children.end());
+			pChild->m_Parent = nullptr;
+			return sharedPtrChild;
+		}
+	}
+
+	return nullptr;
 }

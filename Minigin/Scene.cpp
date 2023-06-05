@@ -24,6 +24,17 @@ void Scene::RemoveAll()
 	m_objects.clear();
 }
 
+std::shared_ptr<GameObject> Scene::GetSharedPtr(GameObject* pGameObject) const
+{
+	for (const auto& object : m_objects)
+	{
+		if (object.get() == pGameObject)
+			return object;
+	}
+
+	return nullptr;
+}
+
 void Scene::Update()
 {
 	for(auto& object : m_objects)

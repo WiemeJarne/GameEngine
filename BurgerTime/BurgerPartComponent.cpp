@@ -1,6 +1,6 @@
 #include "BurgerPartComponent.h"
 #include "Events.h"
-#include "LevelGrid.h"
+#include "LevelManager.h"
 #include "Timer.h"
 #include "RenderComponent.h"
 #include "EventQueue.h"
@@ -58,7 +58,7 @@ void BurgerPartComponent::Update()
 		ownerXMiddlePos.x += m_Width / 2.f;
 
 		//get the cell the owner of this component is in
-		m_pCell = LevelGrid::GetInstance().GetCell(ownerXMiddlePos);
+		m_pCell = LevelManager::GetInstance().GetActiveLevelGrid()->GetCell(ownerXMiddlePos);
 
 		//check if the owner is now in another cell
 		if (m_pCell && m_pPreviousCell && (m_pCell != m_pPreviousCell) && !m_ShouldFallUntilPlatform)
@@ -76,6 +76,7 @@ void BurgerPartComponent::Update()
 				//if so keep moving until the bottom is at the platform
 				m_ShouldFallUntilPlatform = true;
 				m_ToGoYValue = m_pCell->middlePos.y;
+				if(!m_HasReachedPlate)
 				dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartDropped1Level), false);
 				break;
 			}
@@ -152,11 +153,14 @@ void BurgerPartComponent::CalculateWalkedOver(dae::GameObject* pGameObject)
 	//calculate the middle of the given GameObject
 	goPos.x += 8.f;
 
+	//get the active grid
+	auto pActiveGrid{ LevelManager::GetInstance().GetActiveLevelGrid() };
+
 	//get the cell the owner of this component is in
-	auto pOwnerCell{ LevelGrid::GetInstance().GetCell(ownerXMiddlePos) };
+	auto pOwnerCell{ pActiveGrid->GetCell(ownerXMiddlePos) };
 
 	//get the cell the given game object is is
-	auto pGoCell{ LevelGrid::GetInstance().GetCell(goPos) };
+	auto pGoCell{ pActiveGrid->GetCell(goPos) };
 
 	if (!pOwnerCell || !pGoCell)
 		return;
@@ -207,7 +211,6 @@ void BurgerPartComponent::CollidedWithOtherBurgerPart(dae::GameObject* pGameObje
 		{
 			m_HasReachedPlate = true; //if so then is object also reached a plate
 			dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartReachedPlate), false);
-			dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartDropped1Level), false);
 		}
 	}
 	else //if this burgerPart is not above the other burgerPart (so it is below) then start with falling unless this burgerPart already is on a plate

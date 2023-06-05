@@ -3,7 +3,7 @@
 #include "MoveComponent.h"
 #include "Events.h"
 #include "EventQueue.h"
-#include "LevelGrid.h"
+#include "LevelManager.h"
 #include "EngineEvents.h"
 #include "CollisionManager.h"
 #include "BurgerPartComponent.h"
@@ -38,14 +38,17 @@ void EnemyAIComponent::Update()
 	glm::vec2 leftDirection{ -1.f, 0.f };
 	glm::vec2 rightDirection{ 1.f, 0.f };
 
+	//get the active grid
+	auto pActiveGrid{ LevelManager::GetInstance().GetActiveLevelGrid() };
+
 	//get the cell the player is in
-	auto pPlayerCell{ LevelGrid::GetInstance().GetCell(m_PlayerMiddlePos) };
+	auto pPlayerCell{ pActiveGrid->GetCell(m_PlayerMiddlePos) };
 
 	if (!pPlayerCell)
 		return;
 	
 	//get the cell where this enemy is in
-	auto pEnemyCell{ LevelGrid::GetInstance().GetCell(ownerMiddlePos) };
+	auto pEnemyCell{ pActiveGrid->GetCell(ownerMiddlePos) };
 
 	if (!pEnemyCell)
 	{

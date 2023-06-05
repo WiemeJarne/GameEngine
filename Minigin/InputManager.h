@@ -14,6 +14,13 @@ namespace dae
 		pressed
 	};
 
+	enum class SpecialKeyboardKey
+	{
+		BackSpace,
+		Minus,
+		Space
+	};
+
 	class InputManager final : public Singleton<InputManager>
 	{
 	public:
@@ -22,9 +29,10 @@ namespace dae
 		int GetAmountOfControllers() const { return static_cast<int>(m_Controllers.size()); }
 
 		using KeyboardKey = std::pair<KeyState, int>;
-		void AddCommand(std::unique_ptr<commands::Command> command, KeyboardKey keyboardKey);
+		void AddCommand(std::unique_ptr<commands::Command> command, KeyboardKey keyboardKey, bool isSpecialKeyBoardKey = false);
 		void AddButton(ButtonComponent* pButtomComponent);
-		void Reset(); //remoes all the buttons and commands
+		void RemoveAllButtons();
+		void RemoveAllCommands();
 
 	private:
 		std::vector<std::unique_ptr<PlayerController>> m_Controllers{};

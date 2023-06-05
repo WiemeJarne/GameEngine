@@ -26,8 +26,10 @@ namespace dae
 		void Render() const override {}
 		void RenderImGui() override {}
 
+		std::string GetText() const { return m_text; }
 		void SetText(const std::string& text);
 		void SetColor(const SDL_Color& color);
+		dae::TextureComponent* GetTextureComponent() const;
 
 	private:
 		bool m_needsUpdate;

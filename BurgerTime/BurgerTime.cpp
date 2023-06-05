@@ -66,7 +66,7 @@ void load()
 	//scene.Add(std::move(testButton));
 
 	//logo
-	auto logo{ std::make_unique<TexturedGameObjectPrefab>("burgerTimeLogo.png")->GetGameObject() };
+	auto logo{ std::make_unique<TexturedGameObjectPrefab>(&scene, "burgerTimeLogo.png")->GetGameObject() };
 	auto logoSize{ logo->GetComponent<RenderComponent>()->GetTextureComponent()->GetSize() };
 	logo->SetLocalPosition(windowWidth / 2.f - logoSize.x / 2.f, 0.f);
 	scene.Add(std::move(logo));
@@ -75,9 +75,14 @@ void load()
 	auto font{ dae::ResourceManager::GetInstance().LoadFont("PressStart2P-vaV7.ttf", 24) };
 
 	//Single player button
-	auto button1{ std::make_unique<dae::GameObject>() };
+	auto button1{ std::make_unique<dae::GameObject>(&scene) };
 	button1->AddComponent(std::make_unique<dae::TextComponent>(button1.get(), "Single player", font));
-	auto onclickButton1 = [&]() { std::cout << "button1 clicked!\n"; LevelManager::GetInstance().LoadLevel(1, scene, GameMode::singlePlayer); };
+	auto onclickButton1 =
+		[&]() 
+	{
+		dae::InputManager::GetInstance().RemoveAllButtons();
+		LevelManager::GetInstance().LoadLevel(1, scene, GameMode::singlePlayer);
+	};
 	const auto button1Size{ button1->GetComponent<RenderComponent>()->GetTextureComponent()->GetSize() };
 	glm::vec2 button1Pos{ windowWidth / 2.f - button1Size.x / 2.f, 150.f };
 	button1->AddComponent(std::make_unique<dae::ButtonComponent>(button1.get(), button1Pos, static_cast<float>(button1Size.x), static_cast<float>(button1Size.y), onclickButton1));
@@ -85,9 +90,14 @@ void load()
 	scene.Add(std::move(button1));
 
 	//Co-op button
-	auto button2{ std::make_unique<dae::GameObject>() };
+	auto button2{ std::make_unique<dae::GameObject>(&scene) };
 	button2->AddComponent(std::make_unique<dae::TextComponent>(button2.get(), "Co-op", font));
-	auto onclickButton2 = [&]() { std::cout << "button2 clicked!\n"; };
+	auto onclickButton2 =
+		[&]()
+	{
+		dae::InputManager::GetInstance().RemoveAllButtons();
+		LevelManager::GetInstance().LoadLevel(1, scene, GameMode::coOp);
+	};
 	const auto button2Size{ button2->GetComponent<RenderComponent>()->GetTextureComponent()->GetSize() };
 	const glm::vec2 button2Pos{ windowWidth / 2.f - button2Size.x / 2.f, 250.f };
 	button2->AddComponent(std::make_unique<dae::ButtonComponent>(button2.get(), button2Pos, static_cast<float>(button2Size.x), static_cast<float>(button2Size.y), onclickButton2));
@@ -95,9 +105,14 @@ void load()
 	scene.Add(std::move(button2));
 
 	//Versus button
-	auto button3{ std::make_unique<dae::GameObject>() };
+	auto button3{ std::make_unique<dae::GameObject>(&scene) };
 	button3->AddComponent(std::make_unique<dae::TextComponent>(button3.get(), "Versus", font));
-	auto onclickButton3 = [&]() { std::cout << "button2 clicked!\n"; };
+	auto onclickButton3 =
+		[&]() 
+	{ 
+		std::cout << "button2 clicked!\n";
+		dae::InputManager::GetInstance().RemoveAllButtons();
+	};
 	const auto button3Size{ button3->GetComponent<RenderComponent>()->GetTextureComponent()->GetSize() };
 	glm::vec2 button3Pos{ windowWidth / 2.f - button3Size.x / 2.f, 350.f };
 	button3->AddComponent(std::make_unique<dae::ButtonComponent>(button3.get(), button3Pos, static_cast<float>(button3Size.x), static_cast<float>(button3Size.y), onclickButton3));

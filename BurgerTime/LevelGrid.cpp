@@ -51,7 +51,7 @@ void LevelGrid::RecalculateGrid()
 	}
 }
 
-Cell* LevelGrid::GetCell(const glm::vec2& pos)
+Cell* LevelGrid::GetCell(const glm::vec2& pos) const
 {
 	//loop over all the cells and check in which one the pos is in
 	for (const auto& cell : m_Cells)
@@ -72,6 +72,16 @@ Cell* LevelGrid::GetCell(const glm::vec2& pos)
 	}
 
 	return nullptr;
+}
+
+const std::vector<Cell*> LevelGrid::GetCells() const
+{
+	std::vector<Cell*> cells{};
+
+	for (const auto& cell : m_Cells)
+		cells.push_back(cell.get());
+
+	return cells;
 }
 
 bool LevelGrid::CheckForTopNeighbor(Cell* pCell, Cell* pOtherCell)

@@ -2,20 +2,20 @@
 #include "TexturedGameObjectPrefab.h"
 #include "BurgerPartComponent.h"
 #include "RenderComponent.h"
-#include "LevelGrid.h"
+#include "LevelManager.h"
 #include "CollisionBoxComponent.h"
 
-BurgerPartPrefab::BurgerPartPrefab(const std::string& textureFilePath, const glm::vec2& cellTopLeftPos)
+BurgerPartPrefab::BurgerPartPrefab(dae::Scene* pScene, const std::string& textureFilePath, const glm::vec2& cellTopLeftPos)
 {
 	glm::vec2 pos{ cellTopLeftPos };
-	auto texturedGoPrefab{ std::make_unique<TexturedGameObjectPrefab>(textureFilePath, pos) };
+	auto texturedGoPrefab{ std::make_unique<TexturedGameObjectPrefab>(pScene, textureFilePath, pos) };
 	m_go = std::move(texturedGoPrefab->GetGameObject());
 
 	//get the TextureComponent from the RenderComponent
 	auto renderComponent{ m_go->GetComponent<RenderComponent>() };
 	if (renderComponent)
 	{
-		pos.y += LevelGrid::GetInstance().GetCellSideLenght() - renderComponent->GetTextureComponent()->GetSize().y;
+		pos.y += LevelManager::GetInstance().GetActiveLevelGrid()->GetCellSideLenght() - renderComponent->GetTextureComponent()->GetSize().y;
 		m_go->SetLocalPosition(cellTopLeftPos.x, cellTopLeftPos.y);
 
 		auto textureSize{ renderComponent->GetTextureComponent()->GetSize() };

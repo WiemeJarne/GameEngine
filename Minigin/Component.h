@@ -20,6 +20,7 @@ public:
 	virtual void Update() = 0;
 	virtual void Render() const = 0;
 	virtual void RenderImGui() = 0;
+	dae::GameObject* GetOwner() const { return m_pOwner; }
 
 protected:
 	dae::GameObject* m_pOwner;

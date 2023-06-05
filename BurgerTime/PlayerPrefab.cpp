@@ -9,10 +9,11 @@
 #include "InputManager.h"
 #include "CollisionBoxComponent.h"
 #include "ThumbstickMoveCommand.h"
+#include "Scene.h"
 
-PlayerPrefab::PlayerPrefab(const std::string& textureFilePath, int amountOfLives, const glm::vec2& pos, bool useKeyboard, float moveSpeed)
+PlayerPrefab::PlayerPrefab(dae::Scene* pScene, const std::string& textureFilePath, int amountOfLives, const glm::vec2& pos, bool useKeyboard, float moveSpeed)
 {
-	m_go = std::make_unique<dae::GameObject>();
+	m_go = std::make_unique<dae::GameObject>(pScene);
 	m_go->SetLocalPosition(pos.x, pos.y);
 	auto renderComponent{ std::make_unique<RenderComponent>(m_go.get(), textureFilePath) };
 	auto healthComponent{ std::make_unique<HealthComponent>(m_go.get(), amountOfLives) };

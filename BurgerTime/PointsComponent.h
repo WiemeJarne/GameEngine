@@ -19,6 +19,7 @@ public:
 	void RenderImGui() override {}
 	void OnNotify(std::any data, int eventId, bool isEngineEvent) override;
 	int GetPoints() const { return m_AmountOfPoints; }
+	void AddPoints(int amount);
 
 private:
 	int m_AmountOfPoints{};

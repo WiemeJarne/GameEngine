@@ -44,8 +44,24 @@ void dae::InputManager::AddController(std::unique_ptr<PlayerController> playerCo
 	m_Controllers.push_back(std::move(playerController));
 }
 
-void dae::InputManager::AddCommand(std::unique_ptr<commands::Command> command, KeyboardKey keyboardKey)
+void dae::InputManager::AddCommand(std::unique_ptr<commands::Command> command, KeyboardKey keyboardKey, bool isSpecialKeyBoardKey)
 {
+	if (isSpecialKeyBoardKey)
+	{
+		switch (static_cast<SpecialKeyboardKey>(keyboardKey.second))
+		{
+		case SpecialKeyboardKey::BackSpace:
+			keyboardKey.second = VK_BACK;
+			break;
+		case SpecialKeyboardKey::Minus:
+			keyboardKey.second = VK_OEM_MINUS;
+			break;
+		case SpecialKeyboardKey::Space:
+			keyboardKey.second = VK_SPACE;
+			break;
+		}
+	}
+
 	m_KeyboardCommands.insert(std::pair<KeyboardKey, std::unique_ptr<commands::Command>>(keyboardKey, std::move(command)));
 }
 
@@ -105,7 +121,12 @@ bool dae::InputManager::IsPressed(int button) const
 	return (m_CurrentKeyboardKeysState[button] & KEY_DOWN_MASK);
 }
 
-void dae::InputManager::Reset()
+void dae::InputManager::RemoveAllButtons()
+{
+	m_pButtons.clear();
+}
+
+void dae::InputManager::RemoveAllCommands()
 {
 	m_KeyboardCommands.clear();
 	m_Controllers.clear();

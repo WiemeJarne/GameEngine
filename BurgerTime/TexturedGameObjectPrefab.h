@@ -2,6 +2,7 @@
 #include <string>
 #include "Component.h"
 #include <glm/vec2.hpp>
+#include "Scene.h"
 
 namespace dae
 {
@@ -11,7 +12,7 @@ namespace dae
 class TexturedGameObjectPrefab final
 {
 public:
-	TexturedGameObjectPrefab(const std::string& textureFilePath, glm::vec2 pos = { 0.f , 0.f });
+	TexturedGameObjectPrefab(dae::Scene* pScene, const std::string& textureFilePath, glm::vec2 pos = { 0.f , 0.f });
 
 	~TexturedGameObjectPrefab() = default;
 	TexturedGameObjectPrefab(const TexturedGameObjectPrefab&) = delete;

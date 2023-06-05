@@ -9,6 +9,7 @@ dae::ButtonComponent::ButtonComponent(dae::GameObject* pOwner, const glm::vec2& 
 	, m_OnClickFunction{ onClickFunction }
 {
 	InputManager::GetInstance().AddButton(this);
+	pOwner->SetLocalPosition(topLeftPos.x, topLeftPos.y);
 }
 
 void dae::ButtonComponent::OnMouseClick(const glm::vec2& mousePos)

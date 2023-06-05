@@ -23,7 +23,7 @@ void HealthComponent::Update()
 {
 	if (m_AmountOfLives <= 0)
 	{
-		m_SecSinceDeath += Timer::GetInstance().GetElapsedSec();
+		m_SecSinceDeath += Timer::GetInstance().GetElapsedSec();			
 	}
 }
 

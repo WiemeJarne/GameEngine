@@ -33,10 +33,14 @@ void EnemyManagerComponent::Update()
 	for (auto& enemyPair : m_Enemies)
 	{
 		//check if the enemy has zero health and if they still have a parent
-		if (enemyPair.second->GetHealth() == 0.f && enemyPair.first->GetParent() == m_pOwner)
+		if (enemyPair.second->GetHealth() == 0.f)
 		{
-			//if so set the parent of the enemy to nullptr
-			enemyPair.first->SetParent(nullptr, false);
+			enemyPair.first->SetLocalPosition(-100.f, 0.f);
+			
+			if (enemyPair.second->GetSecSinceDeath() >= 3.f)
+			{
+				enemyPair.first->SetLocalPosition(100.f, 0.f);
+			}
 		}
 	}
 }

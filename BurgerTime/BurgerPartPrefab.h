@@ -5,7 +5,7 @@
 class BurgerPartPrefab final
 {
 public:
-	BurgerPartPrefab(const std::string& textureFilePath, const glm::vec2& cellTopLeftPos);
+	BurgerPartPrefab(dae::Scene* pScene, const std::string& textureFilePath, const glm::vec2& cellTopLeftPos);
 
 	~BurgerPartPrefab() = default;
 	BurgerPartPrefab(const BurgerPartPrefab&) = delete;

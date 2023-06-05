@@ -20,6 +20,7 @@ public:
 	void Heal(int amount);
 	void Reset();
 	int GetHealth() const { return m_AmountOfLives; }
+	float GetSecSinceDeath() const { return m_SecSinceDeath; }
 
 private:
 	int m_StartAmountOfLives{};

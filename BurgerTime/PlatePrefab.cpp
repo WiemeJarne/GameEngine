@@ -2,9 +2,9 @@
 #include "GameObject.h"
 #include "RenderComponent.h"
 
-PlatePrefab::PlatePrefab(glm::vec2 pos)
+PlatePrefab::PlatePrefab(dae::Scene* pScene, glm::vec2 pos)
 {
-	m_go = std::make_unique<dae::GameObject>();
+	m_go = std::make_unique<dae::GameObject>(pScene);
 
 	m_go->SetLocalPosition(pos.x, pos.y);
 

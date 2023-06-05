@@ -38,8 +38,15 @@ void PointsComponent::OnNotify(std::any data, int eventId, bool isEngineEvent)
 	switch (event)
 	{
 	case Event::burgerPartDropped1Level:
+	case Event::burgerPartReachedPlate:
 		m_AmountOfPoints += 50;
 		m_pTextComponent->SetText(std::to_string(m_AmountOfPoints));
 		break;
 	}
+}
+
+void PointsComponent::AddPoints(int amount)
+{
+	m_AmountOfPoints += amount;
+	m_pTextComponent->SetText(std::to_string(m_AmountOfPoints));
 }

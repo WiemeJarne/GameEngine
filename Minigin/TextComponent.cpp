@@ -68,3 +68,8 @@ void dae::TextComponent::CreateTextTexture()
 		m_pRenderComponent->SetTextureComponent(new TextureComponent(m_pOwner, texture));
 	}
 }
+
+dae::TextureComponent* dae::TextComponent::GetTextureComponent() const
+{
+	return m_pRenderComponent->GetTextureComponent();
+}

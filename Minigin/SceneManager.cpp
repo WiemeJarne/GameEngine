@@ -36,3 +36,9 @@ void dae::SceneManager::RemoveScene(Scene* scene)
 {
 	m_scenes.erase(std::remove_if(m_scenes.begin(), m_scenes.end(), [&](std::shared_ptr<Scene> pScene) { return scene == pScene.get(); }));
 }
+
+void dae::SceneManager::SetScenesSize(float width, float height)
+{
+	m_ScenesWidth = width;
+	m_ScenesHeight = height;
+}

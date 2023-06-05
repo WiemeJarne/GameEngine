@@ -191,6 +191,8 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPat
     <ClCompile Include="PointsComponent.cpp" />
     <ClCompile Include="TexturedGameObjectPrefab.cpp" />
     <ClCompile Include="ThumbstickMoveCommand.cpp" />
+    <ClCompile Include="TypeCommand.cpp" />
+    <ClCompile Include="TypeComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BurgerPartComponent.h" />
@@ -212,6 +214,8 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPat
     <ClInclude Include="PointsComponent.h" />
     <ClInclude Include="TexturedGameObjectPrefab.h" />
     <ClInclude Include="ThumbstickMoveCommand.h" />
+    <ClInclude Include="TypeCommand.h" />
+    <ClInclude Include="TypeComponent.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

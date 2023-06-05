@@ -42,11 +42,14 @@ struct Cell
 	int collNr{};
 };
 
-class LevelGrid final : public dae::Singleton<LevelGrid>
+class LevelGrid final
 {
 public:
+	LevelGrid() = default;
+
 	void AddCell(const glm::vec2& topLeftPos, CellKind cellKind, int rowNr, int collNr);
-	Cell* GetCell(const glm::vec2& pos); //returns the cell where the given pos is in
+	Cell* GetCell(const glm::vec2& pos) const; //returns the cell where the given pos is in
+	const std::vector<Cell*> GetCells() const;
 	float GetCellSideLenght() const { return m_CellSideLenght; }
 	void Reset(); //removes all cells
 
