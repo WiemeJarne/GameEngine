@@ -8,7 +8,7 @@
 #include "PointsComponent.h"
 #include "EngineEvents.h"
 #include "Events.h"
-#include "EnemyAIComponent.h"
+#include "DamageComponent.h"
 #include <iostream>
 
 BurgerPartComponent::BurgerPartComponent(dae::GameObject* owner, float fallSpeed)
@@ -128,14 +128,14 @@ void BurgerPartComponent::OnNotify(std::any data, int eventId, bool isEngineEven
 	if (collidedGameObjects.pTriggered != m_pOwner)
 		return;
 
-	//check if the trigger object is a player this is done by checking if the gameObject has a pointsComponent
-	bool hasOtherBurgerPartComponent{ collidedGameObjects.pOther->HasComponent<BurgerPartComponent>() };
-	if (!collidedGameObjects.pOther->HasComponent<EnemyAIComponent>() && !hasOtherBurgerPartComponent)
-		CalculateWalkedOver(collidedGameObjects.pOther);
-
+	//check if the other object is a player this is done by checking if the gameObject does not have a DamageComponent
+	if (!collidedGameObjects.pOther->HasComponent<BurgerPartComponent>())
+	{
+		if (!collidedGameObjects.pOther->HasComponent<DamageComponent>())
+			CalculateWalkedOver(collidedGameObjects.pOther);
+	}
 	//if pData is not a player check if it is another burger part by checking if the gameObject has a BurgerPartComponent
-	else if (hasOtherBurgerPartComponent)
-		CollidedWithOtherBurgerPart(collidedGameObjects.pOther);
+	else CollidedWithOtherBurgerPart(collidedGameObjects.pOther);
 }
 
 void BurgerPartComponent::CalculateWalkedOver(dae::GameObject* pGameObject)

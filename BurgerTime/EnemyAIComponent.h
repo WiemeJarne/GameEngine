@@ -20,4 +20,6 @@ private:
 	MoveComponent* m_pMoveComponent{};
 	glm::vec2 m_PlayerMiddlePos{};
 	glm::vec2 m_PreviousDirection{};
+	Cell* m_pClosestLadder{};
+	Cell* m_pPreviousClimbedLadder{};
 };

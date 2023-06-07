@@ -49,14 +49,18 @@ public:
 
 	void AddCell(const glm::vec2& topLeftPos, CellKind cellKind, int rowNr, int collNr);
 	Cell* GetCell(const glm::vec2& pos) const; //returns the cell where the given pos is in
+	Cell* GetCell(int colNr, int rowNr);
+	Cell* GetNearestCellOfKind(const glm::vec2& pos, CellKind cellKind);
 	const std::vector<Cell*> GetCells() const;
 	float GetCellSideLenght() const { return m_CellSideLenght; }
 	void Reset(); //removes all cells
+	int GetMaxAmountOfCollumns() const { return m_MaxAmountOfCollumns; }
 
 private:
 	std::vector<std::unique_ptr<Cell>> m_Cells;
 	const float m_CellSideLenght{ 32.f };
 	const float m_Epsilon{ 0.1f };
+	const int m_MaxAmountOfCollumns{ 9 };
 
 	void RecalculateGrid(); //loops over all the cells and check with each cell if they have a neighbor is so then the pointer in the cell is set to the neighbor
 	bool CheckForTopNeighbor(Cell* pCell, Cell* pOtherCell);

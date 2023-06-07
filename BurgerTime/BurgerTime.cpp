@@ -60,11 +60,6 @@ void load()
 
 	dae::InputManager::GetInstance().AddCommand(std::move(playSoundCommand), dae::InputManager::KeyboardKey(dae::KeyState::pressed, 'P'));
 
-	//auto testButton{ std::make_unique<TexturedGameObjectPrefab>("cheese.png")->GetGameObject() };
-	//auto onclick = [&]() { std::cout << "button clicked!\n"; LevelManager::GetInstance().LoadLevel(1, scene); };
-	//testButton->AddComponent(std::make_unique<dae::ButtonComponent>(testButton.get(), glm::vec2(0.f, 0.f), 64.f, 14.f, onclick));
-	//scene.Add(std::move(testButton));
-
 	//logo
 	auto logo{ std::make_unique<TexturedGameObjectPrefab>(&scene, "burgerTimeLogo.png")->GetGameObject() };
 	auto logoSize{ logo->GetComponent<RenderComponent>()->GetTextureComponent()->GetSize() };
@@ -110,8 +105,8 @@ void load()
 	auto onclickButton3 =
 		[&]() 
 	{ 
-		std::cout << "button2 clicked!\n";
 		dae::InputManager::GetInstance().RemoveAllButtons();
+		LevelManager::GetInstance().LoadLevel(1, scene, GameMode::versus);
 	};
 	const auto button3Size{ button3->GetComponent<RenderComponent>()->GetTextureComponent()->GetSize() };
 	glm::vec2 button3Pos{ windowWidth / 2.f - button3Size.x / 2.f, 350.f };

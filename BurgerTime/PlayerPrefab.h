@@ -12,7 +12,7 @@ namespace dae
 class PlayerPrefab final
 {
 public:
-	PlayerPrefab(dae::Scene* pScene, const std::string& textureFilePath, int amountOfLives, const glm::vec2& pos, bool useKeyboard = false, float moveSpeed = 100.f);
+	PlayerPrefab(dae::Scene* pScene, const std::string& textureFilePath, const glm::vec2& pos, const glm::vec2& healthVisualizationPos, const std::string& healthVisualizationTextureFilepath, int amountOfLives = 3, bool useKeyboard = true, float moveSpeed = 100);
 
 	~PlayerPrefab() = default;
 	PlayerPrefab(const PlayerPrefab&) = delete;

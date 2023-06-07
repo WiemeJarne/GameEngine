@@ -1,8 +1,11 @@
 #include "LevelGrid.h"
 #include <iostream>
+#include <glm/glm.hpp>
 
 void LevelGrid::AddCell(const glm::vec2& topLeftPos, CellKind cellKind, int rowNr, int collNr)
 {
+	assert(collNr < m_MaxAmountOfCollumns && "the grid can only have 9 collumns");
+
 	//calculate the middle
 	glm::vec2 middlePos{ topLeftPos.x + m_CellSideLenght / 2.f, topLeftPos.y + m_CellSideLenght / 2.f };
 
@@ -72,6 +75,46 @@ Cell* LevelGrid::GetCell(const glm::vec2& pos) const
 	}
 
 	return nullptr;
+}
+
+Cell* LevelGrid::GetCell(int colNr, int rowNr)
+{
+	const int cellIndex{ rowNr * m_MaxAmountOfCollumns + colNr };
+
+	if (cellIndex > m_Cells.size())
+		return nullptr;
+
+	return m_Cells[cellIndex].get();
+}
+
+Cell* LevelGrid::GetNearestCellOfKind(const glm::vec2& pos, CellKind cellKind)
+{
+	auto givenCell{ GetCell(pos) };
+
+	if (givenCell == nullptr)
+		return nullptr;
+
+	Cell* currentClosestCell{};
+	float distanceBetweenGivenAndCurrentClosestCell{ FLT_MAX };
+
+	//loop over all the cells
+	for (const auto& cell : m_Cells)
+	{
+		//if the current cell is the kind of cell that is being searched for calculate the distance between the givenCell and the current cell
+		if(cell->cellKind == cellKind)
+		{
+			const float distanceBetweenCells{ glm::length(cell->middlePos - givenCell->middlePos) };
+
+			//if this cell is closer set the currentClosestCell to it and set the distanceBetweenGivenAndCurrentClosestCell
+			if (distanceBetweenCells < distanceBetweenGivenAndCurrentClosestCell)
+			{
+				currentClosestCell = cell.get();
+				distanceBetweenGivenAndCurrentClosestCell = distanceBetweenCells;
+			}
+		}
+	}
+
+	return currentClosestCell;
 }
 
 const std::vector<Cell*> LevelGrid::GetCells() const

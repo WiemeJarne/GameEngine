@@ -20,6 +20,7 @@ namespace dae
 		void SetScenesSize(float width, float height);
 		float GetScenesWidth() const { return m_ScenesWidth; }
 		float GetScenesHeight() const { return m_ScenesHeight; }
+		Scene* GetSceneByIndex(int index) const;
 
 	private:
 		friend class Singleton<SceneManager>;

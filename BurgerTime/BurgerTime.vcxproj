@@ -175,6 +175,7 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPat
     <ClCompile Include="BurgerPartComponent.cpp" />
     <ClCompile Include="BurgerPartPrefab.cpp" />
     <ClCompile Include="BurgerTime.cpp" />
+    <ClCompile Include="DamageComponent.cpp" />
     <ClCompile Include="EnemyAIComponent.cpp" />
     <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="FPSComponent.cpp" />
@@ -197,6 +198,7 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPat
   <ItemGroup>
     <ClInclude Include="BurgerPartComponent.h" />
     <ClInclude Include="BurgerPartPrefab.h" />
+    <ClInclude Include="DamageComponent.h" />
     <ClInclude Include="EnemyAIComponent.h" />
     <ClInclude Include="EnemyManager.h" />
     <ClInclude Include="Events.h" />

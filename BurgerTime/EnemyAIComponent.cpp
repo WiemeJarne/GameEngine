@@ -8,6 +8,7 @@
 #include "CollisionManager.h"
 #include "BurgerPartComponent.h"
 #include <iostream>
+#include <glm/glm.hpp>
 
 EnemyAIComponent::EnemyAIComponent(dae::GameObject* pOwner, float moveSpeed)
 	: Component(pOwner)
@@ -50,81 +51,96 @@ void EnemyAIComponent::Update()
 	//get the cell where this enemy is in
 	auto pEnemyCell{ pActiveGrid->GetCell(ownerMiddlePos) };
 
-	if (!pEnemyCell)
-	{
-		m_pMoveComponent->Move(m_PreviousDirection);
-		return;
-	}
+	const float distanceToPlayer{ glm::length(m_PlayerMiddlePos - ownerMiddlePos) };
 
-	//check if the shortest way to the player is up or down
-	if ((abs(abs(m_PlayerMiddlePos.y) - abs(ownerMiddlePos.y)) < abs(abs(m_PlayerMiddlePos.x) - abs(ownerMiddlePos.x))
-		|| pPlayerCell->rowNr != pEnemyCell->rowNr) && pPlayerCell->collNr == pEnemyCell->collNr)
+	//check if this enemy is on a ladder
+	if (pEnemyCell && pEnemyCell->cellKind == CellKind::ladder && m_pClosestLadder != m_pPreviousClimbedLadder)
 	{
-		//check if the player is above this enemy
-		if (m_PlayerMiddlePos.y < ownerMiddlePos.y)
-		{
-			//if so try to move up and return when succeeded
-			if (m_pMoveComponent->Move(upDirection))
-			{
-				m_PreviousDirection = upDirection;
-				return;
-			}
-		}
-		//if moving up fails try to move down
-		if (m_pMoveComponent->Move(downDirection))
-		{
-			m_PreviousDirection = downDirection;
+		m_pClosestLadder = nullptr;
+		m_pPreviousClimbedLadder = pEnemyCell;
+
+		//if the previous direction was going up try going up
+		if (m_PreviousDirection == upDirection && m_pMoveComponent->Move(upDirection))
 			return;
-		}
-	}
-	else if(m_PlayerMiddlePos.x < ownerMiddlePos.x) //if the player is not above or below this enemy check if the player is to the left of this enemy
-	{
-		//if so try to move to the left and return when succeeded
-		if (m_pMoveComponent->Move(leftDirection))
-		{
-			m_PreviousDirection = leftDirection;
+
+		//if the previous direction was going down try going down
+		if (m_PreviousDirection == downDirection && m_pMoveComponent->Move(downDirection))
 			return;
-		}
 
-		//check if the player is above this enemy
-		if (m_PlayerMiddlePos.y < ownerMiddlePos.y)
-		{
-			//if so try to move up and return when succeeded
-			if (m_pMoveComponent->Move(upDirection))
-			{
-				m_PreviousDirection = upDirection;
-				return;
-			}
-		}
-		//if moving up fails try to move down
-		if (m_pMoveComponent->Move(downDirection))
-		{
-			m_PreviousDirection = downDirection;
-			return;
-		}
-	}
-
-	//if moving to the left fails try to move to the right
-	if (m_pMoveComponent->Move(rightDirection))
-	{
-		m_PreviousDirection = rightDirection;
-		return;
-	}
-
-	//check if the player is above this enemy
-	if (m_PlayerMiddlePos.y < ownerMiddlePos.y)
-	{
-		//if so try to move up and return when succeeded
-		if (m_pMoveComponent->Move(upDirection))
+		//if the previous direction was not up or down check if the player is above the enemy if so try to move up
+		if (ownerMiddlePos.y > m_PlayerMiddlePos.y && m_pMoveComponent->Move(upDirection))
 		{
 			m_PreviousDirection = upDirection;
 			return;
 		}
+		else if (m_pMoveComponent->Move(downDirection))
+		{
+			m_PreviousDirection = downDirection;
+			return;
+		}
 	}
-	//if moving up fails try to move down
-	if (m_pMoveComponent->Move(downDirection))
+
+	//get the closest ladder cell if this enemy is not already walking to one
+	if(!m_pClosestLadder)
+		m_pClosestLadder = pActiveGrid->GetNearestCellOfKind(ownerMiddlePos, CellKind::ladder);
+
+	//calculate the distance to the ladder
+	const float distanceToLadder{ glm::length(m_pClosestLadder->middlePos - ownerMiddlePos) };
+
+	//calculate the distance from the ladder to the player
+	const float distanceFromLadderToPlayer{ glm::length(m_PlayerMiddlePos - m_pClosestLadder->middlePos) };
+
+	glm::vec2 toMovePos{};
+
+	//check if the ladder is closer then the player and if it brings this enemy closer to the player
+	if (distanceToLadder < distanceToPlayer && distanceFromLadderToPlayer < distanceToPlayer)
+		toMovePos = m_pClosestLadder->middlePos; //if so move to the ladder
+	else toMovePos = m_PlayerMiddlePos; //else move to the player
+
+
+	
+
+	//if this enemy is not in the same row then the player
+	if (pEnemyCell && pEnemyCell->rowNr != pPlayerCell->rowNr)
 	{
-		m_PreviousDirection = downDirection;
+		////if the previous direction was going to the left try going to the left
+		if (m_PreviousDirection == upDirection && m_pMoveComponent->Move(upDirection))
+			return;
+
+		//if the previous direction was going to the right try going to the right
+		if (m_PreviousDirection == downDirection && m_pMoveComponent->Move(downDirection))
+			return;
+
+		//check if the ladder is to the left of this enemy if so try to move to the left
+		if (toMovePos.y < ownerMiddlePos.y && m_pMoveComponent->Move(upDirection))
+		{
+			m_PreviousDirection = upDirection;
+			return;
+		}
+		else if (m_pMoveComponent->Move(downDirection)) //otherwise try to move to the right
+		{
+			m_PreviousDirection = downDirection;
+			return;
+		}
+	}
+
+	//if the previous direction was going to the left try going to the left
+	if (m_PreviousDirection == leftDirection && m_pMoveComponent->Move(leftDirection))
+		return;
+
+	//if the previous direction was going to the right try going to the right
+	if (m_PreviousDirection == rightDirection && m_pMoveComponent->Move(rightDirection))
+		return;
+
+	//check if the ladder is to the left of this enemy if so try to move to the left
+	if (toMovePos.x < ownerMiddlePos.x && m_pMoveComponent->Move(leftDirection))
+	{
+		m_PreviousDirection = leftDirection;
+		return;
+	}
+	else if (m_pMoveComponent->Move(rightDirection)) //otherwise try to move to the right
+	{
+		m_PreviousDirection = rightDirection;
 		return;
 	}
 }

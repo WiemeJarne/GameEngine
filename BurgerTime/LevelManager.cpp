@@ -19,6 +19,7 @@
 #include "InputManager.h"
 #include "TypeComponent.h"
 #include "ResourceManager.h"
+#include "DamageComponent.h"
 #include <algorithm>
 #include <iostream>
 
@@ -36,6 +37,9 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode)
 		m_HasBeenInitialized = true;
 		dae::EventQueue::GetInstance().AddListener(this);
 	}
+
+	dae::InputManager::GetInstance().RemoveAllButtons();
+	dae::InputManager::GetInstance().RemoveAllCommands();
 
 	m_LevelNr = levelNr;
 	m_GameMode = gameMode;
@@ -86,10 +90,11 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode)
 	auto enemy{ std::make_shared<dae::GameObject>(m_CurrentScene) };
 	enemy->SetLocalPosition(1.5f * cellSidesLenght * 5 + 8.f, cellSidesLenght * 5);
 	enemy->AddComponent(std::make_unique<RenderComponent>(enemy.get(), "MrHotDog.png"));
-	enemy->AddComponent(std::make_unique<EnemyAIComponent>(enemy.get(), 1.f));
+	enemy->AddComponent(std::make_unique<EnemyAIComponent>(enemy.get(), 50.f));
 	auto enemySize{ enemy->GetComponent<RenderComponent>()->GetTextureComponent()->GetSize() };
 	enemy->AddComponent(std::make_unique<dae::CollisionBoxComponent>(enemy.get(), static_cast<float>(enemySize.x), static_cast<float>(enemySize.y)));
 	enemy->AddComponent(std::make_unique<HealthComponent>(enemy.get(), 1, false));
+	enemy->AddComponent(std::make_unique<DamageComponent>(enemy.get(), 1));
 	m_CurrentScene->Add(enemy);
 	enemy->SetParent(enemyManager.get(), false);
 
@@ -106,7 +111,7 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode)
 	//create player 1
 	glm::vec2 playerPos{ 1.5f * cellSidesLenght * std::get<1>(m_LevelGrids[m_LevelNr - 1]) + 8.f, cellSidesLenght * std::get<2>(m_LevelGrids[m_LevelNr - 1]) };
 	playerPos.y += cellSidesLenght + 10.f;
-	auto player1{ std::make_unique<PlayerPrefab>(m_CurrentScene, "PeterPepperFrontFacing.png", 3, playerPos, true)->GetGameObject() };
+	auto player1{ std::make_unique<PlayerPrefab>(m_CurrentScene, "PeterPepperFrontFacing.png", playerPos, glm::vec2(0.f, dae::SceneManager::GetInstance().GetScenesHeight() - 10.f), "PeterPepperHead.png")->GetGameObject()};
 	levelScene.Add(std::move(player1));
 	
 	std::unique_ptr<dae::GameObject> player2{};
@@ -114,17 +119,50 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode)
 	switch (gameMode)
 	{
 	case GameMode::coOp:
-		//when gameMode is Co-op create player 2
 		playerPos = { 1.5f * cellSidesLenght * std::get<1>(m_LevelGrids[m_LevelNr - 1]) + 16.f, cellSidesLenght * std::get<2>(m_LevelGrids[m_LevelNr - 1]) };
 		playerPos.y += cellSidesLenght + 10.f;
-		player2 = std::make_unique<PlayerPrefab>(m_CurrentScene, "MrsSalt.png", 3, playerPos)->GetGameObject();
+		player2 = std::make_unique<PlayerPrefab>(m_CurrentScene, "MrsSalt.png",playerPos, glm::vec2(dae::SceneManager::GetInstance().GetScenesWidth() - 30.f, dae::SceneManager::GetInstance().GetScenesHeight() - 10.f), "PeterPepperHead.png", 3, false)->GetGameObject();
 		levelScene.Add(std::move(player2));
 		break;
 
 	case GameMode::versus:
+
+		//find the first cell that is not empty, a ladder or a plate. this is the cell where the second player will spawn
+		Cell* cell{};
+
+		int colNr{};
+		int rowNr{};
+		const int maxAmountOfCollumns{ std::get<0>(m_LevelGrids[m_LevelNr - 1])->GetMaxAmountOfCollumns() };
+
+		while (true)
+		{
+			cell = std::get<0>(m_LevelGrids[m_LevelNr - 1])->GetCell(colNr, rowNr);
+
+			if (cell && cell->cellKind != CellKind::shortEmpty && cell->cellKind != CellKind::longEmpty && cell->cellKind != CellKind::ladder && cell->cellKind != CellKind::plate)
+				break;
+
+			++colNr;
+
+			if (colNr > maxAmountOfCollumns)
+			{
+				++rowNr;
+				colNr = 0;
+			}
+		}
+
+		playerPos = { 1.5f * cellSidesLenght * colNr + 16.f, cellSidesLenght * rowNr };
+		playerPos.y += cellSidesLenght + 10.f;
+		player2 = std::make_unique<PlayerPrefab>(m_CurrentScene, "MrHotDog.png", playerPos, glm::vec2(dae::SceneManager::GetInstance().GetScenesWidth() - 30.f, dae::SceneManager::GetInstance().GetScenesHeight() - 10.f), "PeterPepperHead.png", 3, false)->GetGameObject();
+		player2->AddComponent(std::make_unique<DamageComponent>(player2.get(), 1));
+		levelScene.Add(std::move(player2));
 		break;
 	}
 	
+}
+
+void LevelManager::LoadNextLevel()
+{
+	LoadLevel(m_LevelNr + 1, *m_CurrentScene, m_GameMode);
 }
 
 void LevelManager::OnNotify(std::any data, int eventId, bool isEngineEvent)
@@ -146,6 +184,26 @@ void LevelManager::OnNotify(std::any data, int eventId, bool isEngineEvent)
 			LoadLevel(m_LevelNr, *m_CurrentScene, m_GameMode);
 		}
 		break;
+
+	case Event::playerDied:
+		++m_AmountOfPlayersDead;
+
+		switch (m_GameMode)
+		{
+		case GameMode::singlePlayer:
+		case GameMode::versus:
+			ShowPointsScreen();
+			m_AmountOfPlayersDead = 0;
+			break;
+
+		case GameMode::coOp:
+			if (m_AmountOfPlayersDead == 2)
+			{
+				ShowPointsScreen();
+				m_AmountOfPlayersDead = 0;
+			}
+			break;
+		}
 	}
 }
 
@@ -558,6 +616,20 @@ const glm::vec2 LevelManager::AddLevelElementToCurrentScene(CellKind cellKind, i
 
 void LevelManager::ShowPointsScreen()
 {
+	if (m_pPointsComponent)
+	{
+		m_AmountOfPoints = m_pPointsComponent->GetPoints();
+		m_pPointsComponent = nullptr;
+	}
+
+	dae::SceneManager::GetInstance().RemoveScene(m_CurrentScene);
+
+	auto& levelScene = dae::SceneManager::GetInstance().CreateScene("levelScene");
+	m_CurrentScene = &levelScene;
+
+	dae::InputManager::GetInstance().RemoveAllButtons();
+	dae::InputManager::GetInstance().RemoveAllCommands();
+
 	if (!m_Font)
 		m_Font = dae::ResourceManager::GetInstance().LoadFont("PressStart2P-vaV7.ttf", 15u);
 
@@ -618,7 +690,7 @@ void LevelManager::ShowPointsScreen()
 
 	//add a button to continue
 	auto continueButton{ std::make_unique<dae::GameObject>(m_CurrentScene) };
-	continueButton->AddComponent(std::make_unique<dae::TextComponent>(continueButton.get(), "Continue playing", m_Font));
+	continueButton->AddComponent(std::make_unique<dae::TextComponent>(continueButton.get(), "Replay?", m_Font));
 	auto onContinueButtonClick =
 		[=]()
 	{
@@ -662,6 +734,7 @@ void LevelManager::ShowPointsScreen()
 
 		dae::InputManager::GetInstance().RemoveAllButtons();
 		dae::InputManager::GetInstance().RemoveAllCommands();
+		m_AmountOfPoints = 0;
 		LoadLevel(1, *m_CurrentScene, m_GameMode);
 	};
 	const auto buttonSize{ continueButton->GetComponent<RenderComponent>()->GetTextureComponent()->GetSize() };
