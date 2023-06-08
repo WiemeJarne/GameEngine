@@ -7,17 +7,37 @@
 #include "EngineEvents.h"
 #include "CollisionManager.h"
 #include "BurgerPartComponent.h"
+#include "TextureComponent.h"
+#include "Timer.h"
 #include <iostream>
 #include <glm/glm.hpp>
 
-EnemyAIComponent::EnemyAIComponent(dae::GameObject* pOwner, float moveSpeed)
+glm::vec2 EnemyAIComponent::m_sUpDirection;
+glm::vec2 EnemyAIComponent::m_sDownDirection;
+glm::vec2 EnemyAIComponent::m_sLeftDirection;
+glm::vec2 EnemyAIComponent::m_sRightDirection;
+
+EnemyAIComponent::EnemyAIComponent(dae::GameObject* pOwner, float moveSpeed, bool shouldRandomlyClimbLadder, float secBetweenRandomClimbLadder, bool shouldRandomlyFlipDirection, float secBetweenRandomFlipDirection)
 	: Component(pOwner)
+	, m_ShouldRandomlyClimbLadder{ shouldRandomlyClimbLadder }
+	, m_SecBetweenRandomClimbLadder{ secBetweenRandomClimbLadder }
+	, m_ShouldRandomlyFlipDirection{ shouldRandomlyFlipDirection }
+	, m_SecBetweenRandomFlipDirection{ secBetweenRandomFlipDirection }
 {
 	auto moveComponent{ std::make_unique<MoveComponent>(pOwner, moveSpeed, false) };
 	m_pMoveComponent = moveComponent.get();
 	pOwner->AddComponent(std::move(moveComponent));
 
 	dae::EventQueue::GetInstance().AddListener(this);
+
+	//if the abs(y) of the m_sUpDirection is close to zero initialize all the directions
+	if (abs(m_sUpDirection.y) <= 0.01f)
+	{
+		m_sUpDirection = { 0.f, -1.f };
+		m_sDownDirection = { 0.f, 1.f };
+		m_sLeftDirection = { -1.f, 0.f };
+		m_sRightDirection = { 1.f, 0.f };
+	}
 }
 
 EnemyAIComponent::~EnemyAIComponent()
@@ -27,62 +47,103 @@ EnemyAIComponent::~EnemyAIComponent()
 
 void EnemyAIComponent::Update()
 {
-	//constexpr float epsilon{ 0.1f };
+	//check if the owner has a parent if so then don't move
+	if (m_pOwner->GetParent())
+		return;
 
 	//calculate the owner middlePos
 	auto ownerMiddlePos{ m_pOwner->GetLocalPos() };
-	ownerMiddlePos.x += 4.f;
-	ownerMiddlePos.y += 8.f;
 
-	glm::vec2 upDirection{ 0.f, -1.f };
-	glm::vec2 downDirection{ 0.f, 1.f };
-	glm::vec2 leftDirection{ -1.f, 0.f };
-	glm::vec2 rightDirection{ 1.f, 0.f };
+	//if the width of the enmy is close to zero get the width and height from the TextureCompontent of the owner of this component
+	if (abs(m_EnemyWidth) < 0.01f)
+	{
+		auto pTextureComponent{ m_pOwner->GetComponent<dae::TextureComponent>() };
+		if (pTextureComponent)
+		{
+			auto size{ pTextureComponent->GetSize() };
+			m_EnemyWidth = static_cast<float>(size.x);
+			m_EnemyHeight = static_cast<float>(size.y);
+		}
+	}
+
+	ownerMiddlePos.x += m_EnemyWidth / 2.f;
+	ownerMiddlePos.y += m_EnemyHeight / 2.f;
 
 	//get the active grid
-	auto pActiveGrid{ LevelManager::GetInstance().GetActiveLevelGrid() };
+	if(!m_pActiveGrid)
+		m_pActiveGrid = LevelManager::GetInstance().GetActiveLevelGrid();
+
+	if (!m_pActiveGrid)
+		return;
+
+	//get the cell where this enemy is in
+	auto pEnemyCell{ m_pActiveGrid->GetCell(ownerMiddlePos) };
+
+	if (!pEnemyCell)
+	{
+		//if the enemy is not in a cell move him towards it
+		MoveTowardsGrid(ownerMiddlePos);
+		return;
+	}
+
+	if (m_ShouldRandomlyClimbLadder)
+	{
+		m_SecSinceLastRandomClimbedLadder += Timer::GetInstance().GetElapsedSec();
+		if (m_SecSinceLastRandomClimbedLadder >= m_SecBetweenRandomClimbLadder)
+		{
+			RandomlyClimbLadder(pEnemyCell);
+			return;
+		}
+	}
+
+	if (m_ShouldRandomlyFlipDirection)
+	{
+		m_SecSinceRandomDirectionFlip += Timer::GetInstance().GetElapsedSec();
+		if (m_SecSinceRandomDirectionFlip >= m_SecBetweenRandomFlipDirection)
+		{
+			FlipDirection();
+			return;
+		}
+	}
 
 	//get the cell the player is in
-	auto pPlayerCell{ pActiveGrid->GetCell(m_PlayerMiddlePos) };
+	auto pPlayerCell{ m_pActiveGrid->GetCell(m_PlayerMiddlePos) };
 
 	if (!pPlayerCell)
 		return;
-	
-	//get the cell where this enemy is in
-	auto pEnemyCell{ pActiveGrid->GetCell(ownerMiddlePos) };
 
 	const float distanceToPlayer{ glm::length(m_PlayerMiddlePos - ownerMiddlePos) };
 
 	//check if this enemy is on a ladder
-	if (pEnemyCell && pEnemyCell->cellKind == CellKind::ladder && m_pClosestLadder != m_pPreviousClimbedLadder)
+	if (pEnemyCell->cellKind == CellKind::ladder && m_pClosestLadder != m_pPreviousClimbedLadder)
 	{
 		m_pClosestLadder = nullptr;
 		m_pPreviousClimbedLadder = pEnemyCell;
 
 		//if the previous direction was going up try going up
-		if (m_PreviousDirection == upDirection && m_pMoveComponent->Move(upDirection))
+		if (m_PreviousDirection == m_sUpDirection && m_pMoveComponent->Move(m_sUpDirection))
 			return;
 
 		//if the previous direction was going down try going down
-		if (m_PreviousDirection == downDirection && m_pMoveComponent->Move(downDirection))
+		if (m_PreviousDirection == m_sDownDirection && m_pMoveComponent->Move(m_sDownDirection))
 			return;
 
 		//if the previous direction was not up or down check if the player is above the enemy if so try to move up
-		if (ownerMiddlePos.y > m_PlayerMiddlePos.y && m_pMoveComponent->Move(upDirection))
+		if (ownerMiddlePos.y > m_PlayerMiddlePos.y && m_pMoveComponent->Move(m_sUpDirection))
 		{
-			m_PreviousDirection = upDirection;
+			m_PreviousDirection = m_sUpDirection;
 			return;
 		}
-		else if (m_pMoveComponent->Move(downDirection))
+		else if (m_pMoveComponent->Move(m_sDownDirection))
 		{
-			m_PreviousDirection = downDirection;
+			m_PreviousDirection = m_sDownDirection;
 			return;
 		}
 	}
 
 	//get the closest ladder cell if this enemy is not already walking to one
 	if(!m_pClosestLadder)
-		m_pClosestLadder = pActiveGrid->GetNearestCellOfKind(ownerMiddlePos, CellKind::ladder);
+		m_pClosestLadder = m_pActiveGrid->GetNearestCellOfKind(ownerMiddlePos, CellKind::ladder);
 
 	//calculate the distance to the ladder
 	const float distanceToLadder{ glm::length(m_pClosestLadder->middlePos - ownerMiddlePos) };
@@ -97,50 +158,47 @@ void EnemyAIComponent::Update()
 		toMovePos = m_pClosestLadder->middlePos; //if so move to the ladder
 	else toMovePos = m_PlayerMiddlePos; //else move to the player
 
-
-	
-
 	//if this enemy is not in the same row then the player
-	if (pEnemyCell && pEnemyCell->rowNr != pPlayerCell->rowNr)
+	if (pEnemyCell->rowNr != pPlayerCell->rowNr)
 	{
 		////if the previous direction was going to the left try going to the left
-		if (m_PreviousDirection == upDirection && m_pMoveComponent->Move(upDirection))
+		if (m_PreviousDirection == m_sUpDirection && m_pMoveComponent->Move(m_sUpDirection))
 			return;
 
 		//if the previous direction was going to the right try going to the right
-		if (m_PreviousDirection == downDirection && m_pMoveComponent->Move(downDirection))
+		if (m_PreviousDirection == m_sDownDirection && m_pMoveComponent->Move(m_sDownDirection))
 			return;
 
 		//check if the ladder is to the left of this enemy if so try to move to the left
-		if (toMovePos.y < ownerMiddlePos.y && m_pMoveComponent->Move(upDirection))
+		if (toMovePos.y < ownerMiddlePos.y && m_pMoveComponent->Move(m_sUpDirection))
 		{
-			m_PreviousDirection = upDirection;
+			m_PreviousDirection = m_sUpDirection;
 			return;
 		}
-		else if (m_pMoveComponent->Move(downDirection)) //otherwise try to move to the right
+		else if (m_pMoveComponent->Move(m_sDownDirection)) //otherwise try to move to the right
 		{
-			m_PreviousDirection = downDirection;
+			m_PreviousDirection = m_sDownDirection;
 			return;
 		}
 	}
 
 	//if the previous direction was going to the left try going to the left
-	if (m_PreviousDirection == leftDirection && m_pMoveComponent->Move(leftDirection))
+	if (m_PreviousDirection == m_sLeftDirection && m_pMoveComponent->Move(m_sLeftDirection))
 		return;
 
 	//if the previous direction was going to the right try going to the right
-	if (m_PreviousDirection == rightDirection && m_pMoveComponent->Move(rightDirection))
+	if (m_PreviousDirection == m_sRightDirection && m_pMoveComponent->Move(m_sRightDirection))
 		return;
 
 	//check if the ladder is to the left of this enemy if so try to move to the left
-	if (toMovePos.x < ownerMiddlePos.x && m_pMoveComponent->Move(leftDirection))
+	if (toMovePos.x < ownerMiddlePos.x && m_pMoveComponent->Move(m_sLeftDirection))
 	{
-		m_PreviousDirection = leftDirection;
+		m_PreviousDirection = m_sLeftDirection;
 		return;
 	}
-	else if (m_pMoveComponent->Move(rightDirection)) //otherwise try to move to the right
+	else if (m_pMoveComponent->Move(m_sRightDirection)) //otherwise try to move to the right
 	{
-		m_PreviousDirection = rightDirection;
+		m_PreviousDirection = m_sRightDirection;
 		return;
 	}
 }
@@ -152,4 +210,80 @@ void EnemyAIComponent::OnNotify(std::any data, int eventId, bool isEngineEvent)
 
 	if (eventId == static_cast<int>(Event::playerMoved))
 		m_PlayerMiddlePos = std::any_cast<glm::vec2>(data);
+}
+
+void EnemyAIComponent::MoveTowardsGrid(const glm::vec2& ownerMiddlePos)
+{
+	//if the enemy is on the left of the grid try to move to the right
+	if (ownerMiddlePos.x < 0.f && m_pMoveComponent->Move(m_sRightDirection))
+	{
+		m_PreviousDirection = m_sRightDirection;
+		return;
+	}
+
+	const auto cellSideLenght{ m_pActiveGrid->GetCellSideLenght() };
+	
+	//if the enemy is on the right of the grid try to move to the left
+	if (ownerMiddlePos.x > m_pActiveGrid->GetMaxAmountOfCollumns() * cellSideLenght && m_pMoveComponent->Move(m_sLeftDirection))
+	{
+		m_PreviousDirection = m_sLeftDirection;
+		return;
+	}
+
+	//if the enemy is below the grid try to move up
+	if (ownerMiddlePos.y > m_pActiveGrid->GetAmountOfRows() * cellSideLenght && m_pMoveComponent->Move(m_sUpDirection))
+	{
+		m_PreviousDirection = m_sUpDirection;
+		return;
+	}
+
+	//if the enemy is above the grid try to move down
+	if (ownerMiddlePos.y < 0.f && m_pMoveComponent->Move(m_sDownDirection))
+	{
+		m_PreviousDirection = m_sDownDirection;
+	}
+}
+
+void EnemyAIComponent::FlipDirection()
+{
+	if (m_PreviousDirection == m_sUpDirection)
+		m_PreviousDirection = m_sDownDirection;
+
+	else if (m_PreviousDirection == m_sDownDirection)
+		m_PreviousDirection = m_sUpDirection;
+
+	else if (m_PreviousDirection == m_sLeftDirection)
+		m_PreviousDirection = m_sRightDirection;
+
+	else if (m_PreviousDirection == m_sRightDirection)
+		m_PreviousDirection = m_sLeftDirection;
+
+	m_pMoveComponent->Move(m_PreviousDirection);
+
+	m_SecSinceRandomDirectionFlip = 0.f;
+}
+
+void EnemyAIComponent::RandomlyClimbLadder(Cell* currentCell)
+{
+	if (currentCell->cellKind == CellKind::ladder)
+		return;
+
+	//generate a random int
+	int randomInt{ rand() % 2 };
+
+	//if the randomInt is 0 check if there is a ladder above the current cell if so move up
+	if (randomInt == 0 && currentCell->pTopNeighbor && currentCell->pTopNeighbor->cellKind == CellKind::ladder && m_pMoveComponent->Move(m_sUpDirection))
+	{
+		m_PreviousDirection = m_sUpDirection;
+		m_SecSinceLastRandomClimbedLadder = 0.f;
+		return;
+	}
+
+	//if the randomInt is 1 check if there is a ladder below the current cell if so move down
+	else if (randomInt == 1 && currentCell->pBottomNeighbor && currentCell->pBottomNeighbor->cellKind == CellKind::ladder && m_pMoveComponent->Move(m_sDownDirection))
+	{
+		m_PreviousDirection = m_sDownDirection;
+		m_SecSinceLastRandomClimbedLadder = 0.f;
+		return;
+	}
 }

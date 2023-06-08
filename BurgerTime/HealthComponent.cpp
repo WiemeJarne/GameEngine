@@ -8,6 +8,8 @@
 #include "TexturedGameObjectPrefab.h"
 #include "Scene.h"
 #include "Events.h"
+#include "TextureComponent.h"
+#include "RenderComponent.h"
 #include <iostream>
 
 HealthComponent::HealthComponent(dae::GameObject* owner, int amountOfLives, bool isPlayer)
@@ -54,10 +56,14 @@ void HealthComponent::OnNotify(std::any data, int eventId, bool isEngineEvent)
 
 		if (!m_IsOwnerPlayer) //if this component's owner is not a player
 		{
-			//check if the pOther has a burgerPartComponent and check if the burgerPart is falling and if the enemy is below it
-			if (pBurgerPartComponent && pBurgerPartComponent->GetIsFalling() && pBurgerPartComponent->GetTopLeftPos().y < m_pOwner->GetLocalPos().y)
+			//check if the pOther has a burgerPartComponent and check if the burgerPart is falling
+			if (pBurgerPartComponent && pBurgerPartComponent->GetIsFalling())
 			{
-				Damage(m_AmountOfLives);
+				//if the enemy is below it damage the enemy
+				if (pBurgerPartComponent->GetTopLeftPos().y < m_pOwner->GetLocalPos().y)
+					Damage(m_AmountOfLives);
+				//if the enemy is not below the burgerPart set the owner of the enemy equal to the owner of the burgerPart
+				else m_pOwner->SetParent(pBurgerPartComponent->GetOwner(), true);
 			}
 		}
 		else //if this component's owner is a player
@@ -73,7 +79,7 @@ void HealthComponent::OnNotify(std::any data, int eventId, bool isEngineEvent)
 	}
 }
 
-void HealthComponent::Damage(int amount)
+void HealthComponent::Damage(int amount, bool shouldBreadCastDieEvent)
 {
 	if (m_AmountOfLives > 0 && m_SecSinceLiveLost >= 1.f)
 	{
@@ -81,7 +87,7 @@ void HealthComponent::Damage(int amount)
 
 		m_AmountOfLives -= amount;
 
-		if(m_IsOwnerPlayer)
+		if(m_IsOwnerPlayer && shouldBreadCastDieEvent)
 			dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::playerLostLife), false);
 
 		if (m_pVisualizeGameObjects.size() > 0)
@@ -91,8 +97,12 @@ void HealthComponent::Damage(int amount)
 		{
 			m_SecSinceDeath = 0.f;
 
-			if (m_IsOwnerPlayer)
-				dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::playerDied), false);
+			if (shouldBreadCastDieEvent)
+			{
+				if (m_IsOwnerPlayer)
+					dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::playerDied), false);
+				else dae::EventQueue::GetInstance().AddEvent(std::any(m_pOwner->GetComponent<dae::TextureComponent>()), static_cast<int>(Event::enemyDied), false);
+			}
 		}
 	}
 }
@@ -121,4 +131,9 @@ void HealthComponent::VisualizeHealth(const glm::vec2& pos, const std::string& t
 		m_pVisualizeGameObjects.push_back(gameObject.get());
 		pScene->Add(std::move(gameObject));
 	}
+}
+
+void HealthComponent::Die(bool shouldBroadCastDieEvent)
+{
+	Damage(m_AmountOfLives, shouldBroadCastDieEvent);
 }

@@ -15,9 +15,9 @@ class RenderComponent final : public Component
 public:
 	RenderComponent(dae::GameObject* owner);
 	RenderComponent(dae::GameObject* owner, const std::string& textureFilename);
-	RenderComponent(dae::GameObject* owner, dae::TextureComponent* textureComponent);
+	RenderComponent(dae::GameObject* owner, std::unique_ptr<dae::TextureComponent> textureComponent);
 
-	~RenderComponent();
+	~RenderComponent() = default;
 	RenderComponent(const RenderComponent& other) = delete;
 	RenderComponent(RenderComponent&& other) = delete;
 	RenderComponent& operator=(const RenderComponent& other) = delete;
@@ -29,7 +29,7 @@ public:
 	dae::TextureComponent* GetTextureComponent() const { return m_pTextureComponent; }
 
 	void SetTextureComponent(const std::string& filename);
-	void SetTextureComponent(dae::TextureComponent* textureComponent);
+	void SetSDLTexture(SDL_Texture* pSDLTexture);
 
 private:
 	dae::TextureComponent* m_pTextureComponent;

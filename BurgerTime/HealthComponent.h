@@ -20,9 +20,10 @@ public:
 	void Render() const override {}
 	void RenderImGui() override {}
 	void OnNotify(std::any data, int eventId, bool isEngineEvent) override;
-	void Damage(int amount);
+	void Damage(int amount, bool shouldBreadCastDieEvent = true);
 	void Reset();
 	void VisualizeHealth(const glm::vec2& pos, const std::string& textureFilePath);
+	void Die(bool shouldBroadCastDieEvent);
 	int GetHealth() const { return m_AmountOfLives; }
 	float GetSecSinceDeath() const { return m_SecSinceDeath; }
 

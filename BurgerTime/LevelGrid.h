@@ -55,6 +55,7 @@ public:
 	float GetCellSideLenght() const { return m_CellSideLenght; }
 	void Reset(); //removes all cells
 	int GetMaxAmountOfCollumns() const { return m_MaxAmountOfCollumns; }
+	int GetAmountOfRows() const;
 
 private:
 	std::vector<std::unique_ptr<Cell>> m_Cells;

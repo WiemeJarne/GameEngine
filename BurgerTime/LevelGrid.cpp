@@ -153,3 +153,8 @@ void LevelGrid::Reset()
 {
 	m_Cells.clear();
 }
+
+int LevelGrid::GetAmountOfRows() const
+{
+	return static_cast<int>(ceil(static_cast<float>(m_Cells.size()) / m_MaxAmountOfCollumns));
+}

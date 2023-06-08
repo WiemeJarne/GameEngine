@@ -42,7 +42,9 @@ private:
 	bool m_IsFalling{};
 	float m_ToGoYValue{};
 	bool m_HasReachedPlate{};
+	int m_AmountOfLevelsDropped{};
 
 	void CalculateWalkedOver(dae::GameObject* pGameObject);
 	void CollidedWithOtherBurgerPart(dae::GameObject* pGameObject);
+	void HandleChildren(int childCount);
 };

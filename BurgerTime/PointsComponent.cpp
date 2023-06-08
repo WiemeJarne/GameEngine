@@ -2,6 +2,8 @@
 #include "Events.h"
 #include "ResourceManager.h"
 #include "EventQueue.h"
+#include "TextureComponent.h"
+#include <iostream>
 
 PointsComponent::PointsComponent(dae::GameObject* owner)
 	: Component(owner)
@@ -41,6 +43,47 @@ void PointsComponent::OnNotify(std::any data, int eventId, bool isEngineEvent)
 	case Event::burgerPartReachedPlate:
 		m_AmountOfPoints += 50;
 		m_pTextComponent->SetText(std::to_string(m_AmountOfPoints));
+		break;
+
+	case Event::burgerPartDroppedWith1EnemyOn:
+		m_AmountOfPoints += 500;
+		break;
+
+	case Event::burgerPartDroppedWith2EnemiesOn:
+		m_AmountOfPoints += 1000;
+		break;
+
+	case Event::burgerPartDroppedWith3EnemiesOn:
+		m_AmountOfPoints += 2000;
+		break;
+
+	case Event::burgerPartDroppedWith4EnemiesOn:
+		m_AmountOfPoints += 4000;
+		break;
+
+	case Event::burgerPartDroppedWith5EnemiesOn:
+		m_AmountOfPoints += 8000;
+		break;
+
+	case Event::burgerPartDroppedWith6EnemiesOn:
+		m_AmountOfPoints += 16000;
+		break;
+	case Event::enemyDied:
+		auto pTextureComponent{ std::any_cast<dae::TextureComponent*>(data) };
+
+		if (!pTextureComponent)
+			return;
+
+		//get the texture file name
+		const std::string& textureFileName{ pTextureComponent->GetFileName() };
+
+		if (textureFileName == "MrHotDog.png")
+			m_AmountOfPoints += 100;
+		else if (textureFileName == "MrPickle.png")
+			m_AmountOfPoints += 200;
+		else if (textureFileName == "MrEgg.png")
+			m_AmountOfPoints += 300;
+
 		break;
 	}
 }

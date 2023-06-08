@@ -1,6 +1,7 @@
 #include "RenderComponent.h"
 #include "GameObject.h"
 #include "Renderer.h"
+#include "ResourceManager.h"
 #include <iostream>
 
 RenderComponent::RenderComponent(dae::GameObject* owner)
@@ -13,15 +14,11 @@ RenderComponent::RenderComponent(dae::GameObject* owner, const std::string& text
 	SetTextureComponent(textureFilename);
 }
 
-RenderComponent::RenderComponent(dae::GameObject* owner, dae::TextureComponent* textureComponent)
+RenderComponent::RenderComponent(dae::GameObject* owner, std::unique_ptr<dae::TextureComponent> textureComponent)
 	: Component(owner)
 {
-	SetTextureComponent(textureComponent);
-}
-
-RenderComponent::~RenderComponent()
-{
-	delete m_pTextureComponent;
+	m_pTextureComponent = textureComponent.get();
+	owner->AddComponent(std::move(textureComponent));
 }
 
 void RenderComponent::Render() const
@@ -36,11 +33,26 @@ void RenderComponent::Render() const
 
 void RenderComponent::SetTextureComponent(const std::string& filename)
 {
-	m_pTextureComponent = new dae::TextureComponent(m_pOwner, filename);
+	if (m_pTextureComponent)
+	{
+		m_pTextureComponent->SetSDLTexture(dae::ResourceManager::GetInstance().LoadTexture(filename));
+		return;
+	}
+
+	auto pTextureComponent{ std::make_unique<dae::TextureComponent>(m_pOwner, filename) };
+	m_pTextureComponent = pTextureComponent.get();
+	m_pOwner->AddComponent(std::move(pTextureComponent));
 }
 
-void RenderComponent::SetTextureComponent(dae::TextureComponent* textureComponent)
+void RenderComponent::SetSDLTexture(SDL_Texture* pSDLTexture)
 {
-	delete m_pTextureComponent;
-	m_pTextureComponent = textureComponent;
+	if (!m_pTextureComponent)
+	{
+		auto pTextureComponent{ std::make_unique<dae::TextureComponent>(m_pOwner, pSDLTexture) };
+		m_pTextureComponent = pTextureComponent.get();
+		m_pOwner->AddComponent(std::move(pTextureComponent));
+		return;
+	}
+
+	m_pTextureComponent->SetSDLTexture(pSDLTexture);
 }

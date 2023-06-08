@@ -3,7 +3,7 @@
 #include "GameObject.h"
 #include "Events.h"
 #include "EventQueue.h"
-#include "RenderComponent.h"
+#include "TextureComponent.h"
 #include "LevelManager.h"
 
 MoveComponent::MoveComponent(dae::GameObject* owner, float moveSpeed, bool isPlayer)
@@ -11,9 +11,9 @@ MoveComponent::MoveComponent(dae::GameObject* owner, float moveSpeed, bool isPla
 	, m_MoveSpeed{ moveSpeed }
 	, m_IsPlayer{ isPlayer }
 {
-	if (owner->HasComponent<RenderComponent>())
+	if (owner->HasComponent<dae::TextureComponent>())
 	{
-		const auto ownerSize{ owner->GetComponent<RenderComponent>()->GetTextureComponent()->GetSize() };
+		const auto ownerSize{ owner->GetComponent<dae::TextureComponent>()->GetSize() };
 		m_OwnerWidth = static_cast<float>(ownerSize.x);
 		m_OwnerHeight = static_cast<float>(ownerSize.y);
 	}
@@ -69,7 +69,7 @@ bool MoveComponent::Move(const glm::vec2& moveDirection)
 		if (!m_HasSnappedToPlatform)
 		{
 			m_HasSnappedToPlatform = true;
-			m_pOwner->SetLocalPosition(ownerLocalPos.x, pCell->middlePos.y - 8.f);
+			m_pOwner->SetLocalPosition(ownerLocalPos.x, pCell->middlePos.y - m_OwnerHeight / 2.f);
 		}		
 		break;
 	}

@@ -89,14 +89,14 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode)
 	//add an enemy FOR TESTING
 	auto enemy{ std::make_shared<dae::GameObject>(m_CurrentScene) };
 	enemy->SetLocalPosition(1.5f * cellSidesLenght * 5 + 8.f, cellSidesLenght * 5);
-	enemy->AddComponent(std::make_unique<RenderComponent>(enemy.get(), "MrHotDog.png"));
+	enemy->AddComponent(std::make_unique<RenderComponent>(enemy.get(), "MrEgg.png"));
 	enemy->AddComponent(std::make_unique<EnemyAIComponent>(enemy.get(), 50.f));
 	auto enemySize{ enemy->GetComponent<RenderComponent>()->GetTextureComponent()->GetSize() };
 	enemy->AddComponent(std::make_unique<dae::CollisionBoxComponent>(enemy.get(), static_cast<float>(enemySize.x), static_cast<float>(enemySize.y)));
 	enemy->AddComponent(std::make_unique<HealthComponent>(enemy.get(), 1, false));
 	enemy->AddComponent(std::make_unique<DamageComponent>(enemy.get(), 1));
 	m_CurrentScene->Add(enemy);
-	enemy->SetParent(enemyManager.get(), false);
+	//enemy->SetParent(enemyManager.get(), false);
 
 	levelScene.Add(std::move(enemyManager));
 
@@ -109,7 +109,7 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode)
 	levelScene.Add(std::move(pointScreen));
 
 	//create player 1
-	glm::vec2 playerPos{ 1.5f * cellSidesLenght * std::get<1>(m_LevelGrids[m_LevelNr - 1]) + 8.f, cellSidesLenght * std::get<2>(m_LevelGrids[m_LevelNr - 1]) };
+	glm::vec2 playerPos{ 1.5f * cellSidesLenght * std::get<1>(m_LevelGrids[m_LevelNr - 1]), cellSidesLenght * std::get<2>(m_LevelGrids[m_LevelNr - 1]) - 16.f };
 	playerPos.y += cellSidesLenght + 10.f;
 	auto player1{ std::make_unique<PlayerPrefab>(m_CurrentScene, "PeterPepperFrontFacing.png", playerPos, glm::vec2(0.f, dae::SceneManager::GetInstance().GetScenesHeight() - 10.f), "PeterPepperHead.png")->GetGameObject()};
 	levelScene.Add(std::move(player1));

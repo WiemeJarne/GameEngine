@@ -63,21 +63,32 @@ void BurgerPartComponent::Update()
 		//check if the owner is now in another cell
 		if (m_pCell && m_pPreviousCell && (m_pCell != m_pPreviousCell) && !m_ShouldFallUntilPlatform)
 		{
+			const int childCount{ static_cast<int>(m_pOwner->GetChildCount()) };
 			//if so check if it is a cell with a long platform
 			switch (m_pCell->cellKind)
 			{
 			case CellKind::plate:
 				m_HasReachedPlate = true;
-				dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartReachedPlate), false);
+				if(childCount == 0)
+					dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartReachedPlate), false);
 			case CellKind::longFloor:
 			case CellKind::longGoDown:
 			case CellKind::longGoUp:
 			case CellKind::longGoUpAndDown:
-				//if so keep moving until the bottom is at the platform
-				m_ShouldFallUntilPlatform = true;
-				m_ToGoYValue = m_pCell->middlePos.y;
-				if(!m_HasReachedPlate)
-				dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartDropped1Level), false);
+				++m_AmountOfLevelsDropped;
+				if (!m_HasReachedPlate)
+					dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartDropped1Level), false);
+
+				//if so check how many children the owner of this burgerPart has keep moving until the bottom is at the platform
+				if (m_AmountOfLevelsDropped == (childCount + 1) || m_HasReachedPlate)
+				{
+					m_ShouldFallUntilPlatform = true;
+					m_ToGoYValue = m_pCell->middlePos.y;
+
+					if (childCount != 0)
+						HandleChildren(childCount);
+				}
+				
 				break;
 			}
 		}
@@ -96,6 +107,7 @@ void BurgerPartComponent::Update()
 				m_ThirdWalkedOver = false;
 				m_FourthWalkedOver = false;
 				m_IsFalling = false;
+				m_AmountOfLevelsDropped = 0;
 				return;
 			}
 		}
@@ -151,7 +163,13 @@ void BurgerPartComponent::CalculateWalkedOver(dae::GameObject* pGameObject)
 	auto goPos{ pGameObject->GetLocalPos() };
 
 	//calculate the middle of the given GameObject
-	goPos.x += 8.f;
+	auto pTextureComponent{ pGameObject->GetComponent<dae::TextureComponent>() };
+	if (pTextureComponent)
+	{
+		const auto size{ pTextureComponent->GetSize() };
+		goPos.x += size.x / 2.f;
+		goPos.y += size.y / 2.f;
+	}
 
 	//get the active grid
 	auto pActiveGrid{ LevelManager::GetInstance().GetActiveLevelGrid() };
@@ -217,5 +235,35 @@ void BurgerPartComponent::CollidedWithOtherBurgerPart(dae::GameObject* pGameObje
 	{
 		if(!m_HasReachedPlate)
 			m_IsFalling = true;
+	}
+}
+
+void BurgerPartComponent::HandleChildren(int childCount)
+{
+	switch (childCount)
+	{
+	case 1:
+		dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartDroppedWith1EnemyOn), false);
+		break;
+
+	case 2:
+		dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartDroppedWith2EnemiesOn), false);
+		break;
+
+	case 3:
+		dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartDroppedWith3EnemiesOn), false);
+		break;
+
+	case 4:
+		dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartDroppedWith4EnemiesOn), false);
+		break;
+
+	case 5:
+		dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartDroppedWith5EnemiesOn), false);
+		break;
+
+	case 6:
+		dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartDroppedWith6EnemiesOn), false);
+		break;
 	}
 }

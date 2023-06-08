@@ -4,6 +4,7 @@
 #include "Font.h"
 #include "TextureComponent.h"
 #include "RenderComponent.h"
+#include <memory>
 
 dae::TextComponent::TextComponent(dae::GameObject* owner, const std::string& text, std::shared_ptr<Font> font, SDL_Color color)
 	: Component{ owner }
@@ -65,7 +66,7 @@ void dae::TextComponent::CreateTextTexture()
 
 	if (m_pRenderComponent)
 	{
-		m_pRenderComponent->SetTextureComponent(new TextureComponent(m_pOwner, texture));
+		m_pRenderComponent->SetSDLTexture(texture);
 	}
 }
 

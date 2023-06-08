@@ -6,5 +6,12 @@ enum class Event
 	playerMoved,
 	burgerPartDropped1Level,
 	burgerPartReachedPlate,
-	playerDied
+	burgerPartDroppedWith1EnemyOn,
+	burgerPartDroppedWith2EnemiesOn,
+	burgerPartDroppedWith3EnemiesOn,
+	burgerPartDroppedWith4EnemiesOn,
+	burgerPartDroppedWith5EnemiesOn,
+	burgerPartDroppedWith6EnemiesOn,
+	playerDied,
+	enemyDied
 };
