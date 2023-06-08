@@ -10,6 +10,7 @@
 #include "Events.h"
 #include "TextureComponent.h"
 #include "RenderComponent.h"
+#include "EnemyAIComponent.h"
 #include <iostream>
 
 HealthComponent::HealthComponent(dae::GameObject* owner, int amountOfLives, bool isPlayer)
@@ -63,7 +64,12 @@ void HealthComponent::OnNotify(std::any data, int eventId, bool isEngineEvent)
 				if (pBurgerPartComponent->GetTopLeftPos().y < m_pOwner->GetLocalPos().y)
 					Damage(m_AmountOfLives);
 				//if the enemy is not below the burgerPart set the owner of the enemy equal to the owner of the burgerPart
-				else m_pOwner->SetParent(pBurgerPartComponent->GetOwner(), true);
+				else if (!pBurgerPartComponent->GetHasReachedPlate())
+				{
+					//get the EnemyAIComponent to get the height of the enemy and the burgerPart and check if the feet of the enemy are below the middle of the burgerPart
+					if(pBurgerPartComponent->GetOwner()->GetLocalPos().y + pBurgerPartComponent->GetHeight() <= m_pOwner->GetLocalPos().y + m_pOwner->GetComponent<EnemyAIComponent>()->GetHeight() + 5.f)
+						m_pOwner->SetParent(pBurgerPartComponent->GetOwner(), true);
+				}
 			}
 		}
 		else //if this component's owner is a player
@@ -123,7 +129,7 @@ void HealthComponent::VisualizeHealth(const glm::vec2& pos, const std::string& t
 	if (!pScene)
 		return;
 
-	constexpr float spaceBetweenLives{ 10 };
+	constexpr float spaceBetweenLives{ 20 };
 
 	for (int index{}; index < m_AmountOfLives; ++index)
 	{

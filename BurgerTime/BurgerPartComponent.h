@@ -43,6 +43,8 @@ private:
 	float m_ToGoYValue{};
 	bool m_HasReachedPlate{};
 	int m_AmountOfLevelsDropped{};
+	float m_SecSinceDelayStart{}; //only counted while dropping
+	bool m_UseDelay{};
 
 	void CalculateWalkedOver(dae::GameObject* pGameObject);
 	void CollidedWithOtherBurgerPart(dae::GameObject* pGameObject);

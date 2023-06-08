@@ -19,6 +19,12 @@ void dae::EventQueue::Update()
 		{
 			if(pListener)
 				pListener->OnNotify(std::get<0>(*e), std::get<1>(*e), std::get<2>(*e));
+
+			if (m_ListenerRemoved)
+			{
+				m_ListenerRemoved = false;
+				break;
+			}
 		}
 
 		m_pEvents[m_Head] = nullptr;
@@ -39,7 +45,10 @@ void dae::EventQueue::RemoveListener(EventListener* pObserver)
 	for (auto& listener : m_Listeners)
 	{
 		if (listener == pObserver)
+		{
+			m_ListenerRemoved = true;
 			listener = nullptr;
+		}
 	}
 }
 

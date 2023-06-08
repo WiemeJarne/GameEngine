@@ -7,7 +7,7 @@ class PointsComponent : public Component, public dae::EventListener
 {
 public:
 	PointsComponent() = default;
-	PointsComponent(dae::GameObject* owner);
+	PointsComponent(dae::GameObject* owner, const glm::vec2& middlePos = {0.f, 0.f});
 	~PointsComponent();
 	PointsComponent(const PointsComponent& other) = delete;
 	PointsComponent(PointsComponent&& other) = delete;
@@ -24,4 +24,7 @@ public:
 private:
 	int m_AmountOfPoints{};
 	dae::TextComponent* m_pTextComponent{};
+	const glm::vec2 m_MiddlePos{};
+
+	void Recenter();
 };

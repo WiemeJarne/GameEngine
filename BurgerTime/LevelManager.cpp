@@ -102,7 +102,7 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode)
 
 	//create point screen
 	auto pointScreen{ std::make_unique<dae::GameObject>(m_CurrentScene) };
-	auto pointsComponent{ std::make_unique<PointsComponent>(pointScreen.get()) };
+	auto pointsComponent{ std::make_unique<PointsComponent>(pointScreen.get(), glm::vec2(dae::SceneManager::GetInstance().GetScenesWidth() / 2.f, 10.f)) };
 	pointsComponent->AddPoints(m_AmountOfPoints);
 	m_pPointsComponent = pointsComponent.get();
 	pointScreen->AddComponent(std::move(pointsComponent));
@@ -111,7 +111,7 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode)
 	//create player 1
 	glm::vec2 playerPos{ 1.5f * cellSidesLenght * std::get<1>(m_LevelGrids[m_LevelNr - 1]), cellSidesLenght * std::get<2>(m_LevelGrids[m_LevelNr - 1]) - 16.f };
 	playerPos.y += cellSidesLenght + 10.f;
-	auto player1{ std::make_unique<PlayerPrefab>(m_CurrentScene, "PeterPepperFrontFacing.png", playerPos, glm::vec2(0.f, dae::SceneManager::GetInstance().GetScenesHeight() - 10.f), "PeterPepperHead.png")->GetGameObject()};
+	auto player1{ std::make_unique<PlayerPrefab>(m_CurrentScene, "PeterPepperFrontFacing.png", playerPos, glm::vec2(0.f, 0.f), "PeterPepperHead.png")->GetGameObject()};
 	levelScene.Add(std::move(player1));
 	
 	std::unique_ptr<dae::GameObject> player2{};
@@ -119,9 +119,9 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode)
 	switch (gameMode)
 	{
 	case GameMode::coOp:
-		playerPos = { 1.5f * cellSidesLenght * std::get<1>(m_LevelGrids[m_LevelNr - 1]) + 16.f, cellSidesLenght * std::get<2>(m_LevelGrids[m_LevelNr - 1]) };
+		playerPos = { 1.5f * cellSidesLenght * std::get<1>(m_LevelGrids[m_LevelNr - 1]) + 16.f, cellSidesLenght * std::get<2>(m_LevelGrids[m_LevelNr - 1]) - 16.f };
 		playerPos.y += cellSidesLenght + 10.f;
-		player2 = std::make_unique<PlayerPrefab>(m_CurrentScene, "MrsSalt.png",playerPos, glm::vec2(dae::SceneManager::GetInstance().GetScenesWidth() - 30.f, dae::SceneManager::GetInstance().GetScenesHeight() - 10.f), "PeterPepperHead.png", 3, false)->GetGameObject();
+		player2 = std::make_unique<PlayerPrefab>(m_CurrentScene, "MrsSalt.png",playerPos, glm::vec2(dae::SceneManager::GetInstance().GetScenesWidth() - 60.f, 0.f), "PeterPepperHead.png", 3, false)->GetGameObject();
 		levelScene.Add(std::move(player2));
 		break;
 

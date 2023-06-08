@@ -15,12 +15,13 @@ public:
 	void RenderImGui() override {}
 
 	void OnNotify(std::any data, int eventId, bool isEngineEvent);
+	float GetHeight() const { return m_EnemyHeight; }
 
 private:
 	MoveComponent* m_pMoveComponent{};
 	glm::vec2 m_PlayerMiddlePos{};
 	glm::vec2 m_PreviousDirection{};
-	Cell* m_pClosestLadder{};
+	Cell* m_pToNavigateCell{};
 	Cell* m_pPreviousClimbedLadder{};
 	LevelGrid* m_pActiveGrid{};
 	bool m_ShouldRandomlyClimbLadder{};
@@ -31,8 +32,10 @@ private:
 	float m_SecSinceRandomDirectionFlip{};
 	float m_EnemyWidth{};
 	float m_EnemyHeight{};
+	bool m_IsNavigationToGridOrPlatform{};
 
 	void MoveTowardsGrid(const glm::vec2& ownerMiddlePos);
+	void MoveTowardsClosestPlatform(const glm::vec2& ownerMiddlePos);
 	void FlipDirection();
 	void RandomlyClimbLadder(Cell* currentCell);
 

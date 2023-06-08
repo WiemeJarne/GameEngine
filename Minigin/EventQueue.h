@@ -25,5 +25,6 @@ namespace dae
 		int m_Head{};
 		int m_Tail{};
 		int m_Size{ 10 };
+		bool m_ListenerRemoved{};
 	};
 }

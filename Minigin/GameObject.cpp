@@ -143,7 +143,7 @@ void dae::GameObject::SetParent(dae::GameObject* parent, bool keepWorldPos)
 		}
 	}
 	else //if the given parent is nullptr add it to the scene
-		m_pScene->Add(sharedPtr);
+		m_pScene->QueueForAdd(sharedPtr);
 }
 
 void dae::GameObject::SetLocalPosition(float x, float y)

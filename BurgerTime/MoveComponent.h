@@ -7,7 +7,7 @@
 class MoveComponent : public Component
 {
 public:
-	MoveComponent(dae::GameObject* owner, float moveSpeed, bool isPlayer = true);
+	MoveComponent(dae::GameObject* owner, float moveSpeed, bool isPlayer = true, bool canMoveOverEmptyCells = false);
 	~MoveComponent() = default;
 	MoveComponent(const MoveComponent& other) = delete;
 	MoveComponent(MoveComponent&& other) = delete;
@@ -26,6 +26,7 @@ private:
 	Cell* m_pPreviousCell{};
 	float m_OwnerWidth{};
 	float m_OwnerHeight{};
+	bool m_CanMoveOverEmptyCells{};
 
 	bool CanMoveUp(Cell* pCell, const glm::vec2& ownerMiddlePos, float cellSideLenght);
 	bool CanMoveDown(Cell* pCell, const glm::vec2& ownerMiddlePos, float cellSideLenght);

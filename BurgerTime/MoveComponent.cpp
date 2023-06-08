@@ -6,10 +6,11 @@
 #include "TextureComponent.h"
 #include "LevelManager.h"
 
-MoveComponent::MoveComponent(dae::GameObject* owner, float moveSpeed, bool isPlayer)
+MoveComponent::MoveComponent(dae::GameObject* owner, float moveSpeed, bool isPlayer, bool canMoveOverEmptyCells)
 	: Component(owner)
 	, m_MoveSpeed{ moveSpeed }
 	, m_IsPlayer{ isPlayer }
+	, m_CanMoveOverEmptyCells{ canMoveOverEmptyCells }
 {
 	if (owner->HasComponent<dae::TextureComponent>())
 	{
@@ -137,6 +138,10 @@ bool MoveComponent::CanMoveUp(Cell* pCell, const glm::vec2& ownerMiddlePos, floa
 		if (ownerMiddlePos.x >= pCell->middlePos.x - cellSideLenght / 2.f && ownerMiddlePos.x <= pCell->middlePos.x + cellSideLenght / 2.f)
 			return true;
 		break;
+
+	case CellKind::shortEmpty:
+	case CellKind::longEmpty:
+		return m_CanMoveOverEmptyCells;
 	}
 
 	return false;

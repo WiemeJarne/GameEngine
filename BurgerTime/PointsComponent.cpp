@@ -5,8 +5,9 @@
 #include "TextureComponent.h"
 #include <iostream>
 
-PointsComponent::PointsComponent(dae::GameObject* owner)
+PointsComponent::PointsComponent(dae::GameObject* owner, const glm::vec2& middlePos)
 	: Component(owner)
+	, m_MiddlePos{ middlePos }
 {
 	auto textComponent{ owner->GetComponent<dae::TextComponent>() };
 
@@ -20,6 +21,7 @@ PointsComponent::PointsComponent(dae::GameObject* owner)
 		auto newTextComponent{ std::make_unique<dae::TextComponent>(owner, "0", font) };
 		m_pTextComponent = newTextComponent.get();
 		owner->AddComponent(std::move(newTextComponent));
+		Recenter();
 	}
 
 	dae::EventQueue::GetInstance().AddListener(this);
@@ -43,31 +45,39 @@ void PointsComponent::OnNotify(std::any data, int eventId, bool isEngineEvent)
 	case Event::burgerPartReachedPlate:
 		m_AmountOfPoints += 50;
 		m_pTextComponent->SetText(std::to_string(m_AmountOfPoints));
+		Recenter();
 		break;
 
 	case Event::burgerPartDroppedWith1EnemyOn:
 		m_AmountOfPoints += 500;
+		Recenter();
 		break;
 
 	case Event::burgerPartDroppedWith2EnemiesOn:
 		m_AmountOfPoints += 1000;
+		Recenter();
 		break;
 
 	case Event::burgerPartDroppedWith3EnemiesOn:
 		m_AmountOfPoints += 2000;
+		Recenter();
 		break;
 
 	case Event::burgerPartDroppedWith4EnemiesOn:
 		m_AmountOfPoints += 4000;
+		Recenter();
 		break;
 
 	case Event::burgerPartDroppedWith5EnemiesOn:
 		m_AmountOfPoints += 8000;
+		Recenter();
 		break;
 
 	case Event::burgerPartDroppedWith6EnemiesOn:
 		m_AmountOfPoints += 16000;
+		Recenter();
 		break;
+
 	case Event::enemyDied:
 		auto pTextureComponent{ std::any_cast<dae::TextureComponent*>(data) };
 
@@ -84,6 +94,7 @@ void PointsComponent::OnNotify(std::any data, int eventId, bool isEngineEvent)
 		else if (textureFileName == "MrEgg.png")
 			m_AmountOfPoints += 300;
 
+		Recenter();
 		break;
 	}
 }
@@ -92,4 +103,11 @@ void PointsComponent::AddPoints(int amount)
 {
 	m_AmountOfPoints += amount;
 	m_pTextComponent->SetText(std::to_string(m_AmountOfPoints));
+}
+
+void PointsComponent::Recenter()
+{
+	const auto scale{ m_pTextComponent->GetTextureComponent()->GetSize() };
+
+	m_pOwner->SetLocalPosition(m_MiddlePos.x - scale.x / 2.f, m_MiddlePos.y - scale.y / 2.f);
 }

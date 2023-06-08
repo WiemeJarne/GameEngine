@@ -24,7 +24,7 @@ EnemyAIComponent::EnemyAIComponent(dae::GameObject* pOwner, float moveSpeed, boo
 	, m_ShouldRandomlyFlipDirection{ shouldRandomlyFlipDirection }
 	, m_SecBetweenRandomFlipDirection{ secBetweenRandomFlipDirection }
 {
-	auto moveComponent{ std::make_unique<MoveComponent>(pOwner, moveSpeed, false) };
+	auto moveComponent{ std::make_unique<MoveComponent>(pOwner, moveSpeed, false, true) };
 	m_pMoveComponent = moveComponent.get();
 	pOwner->AddComponent(std::move(moveComponent));
 
@@ -79,14 +79,24 @@ void EnemyAIComponent::Update()
 	//get the cell where this enemy is in
 	auto pEnemyCell{ m_pActiveGrid->GetCell(ownerMiddlePos) };
 
+	//if the enemy is not in a cell move towards the grid
 	if (!pEnemyCell)
 	{
-		//if the enemy is not in a cell move him towards it
 		MoveTowardsGrid(ownerMiddlePos);
 		return;
 	}
 
-	if (m_ShouldRandomlyClimbLadder)
+	if (m_IsNavigationToGridOrPlatform && pEnemyCell->cellKind != CellKind::shortEmpty && pEnemyCell->cellKind != CellKind::longEmpty)
+	{
+		m_IsNavigationToGridOrPlatform = false;
+		m_pToNavigateCell = nullptr;
+	}
+
+	//if the enemy is in an empty cell move towards the closest longFloor
+	if (pEnemyCell->cellKind == CellKind::shortEmpty || pEnemyCell->cellKind == CellKind::longEmpty)
+		MoveTowardsClosestPlatform(ownerMiddlePos);
+
+	if (m_ShouldRandomlyClimbLadder && !m_IsNavigationToGridOrPlatform)
 	{
 		m_SecSinceLastRandomClimbedLadder += Timer::GetInstance().GetElapsedSec();
 		if (m_SecSinceLastRandomClimbedLadder >= m_SecBetweenRandomClimbLadder)
@@ -96,7 +106,7 @@ void EnemyAIComponent::Update()
 		}
 	}
 
-	if (m_ShouldRandomlyFlipDirection)
+	if (m_ShouldRandomlyFlipDirection && !m_IsNavigationToGridOrPlatform)
 	{
 		m_SecSinceRandomDirectionFlip += Timer::GetInstance().GetElapsedSec();
 		if (m_SecSinceRandomDirectionFlip >= m_SecBetweenRandomFlipDirection)
@@ -115,9 +125,9 @@ void EnemyAIComponent::Update()
 	const float distanceToPlayer{ glm::length(m_PlayerMiddlePos - ownerMiddlePos) };
 
 	//check if this enemy is on a ladder
-	if (pEnemyCell->cellKind == CellKind::ladder && m_pClosestLadder != m_pPreviousClimbedLadder)
+	if (pEnemyCell->cellKind == CellKind::ladder && m_pToNavigateCell != m_pPreviousClimbedLadder)
 	{
-		m_pClosestLadder = nullptr;
+		m_pToNavigateCell = nullptr;
 		m_pPreviousClimbedLadder = pEnemyCell;
 
 		//if the previous direction was going up try going up
@@ -142,26 +152,26 @@ void EnemyAIComponent::Update()
 	}
 
 	//get the closest ladder cell if this enemy is not already walking to one
-	if(!m_pClosestLadder)
-		m_pClosestLadder = m_pActiveGrid->GetNearestCellOfKind(ownerMiddlePos, CellKind::ladder);
+	if(!m_pToNavigateCell)
+		m_pToNavigateCell = m_pActiveGrid->GetNearestCellOfKind(ownerMiddlePos, CellKind::ladder);
 
 	//calculate the distance to the ladder
-	const float distanceToLadder{ glm::length(m_pClosestLadder->middlePos - ownerMiddlePos) };
+	const float distanceToToNavigateCell{ glm::length(m_pToNavigateCell->middlePos - ownerMiddlePos) };
 
 	//calculate the distance from the ladder to the player
-	const float distanceFromLadderToPlayer{ glm::length(m_PlayerMiddlePos - m_pClosestLadder->middlePos) };
+	const float distanceFromLadderToPlayer{ glm::length(m_PlayerMiddlePos - m_pToNavigateCell->middlePos) };
 
 	glm::vec2 toMovePos{};
 
 	//check if the ladder is closer then the player and if it brings this enemy closer to the player
-	if (distanceToLadder < distanceToPlayer && distanceFromLadderToPlayer < distanceToPlayer)
-		toMovePos = m_pClosestLadder->middlePos; //if so move to the ladder
+	if ((distanceToToNavigateCell < distanceToPlayer && distanceFromLadderToPlayer < distanceToPlayer) || m_pToNavigateCell->cellKind == CellKind::longFloor)
+		toMovePos = m_pToNavigateCell->middlePos; //if so move to the ladder
 	else toMovePos = m_PlayerMiddlePos; //else move to the player
 
 	//if this enemy is not in the same row then the player
 	if (pEnemyCell->rowNr != pPlayerCell->rowNr)
 	{
-		////if the previous direction was going to the left try going to the left
+		//if the previous direction was going to the left try going to the left
 		if (m_PreviousDirection == m_sUpDirection && m_pMoveComponent->Move(m_sUpDirection))
 			return;
 
@@ -214,13 +224,15 @@ void EnemyAIComponent::OnNotify(std::any data, int eventId, bool isEngineEvent)
 
 void EnemyAIComponent::MoveTowardsGrid(const glm::vec2& ownerMiddlePos)
 {
+	m_IsNavigationToGridOrPlatform = true;
+
 	//if the enemy is on the left of the grid try to move to the right
 	if (ownerMiddlePos.x < 0.f && m_pMoveComponent->Move(m_sRightDirection))
 	{
 		m_PreviousDirection = m_sRightDirection;
 		return;
 	}
-
+	
 	const auto cellSideLenght{ m_pActiveGrid->GetCellSideLenght() };
 	
 	//if the enemy is on the right of the grid try to move to the left
@@ -229,18 +241,28 @@ void EnemyAIComponent::MoveTowardsGrid(const glm::vec2& ownerMiddlePos)
 		m_PreviousDirection = m_sLeftDirection;
 		return;
 	}
-
+	
 	//if the enemy is below the grid try to move up
 	if (ownerMiddlePos.y > m_pActiveGrid->GetAmountOfRows() * cellSideLenght && m_pMoveComponent->Move(m_sUpDirection))
 	{
 		m_PreviousDirection = m_sUpDirection;
 		return;
 	}
-
+	
 	//if the enemy is above the grid try to move down
 	if (ownerMiddlePos.y < 0.f && m_pMoveComponent->Move(m_sDownDirection))
 	{
 		m_PreviousDirection = m_sDownDirection;
+	}
+}
+
+void EnemyAIComponent::MoveTowardsClosestPlatform(const glm::vec2& ownerMiddlePos)
+{
+	m_IsNavigationToGridOrPlatform = true;
+
+	if (!m_pToNavigateCell || m_pToNavigateCell->cellKind != CellKind::longFloor)
+	{
+		m_pToNavigateCell = m_pActiveGrid->GetNearestCellOfKind(ownerMiddlePos, CellKind::longFloor);
 	}
 }
 

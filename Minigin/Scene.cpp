@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "GameObject.h"
+#include <iostream>
 
 using namespace dae;
 
@@ -12,6 +13,11 @@ Scene::~Scene() = default;
 void Scene::Add(std::shared_ptr<GameObject> object)
 {
 	m_objects.emplace_back(std::move(object));
+}
+
+void Scene::QueueForAdd(std::shared_ptr<GameObject> object)
+{
+	m_ObjectsQueuedToAdd.emplace_back(std::move(object));
 }
 
 void Scene::Remove(std::shared_ptr<GameObject> object)
@@ -46,6 +52,13 @@ void Scene::Update()
 	{
 		object->EraseComponentsMarkedForDelete();
 	}
+
+	for (auto& object : m_ObjectsQueuedToAdd)
+	{
+		m_objects.emplace_back(std::move(object));
+	}
+
+	m_ObjectsQueuedToAdd.clear();
 }
 
 void Scene::Render() const
