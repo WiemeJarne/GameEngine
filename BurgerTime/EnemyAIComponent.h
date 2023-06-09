@@ -16,6 +16,8 @@ public:
 
 	void OnNotify(std::any data, int eventId, bool isEngineEvent);
 	float GetHeight() const { return m_EnemyHeight; }
+	void SetCanMove(bool canWalk) { m_CanWalk = canWalk; }
+	bool GetCanMove() const { return m_CanWalk; }
 
 private:
 	MoveComponent* m_pMoveComponent{};
@@ -33,11 +35,12 @@ private:
 	float m_EnemyWidth{};
 	float m_EnemyHeight{};
 	bool m_IsNavigationToGridOrPlatform{};
+	bool m_CanWalk{};
 
 	void MoveTowardsGrid(const glm::vec2& ownerMiddlePos);
 	void MoveTowardsClosestPlatform(const glm::vec2& ownerMiddlePos);
 	void FlipDirection();
-	void RandomlyClimbLadder(Cell* currentCell);
+	bool RandomlyClimbLadder(Cell* currentCell);
 
 	static glm::vec2 m_sUpDirection;
 	static glm::vec2 m_sDownDirection;

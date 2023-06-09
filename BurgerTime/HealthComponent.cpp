@@ -15,6 +15,7 @@
 
 HealthComponent::HealthComponent(dae::GameObject* owner, int amountOfLives, bool isPlayer)
 	: Component(owner)
+	, m_StartAmountOfLives{ amountOfLives }
 	, m_AmountOfLives{ amountOfLives }
 	, m_IsOwnerPlayer{ isPlayer }
 {
@@ -139,7 +140,7 @@ void HealthComponent::VisualizeHealth(const glm::vec2& pos, const std::string& t
 	}
 }
 
-void HealthComponent::Die(bool shouldBroadCastDieEvent)
+void HealthComponent::Die()
 {
-	Damage(m_AmountOfLives, shouldBroadCastDieEvent);
+	m_AmountOfLives = 0;
 }

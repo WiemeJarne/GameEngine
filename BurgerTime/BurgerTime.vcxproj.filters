@@ -75,9 +75,6 @@
     <ClCompile Include="EnemyAIComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="EnemyManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ThumbstickMoveCommand.cpp">
       <Filter>Commands</Filter>
     </ClCompile>
@@ -88,6 +85,9 @@
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="DamageComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyManager.cpp">
       <Filter>Components</Filter>
     </ClCompile>
   </ItemGroup>
@@ -143,9 +143,6 @@
     <ClInclude Include="EnemyAIComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="EnemyManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ThumbstickMoveCommand.h">
       <Filter>Commands</Filter>
     </ClInclude>
@@ -156,6 +153,9 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="DamageComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyManager.h">
       <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>

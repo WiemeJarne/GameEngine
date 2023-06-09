@@ -39,6 +39,7 @@ private:
 	std::shared_ptr<dae::Font> m_Font;
 	std::vector<std::pair<std::string, int>> m_HighScoreList;
 	int m_AmountOfPlayersDead{};
+	std::vector<glm::vec2> m_EnemiesSpawnLocations{};
 
 	bool LoadLevelPlatforms(int levelNr); //return if it succeeded to open the file
 	void LoadLevelBurgerParts(int levelNr);

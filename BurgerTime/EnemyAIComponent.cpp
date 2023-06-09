@@ -48,7 +48,7 @@ EnemyAIComponent::~EnemyAIComponent()
 void EnemyAIComponent::Update()
 {
 	//check if the owner has a parent if so then don't move
-	if (m_pOwner->GetParent())
+	if (m_pOwner->GetParent() || !m_CanWalk)
 		return;
 
 	//calculate the owner middlePos
@@ -101,7 +101,7 @@ void EnemyAIComponent::Update()
 		m_SecSinceLastRandomClimbedLadder += Timer::GetInstance().GetElapsedSec();
 		if (m_SecSinceLastRandomClimbedLadder >= m_SecBetweenRandomClimbLadder)
 		{
-			RandomlyClimbLadder(pEnemyCell);
+			if(RandomlyClimbLadder(pEnemyCell))
 			return;
 		}
 	}
@@ -285,10 +285,10 @@ void EnemyAIComponent::FlipDirection()
 	m_SecSinceRandomDirectionFlip = 0.f;
 }
 
-void EnemyAIComponent::RandomlyClimbLadder(Cell* currentCell)
+bool EnemyAIComponent::RandomlyClimbLadder(Cell* currentCell)
 {
 	if (currentCell->cellKind == CellKind::ladder)
-		return;
+		return false;
 
 	//generate a random int
 	int randomInt{ rand() % 2 };
@@ -298,7 +298,7 @@ void EnemyAIComponent::RandomlyClimbLadder(Cell* currentCell)
 	{
 		m_PreviousDirection = m_sUpDirection;
 		m_SecSinceLastRandomClimbedLadder = 0.f;
-		return;
+		return true;
 	}
 
 	//if the randomInt is 1 check if there is a ladder below the current cell if so move down
@@ -306,6 +306,8 @@ void EnemyAIComponent::RandomlyClimbLadder(Cell* currentCell)
 	{
 		m_PreviousDirection = m_sDownDirection;
 		m_SecSinceLastRandomClimbedLadder = 0.f;
-		return;
+		return true;
 	}
+
+	return false;
 }

@@ -23,7 +23,7 @@ public:
 	void Damage(int amount, bool shouldBreadCastDieEvent = true);
 	void Reset();
 	void VisualizeHealth(const glm::vec2& pos, const std::string& textureFilePath);
-	void Die(bool shouldBroadCastDieEvent);
+	void Die();
 	int GetHealth() const { return m_AmountOfLives; }
 	float GetSecSinceDeath() const { return m_SecSinceDeath; }
 

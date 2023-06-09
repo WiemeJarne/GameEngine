@@ -81,22 +81,17 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode)
 	
 	LoadLevelBurgerParts(levelNr);
 
+	if (m_EnemiesSpawnLocations.empty())
+	{
+		const float cellSideLenght{ std::get<0>(m_LevelGrids[m_LevelNr - 1])->GetCellSideLenght() };
+		m_EnemiesSpawnLocations.push_back({ -cellSideLenght, m_LevelTopLeftPos.y + cellSideLenght });
+		m_EnemiesSpawnLocations.push_back({ cellSideLenght * (std::get<0>(m_LevelGrids[m_LevelNr - 1])->GetAmountOfRows() + 1), m_LevelTopLeftPos.y + cellSideLenght});
+	}
+
 	auto enemyManager{ std::make_unique<dae::GameObject>(m_CurrentScene) };
-	enemyManager->AddComponent(std::make_unique<EnemyManagerComponent>(enemyManager.get()));
+	enemyManager->AddComponent(std::make_unique<EnemyManagerComponent>(enemyManager.get(), m_CurrentScene, m_EnemiesSpawnLocations, 2, 2, 2));
 
 	const float cellSidesLenght{ std::get<0>(m_LevelGrids[m_LevelNr - 1])->GetCellSideLenght() };
-
-	//add an enemy FOR TESTING
-	auto enemy{ std::make_shared<dae::GameObject>(m_CurrentScene) };
-	enemy->SetLocalPosition(1.5f * cellSidesLenght * 5 + 8.f, cellSidesLenght * 5);
-	enemy->AddComponent(std::make_unique<RenderComponent>(enemy.get(), "MrEgg.png"));
-	enemy->AddComponent(std::make_unique<EnemyAIComponent>(enemy.get(), 50.f));
-	auto enemySize{ enemy->GetComponent<RenderComponent>()->GetTextureComponent()->GetSize() };
-	enemy->AddComponent(std::make_unique<dae::CollisionBoxComponent>(enemy.get(), static_cast<float>(enemySize.x), static_cast<float>(enemySize.y)));
-	enemy->AddComponent(std::make_unique<HealthComponent>(enemy.get(), 1, false));
-	enemy->AddComponent(std::make_unique<DamageComponent>(enemy.get(), 1));
-	m_CurrentScene->Add(enemy);
-	//enemy->SetParent(enemyManager.get(), false);
 
 	levelScene.Add(std::move(enemyManager));
 
