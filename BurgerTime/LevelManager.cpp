@@ -5,13 +5,10 @@
 #include "PlayerPrefab.h"
 #include "LevelGrid.h"
 #include "TexturedGameObjectPrefab.h"
-#include "MoveComponent.h"
 #include "BurgerPartComponent.h"
 #include "TextureComponent.h"
 #include "RenderComponent.h"
 #include "BurgerPartPrefab.h"
-#include "EnemyAIComponent.h"
-#include "CollisionBoxComponent.h"
 #include "EnemyManager.h"
 #include "PointsComponent.h"
 #include "Events.h"
@@ -20,6 +17,7 @@
 #include "TypeComponent.h"
 #include "ResourceManager.h"
 #include "DamageComponent.h"
+#include "SkipLevelCommand.h"
 #include <algorithm>
 #include <iostream>
 
@@ -39,7 +37,7 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode)
 	}
 
 	dae::InputManager::GetInstance().RemoveAllButtons();
-	dae::InputManager::GetInstance().RemoveAllCommands();
+	dae::InputManager::GetInstance().RemoveAllCommandsAndControlers();
 
 	m_LevelNr = levelNr;
 	m_GameMode = gameMode;
@@ -63,7 +61,7 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode)
 	}
 	else
 	{
-		auto levelGridCells{ std::get<0>(m_LevelGrids[m_LevelNr - 1])->GetCells() };
+		const auto levelGridCells{ std::get<0>(m_LevelGrids[m_LevelNr - 1])->GetCells() };
 
 		for (const auto& cell : levelGridCells)
 		{
@@ -80,6 +78,9 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode)
 	}
 	
 	LoadLevelBurgerParts(levelNr);
+
+	auto skipLevelCommand = std::make_unique<commands::SkipLevelCommand>();
+	dae::InputManager::GetInstance().AddCommand(std::move(skipLevelCommand), dae::KeyState::down, dae::InputManager::KeyboardKey::F1);
 
 	if (m_EnemiesSpawnLocations.empty())
 	{
@@ -175,7 +176,7 @@ void LevelManager::OnNotify(std::any data, int eventId, bool isEngineEvent)
 		{
 			++m_LevelNr;
 
-			dae::InputManager::GetInstance().RemoveAllCommands();
+			dae::InputManager::GetInstance().RemoveAllCommandsAndControlers();
 			LoadLevel(m_LevelNr, *m_CurrentScene, m_GameMode);
 		}
 		break;
@@ -202,7 +203,7 @@ void LevelManager::OnNotify(std::any data, int eventId, bool isEngineEvent)
 	}
 }
 
-LevelGrid* LevelManager::GetActiveLevelGrid()
+LevelGrid* LevelManager::GetActiveLevelGrid() const
 { 
 	assert(m_LevelGrids.size() != 0 && "GetActiveLevelGrid being called when there arn't any level grids");
 
@@ -623,7 +624,7 @@ void LevelManager::ShowPointsScreen()
 	m_CurrentScene = &levelScene;
 
 	dae::InputManager::GetInstance().RemoveAllButtons();
-	dae::InputManager::GetInstance().RemoveAllCommands();
+	dae::InputManager::GetInstance().RemoveAllCommandsAndControlers();
 
 	if (!m_Font)
 		m_Font = dae::ResourceManager::GetInstance().LoadFont("PressStart2P-vaV7.ttf", 15u);
@@ -659,7 +660,7 @@ void LevelManager::ShowPointsScreen()
 	{
 		auto scoreObject{ std::make_unique<dae::GameObject>(m_CurrentScene) };
 		scoreObject->AddComponent(std::make_unique<dae::TextComponent>(scoreObject.get(), m_HighScoreList[index].first + ' ' + std::to_string(m_HighScoreList[index].second), m_Font));
-		auto textureSize{ scoreObject->GetComponent<RenderComponent>()->GetTextureComponent()->GetSize() };
+		auto textureSize{ scoreObject->GetComponent<dae::RenderComponent>()->GetTextureComponent()->GetSize() };
 		scoreObject->SetLocalPosition(sceneWidth / 2.f - textureSize.x / 2.f, 75.f + index * 50.f);
 		m_CurrentScene->Add(std::move(scoreObject));
 
@@ -677,7 +678,7 @@ void LevelManager::ShowPointsScreen()
 		//add object so the player can type in his name
 		auto typeObject{ std::make_unique<dae::GameObject>(m_CurrentScene) };
 		typeObject->AddComponent(std::make_unique<TypeComponent>(typeObject.get(), m_Font));
-		auto textureSize{ typeObject->GetComponent<RenderComponent>()->GetTextureComponent()->GetSize() };
+		auto textureSize{ typeObject->GetComponent<dae::RenderComponent>()->GetTextureComponent()->GetSize() };
 		typeObject->SetLocalPosition(sceneWidth / 2.f - textureSize.x / 2.f, sceneHeight - 75.f);
 		pTextComponent = typeObject->GetComponent<dae::TextComponent>();
 		m_CurrentScene->Add(std::move(typeObject));
@@ -728,11 +729,11 @@ void LevelManager::ShowPointsScreen()
 		}
 
 		dae::InputManager::GetInstance().RemoveAllButtons();
-		dae::InputManager::GetInstance().RemoveAllCommands();
+		dae::InputManager::GetInstance().RemoveAllCommandsAndControlers();
 		m_AmountOfPoints = 0;
 		LoadLevel(1, *m_CurrentScene, m_GameMode);
 	};
-	const auto buttonSize{ continueButton->GetComponent<RenderComponent>()->GetTextureComponent()->GetSize() };
+	const auto buttonSize{ continueButton->GetComponent<dae::RenderComponent>()->GetTextureComponent()->GetSize() };
 	const glm::vec2 buttonPos{ sceneWidth / 2.f - buttonSize.x / 2.f, sceneHeight - 25.f };
 	continueButton->AddComponent(std::make_unique<dae::ButtonComponent>(continueButton.get(), buttonPos, static_cast<float>(buttonSize.x), static_cast<float>(buttonSize.y), onContinueButtonClick));
 	m_CurrentScene->Add(std::move(continueButton));
@@ -740,7 +741,7 @@ void LevelManager::ShowPointsScreen()
 	//add object to show the current score
 	auto currentScoreObject{ std::make_unique<dae::GameObject>(m_CurrentScene) };
 	currentScoreObject->AddComponent(std::make_unique<dae::TextComponent>(currentScoreObject.get(), "your current score: " + std::to_string(m_AmountOfPoints), m_Font));
-	auto textureSize{ currentScoreObject->GetComponent<RenderComponent>()->GetTextureComponent()->GetSize() };
+	auto textureSize{ currentScoreObject->GetComponent<dae::RenderComponent>()->GetTextureComponent()->GetSize() };
 	currentScoreObject->SetLocalPosition(sceneWidth / 2.f - textureSize.x / 2.f, sceneHeight - 125.f);
 	m_CurrentScene->Add(std::move(currentScoreObject));
 }

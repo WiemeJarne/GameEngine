@@ -13,7 +13,7 @@ namespace dae
 		void Update() override {}
 		void Render() const override {}
 		void RenderImGui() override {}
-		void OnMouseClick(const glm::vec2& mousePos);
+		void OnMouseClick(const glm::vec2& mousePos) const;
 
 	private:
 		glm::vec2 m_TopLeftPos;

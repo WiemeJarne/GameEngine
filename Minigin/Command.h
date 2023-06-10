@@ -1,7 +1,6 @@
 #pragma once
-#include "GameObject.h"
 
-namespace commands
+namespace dae
 {
 	class Command
 	{
@@ -15,6 +14,6 @@ namespace commands
 		Command& operator=(Command&&) = delete;
 
 		virtual void Execute() = 0;
-		virtual void Undo() {};
+		virtual void Undo() {}
 	};
 }

@@ -4,12 +4,9 @@
 #include "Events.h"
 #include "EventQueue.h"
 #include "LevelManager.h"
-#include "EngineEvents.h"
-#include "CollisionManager.h"
-#include "BurgerPartComponent.h"
 #include "TextureComponent.h"
 #include "Timer.h"
-#include <iostream>
+#include "NotStunnedState.h"
 #include <glm/glm.hpp>
 
 glm::vec2 EnemyAIComponent::m_sUpDirection;
@@ -43,12 +40,19 @@ EnemyAIComponent::EnemyAIComponent(dae::GameObject* pOwner, float moveSpeed, boo
 EnemyAIComponent::~EnemyAIComponent()
 {
 	dae::EventQueue::GetInstance().RemoveListener(this);
+	delete m_pEnemyState;
 }
 
 void EnemyAIComponent::Update()
 {
+	if(!m_pEnemyState)
+		m_pEnemyState = new NotStunnedState(m_pOwner->GetComponent<DamageComponent>(), m_pOwner->GetComponent<HealthComponent>(), this);
+
+	
+	m_pEnemyState = m_pEnemyState->Update();
+
 	//check if the owner has a parent if so then don't move
-	if (m_pOwner->GetParent() || !m_CanWalk)
+	if (!m_CanWalk)
 		return;
 
 	//calculate the owner middlePos
@@ -98,7 +102,7 @@ void EnemyAIComponent::Update()
 
 	if (m_ShouldRandomlyClimbLadder && !m_IsNavigationToGridOrPlatform)
 	{
-		m_SecSinceLastRandomClimbedLadder += Timer::GetInstance().GetElapsedSec();
+		m_SecSinceLastRandomClimbedLadder += dae::Timer::GetInstance().GetElapsedSec();
 		if (m_SecSinceLastRandomClimbedLadder >= m_SecBetweenRandomClimbLadder)
 		{
 			if(RandomlyClimbLadder(pEnemyCell))
@@ -108,7 +112,7 @@ void EnemyAIComponent::Update()
 
 	if (m_ShouldRandomlyFlipDirection && !m_IsNavigationToGridOrPlatform)
 	{
-		m_SecSinceRandomDirectionFlip += Timer::GetInstance().GetElapsedSec();
+		m_SecSinceRandomDirectionFlip += dae::Timer::GetInstance().GetElapsedSec();
 		if (m_SecSinceRandomDirectionFlip >= m_SecBetweenRandomFlipDirection)
 		{
 			FlipDirection();

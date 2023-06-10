@@ -3,7 +3,7 @@
 #include <XInput.h>
 #include "InputManager.h"
 
-class PlayerController::PlayerControllerImpl final
+class dae::PlayerController::PlayerControllerImpl final
 {
 public:
 	PlayerControllerImpl(int controllerIndex)
@@ -132,14 +132,14 @@ public:
 		return(thumbStickDirection - deadZone) / (m_ThumbStickMaxValue - deadZone);
 	}
 
-	void AddCommand(std::unique_ptr<commands::Command> command, Control controllerKey)
+	void AddCommand(std::unique_ptr<dae::Command> command, Control controllerKey)
 	{
-		m_ControllerButtonCommands.insert(std::pair<Control, std::unique_ptr<commands::Command>>(controllerKey, std::move(command)));
+		m_ControllerButtonCommands.insert(std::pair<Control, std::unique_ptr<dae::Command>>(controllerKey, std::move(command)));
 	}
 
-	void AddCommand(std::unique_ptr<commands::ThumbstickCommand> command, ControllerAxis controllerAxis)
+	void AddCommand(std::unique_ptr<dae::ThumbstickCommand> command, ControllerAxis controllerAxis)
 	{
-		m_ControllerAxisCommands.insert(std::pair<ControllerAxis, std::unique_ptr<commands::ThumbstickCommand>>(controllerAxis, std::move(command)));
+		m_ControllerAxisCommands.insert(std::pair<ControllerAxis, std::unique_ptr<dae::ThumbstickCommand>>(controllerAxis, std::move(command)));
 	}
 
 	void InvertThumbstickLeftYAxis()
@@ -169,40 +169,40 @@ private:
 	int m_ControllerIndex{};
 	unsigned int m_ButtonsPressedThisFrame{};
 	unsigned int m_ButtonsReleasedThisFrame{};
-	using ControllerButtonCommandsMap = std::map<Control, std::unique_ptr<commands::Command>>;
+	using ControllerButtonCommandsMap = std::map<Control, std::unique_ptr<dae::Command>>;
 	ControllerButtonCommandsMap m_ControllerButtonCommands{};
-	using ControllerAxisCommandsMap = std::map<ControllerAxis, std::unique_ptr<commands::ThumbstickCommand>>;
+	using ControllerAxisCommandsMap = std::map<ControllerAxis, std::unique_ptr<dae::ThumbstickCommand>>;
 	ControllerAxisCommandsMap m_ControllerAxisCommands{};
 	const float m_ThumbStickMaxValue{ 32768.f };
 	bool m_IsThumbstickLeftYAxisInverted{};
 };
 
-PlayerController::PlayerController()
+dae::PlayerController::PlayerController()
 	: m_PlayerControllerImpl{ std::make_unique<PlayerControllerImpl>(-1) } //when the playerController is created for keyboard input then the controller index is set to -1
 {}
 
-PlayerController::PlayerController(int controllerIndex)
+dae::PlayerController::PlayerController(int controllerIndex)
 	: m_PlayerControllerImpl{ std::make_unique<PlayerControllerImpl>(controllerIndex) }
 {}
 
-PlayerController::~PlayerController() = default;
+dae::PlayerController::~PlayerController() = default;
 
-void PlayerController::Update()
+void dae::PlayerController::Update()
 {
 	m_PlayerControllerImpl->HandleControllerInput();
 }
 
-void PlayerController::AddCommand(std::unique_ptr<commands::Command> command, Control controllerKey)
+void dae::PlayerController::AddCommand(std::unique_ptr<dae::Command> command, Control controllerKey)
 {
 	m_PlayerControllerImpl->AddCommand(std::move(command), controllerKey);
 }
 
-void PlayerController::AddCommand(std::unique_ptr<commands::ThumbstickCommand> command, ControllerAxis controllerAxis)
+void dae::PlayerController::AddCommand(std::unique_ptr<dae::ThumbstickCommand> command, ControllerAxis controllerAxis)
 {
 	m_PlayerControllerImpl->AddCommand(std::move(command), controllerAxis);
 }
 
-void PlayerController::InvertThumbstickLeftYAxis()
+void dae::PlayerController::InvertThumbstickLeftYAxis()
 {
 	m_PlayerControllerImpl->InvertThumbstickLeftYAxis();
 }

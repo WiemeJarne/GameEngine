@@ -12,7 +12,7 @@ BurgerPartPrefab::BurgerPartPrefab(dae::Scene* pScene, const std::string& textur
 	m_go = std::move(texturedGoPrefab->GetGameObject());
 
 	//get the TextureComponent from the RenderComponent
-	auto renderComponent{ m_go->GetComponent<RenderComponent>() };
+	auto renderComponent{ m_go->GetComponent<dae::RenderComponent>() };
 	if (renderComponent)
 	{
 		pos.y += LevelManager::GetInstance().GetActiveLevelGrid()->GetCellSideLenght() - renderComponent->GetTextureComponent()->GetSize().y;

@@ -2,6 +2,7 @@
 #include <string>
 #include <glm/vec2.hpp>
 #include "Component.h"
+#include <memory>
 
 namespace dae
 {

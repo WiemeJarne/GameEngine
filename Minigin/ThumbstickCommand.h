@@ -1,7 +1,8 @@
 #pragma once
 #include "Command.h"
+#include <glm/vec2.hpp>
 
-namespace commands
+namespace dae
 {
 	class ThumbstickCommand : public Command
 	{

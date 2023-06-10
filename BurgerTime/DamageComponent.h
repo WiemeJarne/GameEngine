@@ -1,8 +1,7 @@
 #pragma once
 #include "Component.h"
-#include "GameObject.h"
 
-class DamageComponent final : public Component
+class DamageComponent final : public dae::Component
 {
 public:
 	DamageComponent(dae::GameObject* pOwner, int damageAmount);
@@ -11,8 +10,10 @@ public:
 	void Render() const {}
 	void RenderImGui() {}
 
-	int GetDamageAmount() const { return m_DamageAmount; }
+	int GetDamageAmount() const;
+	void SetCanDoDamage(bool canDoDamage) { m_CanDoDamage = canDoDamage; }
 
 private:
 	int m_DamageAmount;
+	bool m_CanDoDamage{ true };
 };

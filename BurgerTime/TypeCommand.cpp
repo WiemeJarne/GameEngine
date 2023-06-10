@@ -1,5 +1,7 @@
 #include "TypeCommand.h"
 #include "TextureComponent.h"
+#include "SceneManager.h"
+#include "GameObject.h"
 
 commands::TypeCommand::TypeCommand(char charToType, dae::TextComponent* textComponentToTypeTo)
 	: m_CharToType{ charToType }
@@ -10,9 +12,9 @@ commands::TypeCommand::TypeCommand(char charToType, dae::TextComponent* textComp
 
 void commands::TypeCommand::Execute()
 {
-	auto currentText{ m_pTextComponentToTypeTo->GetText() };
+	const auto currentText{ m_pTextComponentToTypeTo->GetText() };
 
-	auto textLenght{ currentText.length() };
+	const auto textLenght{ currentText.length() };
 
 	if (m_CharToType == '\b')
 	{
@@ -29,9 +31,9 @@ void commands::TypeCommand::Execute()
 	}
 }
 
-void commands::TypeCommand::RecenterAlongXAxis()
+void commands::TypeCommand::RecenterAlongXAxis() const
 {
-	auto textureSize{ m_pTextComponentToTypeTo->GetTextureComponent()->GetSize() };
-	auto& sceneManager{ dae::SceneManager::GetInstance() };
+	const auto textureSize{ m_pTextComponentToTypeTo->GetTextureComponent()->GetSize() };
+	const auto& sceneManager{ dae::SceneManager::GetInstance() };
 	m_pTextComponentOwner->SetLocalPosition(sceneManager.GetScenesWidth() / 2.f - textureSize.x / 2.f, m_pTextComponentOwner->GetLocalPos().y);
 }

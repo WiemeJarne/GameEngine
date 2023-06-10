@@ -37,8 +37,6 @@ Index of this file:
 #include "misc/freetype/imgui_freetype.h"
 #endif
 
-#include <stdio.h>      // vsnprintf, sscanf, printf
-
 // Visual Studio warnings
 #ifdef _MSC_VER
 #pragma warning (disable: 4127)     // condition expression is constant

@@ -25,6 +25,21 @@ void Scene::Remove(std::shared_ptr<GameObject> object)
 	m_objects.erase(std::remove(m_objects.begin(), m_objects.end(), object), m_objects.end());
 }
 
+void Scene::Remove(GameObject* object)
+{
+	m_objects.erase(std::remove_if(m_objects.begin(), m_objects.end(), [&object](std::shared_ptr<GameObject> otherObject) { return otherObject.get() == object; }), m_objects.end());
+}
+
+void Scene::QueueForRemove(std::shared_ptr<GameObject> object)
+{
+	m_ObjectsQueuedForRemove.push_back(object.get());
+}
+
+void Scene::QueueForRemove(GameObject* object)
+{
+	m_ObjectsQueuedForRemove.push_back(object);
+}
+
 void Scene::RemoveAll()
 {
 	m_objects.clear();
@@ -53,9 +68,16 @@ void Scene::Update()
 		object->EraseComponentsMarkedForDelete();
 	}
 
+	//remove all objects queued for remove
+	for(auto& object : m_ObjectsQueuedForRemove)
+	{
+		Remove(object);
+	}
+
+	//add objects queued for add
 	for (auto& object : m_ObjectsQueuedToAdd)
 	{
-		m_objects.emplace_back(std::move(object));
+		Add(object);
 	}
 
 	m_ObjectsQueuedToAdd.clear();

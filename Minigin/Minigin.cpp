@@ -12,7 +12,6 @@
 #include "Timer.h"
 #include "EventQueue.h"
 #include "CollisionManager.h"
-#include <iostream>
 
 SDL_Window* g_window{};
 

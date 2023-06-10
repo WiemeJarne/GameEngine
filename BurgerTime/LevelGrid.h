@@ -2,7 +2,6 @@
 #include <glm/vec2.hpp>
 #include <vector>
 #include <memory>
-#include "Singleton.h"
 
 enum class CellKind
 {

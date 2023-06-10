@@ -9,9 +9,7 @@
 #include "Scene.h"
 #include "Events.h"
 #include "TextureComponent.h"
-#include "RenderComponent.h"
 #include "EnemyAIComponent.h"
-#include <iostream>
 
 HealthComponent::HealthComponent(dae::GameObject* owner, int amountOfLives, bool isPlayer)
 	: Component(owner)
@@ -37,9 +35,9 @@ void HealthComponent::Update()
 {
 	if (m_AmountOfLives <= 0)
 	{
-		m_SecSinceDeath += Timer::GetInstance().GetElapsedSec();
+		m_SecSinceDeath += dae::Timer::GetInstance().GetElapsedSec();
 	}
-	else m_SecSinceLiveLost += Timer::GetInstance().GetElapsedSec();
+	else m_SecSinceLiveLost += dae::Timer::GetInstance().GetElapsedSec();
 }
 
 void HealthComponent::OnNotify(std::any data, int eventId, bool isEngineEvent)
@@ -69,7 +67,10 @@ void HealthComponent::OnNotify(std::any data, int eventId, bool isEngineEvent)
 				{
 					//get the EnemyAIComponent to get the height of the enemy and the burgerPart and check if the feet of the enemy are below the middle of the burgerPart
 					if(pBurgerPartComponent->GetOwner()->GetLocalPos().y + pBurgerPartComponent->GetHeight() <= m_pOwner->GetLocalPos().y + m_pOwner->GetComponent<EnemyAIComponent>()->GetHeight() + 5.f)
+					{
 						m_pOwner->SetParent(pBurgerPartComponent->GetOwner(), true);
+						m_pOwner->GetComponent<EnemyAIComponent>()->SetIsFallingWithBurgerPart(true);
+					}
 				}
 			}
 		}
@@ -97,8 +98,13 @@ void HealthComponent::Damage(int amount, bool shouldBreadCastDieEvent)
 		if(m_IsOwnerPlayer && shouldBreadCastDieEvent)
 			dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::playerLostLife), false);
 
-		if (m_pVisualizeGameObjects.size() > 0)
-			m_pVisualizeGameObjects[m_AmountOfLives]->SetLocalPosition(0.f, -100.f);
+		if (!m_pVisualizeGameObjects.empty())
+		{
+			auto pScene{ dae::SceneManager::GetInstance().GetSceneByIndex(0) };
+
+			if (pScene)
+				pScene->Remove(m_pVisualizeGameObjects[m_AmountOfLives]);
+		}
 
 		if (m_AmountOfLives == 0)
 		{
@@ -122,7 +128,7 @@ void HealthComponent::Reset()
 
 void HealthComponent::VisualizeHealth(const glm::vec2& pos, const std::string& textureFilePath)
 {
-	if (m_pVisualizeGameObjects.size() > 0)
+	if (!m_pVisualizeGameObjects.empty())
 		return;
 
 	dae::Scene* pScene{ dae::SceneManager::GetInstance().GetSceneByIndex(0) };

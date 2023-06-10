@@ -8,6 +8,6 @@ PlatePrefab::PlatePrefab(dae::Scene* pScene, glm::vec2 pos)
 
 	m_go->SetLocalPosition(pos.x, pos.y);
 
-	auto renderComponent{ std::make_unique<RenderComponent>(m_go.get(), "plate.png") };
+	auto renderComponent{ std::make_unique<dae::RenderComponent>(m_go.get(), "plate.png") };
 	m_go->AddComponent(std::move(renderComponent));
 }

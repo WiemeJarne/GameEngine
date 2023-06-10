@@ -2,8 +2,9 @@
 #include "Component.h"
 #include "EventListener.h"
 #include "TextComponent.h"
+#include <glm/vec2.hpp>
 
-class PointsComponent : public Component, public dae::EventListener
+class PointsComponent final : public dae::Component, public dae::EventListener
 {
 public:
 	PointsComponent() = default;

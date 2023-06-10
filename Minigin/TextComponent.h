@@ -2,16 +2,14 @@
 #include <string>
 #include <memory>
 #include <SDL_ttf.h>
-#include "GameObject.h"
 #include "Component.h"
-#include "Observer.h"
-
-class RenderComponent;
 
 namespace dae
 {
 	class Font;
+	class RenderComponent;
 	class TextureComponent;
+
 	class TextComponent final : public Component
 	{
 	public:

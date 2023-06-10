@@ -5,7 +5,7 @@
 #include "EnemyAIComponent.h"
 #include <vector>
 
-class EnemyManagerComponent final : public Component
+class EnemyManagerComponent final : public dae::Component
 {
 public:
 	EnemyManagerComponent(dae::GameObject* pOwner, dae::Scene* pScene, const std::vector<glm::vec2>& spawnLocations, int amountOfMrHotDogs = 0, int amountOfMrEggs = 0, int amountOfMrPickles = 0, float secBetweenSpawns = 2.f);

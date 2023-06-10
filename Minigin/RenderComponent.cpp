@@ -4,24 +4,24 @@
 #include "ResourceManager.h"
 #include <iostream>
 
-RenderComponent::RenderComponent(dae::GameObject* owner)
+dae::RenderComponent::RenderComponent(dae::GameObject* owner)
 	: Component(owner)
 {}
 
-RenderComponent::RenderComponent(dae::GameObject* owner, const std::string& textureFilename)
+dae::RenderComponent::RenderComponent(dae::GameObject* owner, const std::string& textureFilename)
 	: Component(owner)
 {
 	SetTextureComponent(textureFilename);
 }
 
-RenderComponent::RenderComponent(dae::GameObject* owner, std::unique_ptr<dae::TextureComponent> textureComponent)
+dae::RenderComponent::RenderComponent(dae::GameObject* owner, std::unique_ptr<dae::TextureComponent> textureComponent)
 	: Component(owner)
 {
 	m_pTextureComponent = textureComponent.get();
 	owner->AddComponent(std::move(textureComponent));
 }
 
-void RenderComponent::Render() const
+void dae::RenderComponent::Render() const
 {
 	auto pos = m_pOwner->GetWorldPos();
 
@@ -31,7 +31,7 @@ void RenderComponent::Render() const
 	}
 }
 
-void RenderComponent::SetTextureComponent(const std::string& filename)
+void dae::RenderComponent::SetTextureComponent(const std::string& filename)
 {
 	if (m_pTextureComponent)
 	{
@@ -44,7 +44,7 @@ void RenderComponent::SetTextureComponent(const std::string& filename)
 	m_pOwner->AddComponent(std::move(pTextureComponent));
 }
 
-void RenderComponent::SetSDLTexture(SDL_Texture* pSDLTexture)
+void dae::RenderComponent::SetSDLTexture(SDL_Texture* pSDLTexture)
 {
 	if (!m_pTextureComponent)
 	{

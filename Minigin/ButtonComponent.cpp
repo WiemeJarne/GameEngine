@@ -1,5 +1,6 @@
 #include "ButtonComponent.h"
 #include "InputManager.h"
+#include "GameObject.h"
 
 dae::ButtonComponent::ButtonComponent(dae::GameObject* pOwner, const glm::vec2& topLeftPos, float width, float height, std::function<void()> onClickFunction)
 	: Component(pOwner)
@@ -12,7 +13,7 @@ dae::ButtonComponent::ButtonComponent(dae::GameObject* pOwner, const glm::vec2& 
 	pOwner->SetLocalPosition(topLeftPos.x, topLeftPos.y);
 }
 
-void dae::ButtonComponent::OnMouseClick(const glm::vec2& mousePos)
+void dae::ButtonComponent::OnMouseClick(const glm::vec2& mousePos) const
 {
 	if (mousePos.x > m_TopLeftPos.x && mousePos.x < m_TopLeftPos.x + width
 		&& mousePos.y > m_TopLeftPos.y && mousePos.y < m_TopLeftPos.y + height)

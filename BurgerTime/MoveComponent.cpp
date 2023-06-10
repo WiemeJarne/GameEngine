@@ -43,8 +43,8 @@ bool MoveComponent::Move(const glm::vec2& moveDirection)
 
 	if (!pCell)
 	{
-		Move(m_pOwner->GetLocalPos().x + Timer::GetInstance().GetElapsedSec() * m_MoveSpeed * moveDirection.x,
-			m_pOwner->GetLocalPos().y + Timer::GetInstance().GetElapsedSec() * m_MoveSpeed * moveDirection.y);
+		Move(m_pOwner->GetLocalPos().x + dae::Timer::GetInstance().GetElapsedSec() * m_MoveSpeed * moveDirection.x,
+			m_pOwner->GetLocalPos().y + dae::Timer::GetInstance().GetElapsedSec() * m_MoveSpeed * moveDirection.y);
 
 		if (m_IsPlayer)
 		{
@@ -101,8 +101,10 @@ bool MoveComponent::Move(const glm::vec2& moveDirection)
 
 	if (canMove)
 	{
-		Move(m_pOwner->GetLocalPos().x + Timer::GetInstance().GetElapsedSec() * m_MoveSpeed * moveDirection.x,
-			m_pOwner->GetLocalPos().y + Timer::GetInstance().GetElapsedSec() * m_MoveSpeed * moveDirection.y);
+		Move(m_pOwner->GetLocalPos().x + dae::Timer::GetInstance().GetElapsedSec() * m_MoveSpeed * moveDirection.x,
+			m_pOwner->GetLocalPos().y + dae::Timer::GetInstance().GetElapsedSec() * m_MoveSpeed * moveDirection.y);
+
+		m_PreviousMoveDirection = moveDirection;
 
 		if (m_IsPlayer)
 		{

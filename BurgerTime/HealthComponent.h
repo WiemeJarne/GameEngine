@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-class HealthComponent : public Component, public dae::EventListener
+class HealthComponent : public dae::Component, public dae::EventListener
 {
 public:
 	HealthComponent(dae::GameObject* owner, int amountOfLives, bool isPlayer = true);
@@ -26,6 +26,10 @@ public:
 	void Die();
 	int GetHealth() const { return m_AmountOfLives; }
 	float GetSecSinceDeath() const { return m_SecSinceDeath; }
+	bool GetIsCollidingWithPepper() const { return m_IsCollidingWithPepper; }
+	void SetIsCollidingWithPepper(bool isCollidingWithPepper) { m_IsCollidingWithPepper = isCollidingWithPepper; }
+	float GetAmountOfSecStunned() const { return m_AmountOfSecStunnned; }
+	void SetAmountOfSecStunned(float amountOfSecStunned) { m_AmountOfSecStunnned = amountOfSecStunned; }
 
 private:
 	int m_StartAmountOfLives{};
@@ -34,4 +38,6 @@ private:
 	const bool m_IsOwnerPlayer{};
 	std::vector<dae::GameObject*> m_pVisualizeGameObjects;
 	float m_SecSinceLiveLost{};
+	bool m_IsCollidingWithPepper{};
+	float m_AmountOfSecStunnned{};
 };

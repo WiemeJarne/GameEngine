@@ -4,7 +4,7 @@
 
 namespace commands
 {
-	class PlaySoundCommand final : public Command
+	class PlaySoundCommand final : public dae::Command
 	{
 	public:
 		PlaySoundCommand(dae::SoundSystem* pSoundSystem);

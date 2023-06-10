@@ -8,6 +8,6 @@ TexturedGameObjectPrefab::TexturedGameObjectPrefab(dae::Scene* pScene, const std
 
 	m_go->SetLocalPosition(pos.x, pos.y);
 
-	auto renderComponent{ std::make_unique<RenderComponent>(m_go.get(), textureFilePath) };
+	auto renderComponent{ std::make_unique<dae::RenderComponent>(m_go.get(), textureFilePath) };
 	m_go->AddComponent(std::move(renderComponent));
 }

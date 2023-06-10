@@ -2,8 +2,8 @@
 #include "TextComponent.h"
 #include "Renderer.h"
 #include "Font.h"
-#include "TextureComponent.h"
 #include "RenderComponent.h"
+#include "GameObject.h"
 #include <memory>
 
 dae::TextComponent::TextComponent(dae::GameObject* owner, const std::string& text, std::shared_ptr<Font> font, SDL_Color color)
@@ -13,9 +13,7 @@ dae::TextComponent::TextComponent(dae::GameObject* owner, const std::string& tex
 	, m_font{ std::move(font) }
 	, m_Color{ color }
 { 
-	auto renderComponent = owner->GetComponent<RenderComponent>();
-
-	if (renderComponent)
+	if (const auto renderComponent = owner->GetComponent<RenderComponent>())
 	{
 		m_pRenderComponent = renderComponent;
 	}

@@ -1,11 +1,7 @@
-#include <string>
 #include "GameObject.h"
 #include "ResourceManager.h"
-#include "Renderer.h"
 #include "Component.h"
-#include "RenderComponent.h"
 #include "TextureComponent.h"
-#include "TextComponent.h"
 #include <iostream>
 
 dae::GameObject::GameObject(Scene* pScene)

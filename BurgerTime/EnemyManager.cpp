@@ -4,7 +4,6 @@
 #include "CollisionBoxComponent.h"
 #include "DamageComponent.h"
 #include "Timer.h"
-#include <iostream>
 
 EnemyManagerComponent::EnemyManagerComponent(dae::GameObject* pOwner, dae::Scene* pScene, const std::vector<glm::vec2>& spawnLocations, int amountOfMrHotDogs, int amountOfMrEggs, int amountOfMrPickles, float secBetweenSpawns)
 	: Component(pOwner)
@@ -20,9 +19,9 @@ EnemyManagerComponent::EnemyManagerComponent(dae::GameObject* pOwner, dae::Scene
 		auto enemy{ std::make_shared<dae::GameObject>(pScene) };
 		const int randomInt{ rand() % maxRandomInt };
 		enemy->SetLocalPosition(spawnLocations[randomInt].x, spawnLocations[randomInt].y);
-		enemy->AddComponent(std::make_unique<RenderComponent>(enemy.get(), "MrHotDog.png"));
+		enemy->AddComponent(std::make_unique<dae::RenderComponent>(enemy.get(), "MrHotDog.png"));
 		auto aiComponent{ std::make_unique<EnemyAIComponent>(enemy.get(), moveSpeed, true) };
-		auto enemySize{ enemy->GetComponent<RenderComponent>()->GetTextureComponent()->GetSize() };
+		auto enemySize{ enemy->GetComponent<dae::RenderComponent>()->GetTextureComponent()->GetSize() };
 		enemy->AddComponent(std::make_unique<dae::CollisionBoxComponent>(enemy.get(), static_cast<float>(enemySize.x), static_cast<float>(enemySize.y)));
 		auto healthComponent{ std::make_unique<HealthComponent>(enemy.get(), 1, false) };
 		healthComponent->Die();
@@ -39,9 +38,9 @@ EnemyManagerComponent::EnemyManagerComponent(dae::GameObject* pOwner, dae::Scene
 		auto enemy{ std::make_shared<dae::GameObject>(pScene) };
 		const int randomInt{ rand() % maxRandomInt };
 		enemy->SetLocalPosition(spawnLocations[randomInt].x, spawnLocations[randomInt].y);
-		enemy->AddComponent(std::make_unique<RenderComponent>(enemy.get(), "MrEgg.png"));
+		enemy->AddComponent(std::make_unique<dae::RenderComponent>(enemy.get(), "MrEgg.png"));
 		auto aiComponent{ std::make_unique<EnemyAIComponent>(enemy.get(), moveSpeed, true) };
-		auto enemySize{ enemy->GetComponent<RenderComponent>()->GetTextureComponent()->GetSize() };
+		auto enemySize{ enemy->GetComponent<dae::RenderComponent>()->GetTextureComponent()->GetSize() };
 		enemy->AddComponent(std::make_unique<dae::CollisionBoxComponent>(enemy.get(), static_cast<float>(enemySize.x), static_cast<float>(enemySize.y)));
 		auto healthComponent{ std::make_unique<HealthComponent>(enemy.get(), 1, false) };
 		healthComponent->Die();
@@ -58,9 +57,9 @@ EnemyManagerComponent::EnemyManagerComponent(dae::GameObject* pOwner, dae::Scene
 		auto enemy{ std::make_shared<dae::GameObject>(pScene) };
 		const int randomInt{ rand() % maxRandomInt };
 		enemy->SetLocalPosition(spawnLocations[randomInt].x, spawnLocations[randomInt].y);
-		enemy->AddComponent(std::make_unique<RenderComponent>(enemy.get(), "MrPickle.png"));
+		enemy->AddComponent(std::make_unique<dae::RenderComponent>(enemy.get(), "MrPickle.png"));
 		auto aiComponent{ std::make_unique<EnemyAIComponent>(enemy.get(), moveSpeed, false, 0.f, true) };
-		auto enemySize{ enemy->GetComponent<RenderComponent>()->GetTextureComponent()->GetSize() };
+		auto enemySize{ enemy->GetComponent<dae::RenderComponent>()->GetTextureComponent()->GetSize() };
 		enemy->AddComponent(std::make_unique<dae::CollisionBoxComponent>(enemy.get(), static_cast<float>(enemySize.x), static_cast<float>(enemySize.y)));
 		auto healthComponent{ std::make_unique<HealthComponent>(enemy.get(), 1, false) };
 		healthComponent->Die();
@@ -74,7 +73,7 @@ EnemyManagerComponent::EnemyManagerComponent(dae::GameObject* pOwner, dae::Scene
 
 void EnemyManagerComponent::Update()
 {
-	m_SecSinceLastSpawn += Timer::GetInstance().GetElapsedSec();
+	m_SecSinceLastSpawn += dae::Timer::GetInstance().GetElapsedSec();
 
 	//loop over the enemies
 	for (auto& enemy : m_Enemies)

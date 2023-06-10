@@ -5,19 +5,17 @@
 #include "RenderComponent.h"
 #include "EventQueue.h"
 #include "CollisionManager.h"
-#include "PointsComponent.h"
 #include "EngineEvents.h"
-#include "Events.h"
 #include "DamageComponent.h"
-#include "Timer.h"
-#include <iostream>
+#include "EnemyAIComponent.h"
+#include  <iostream>
 
 BurgerPartComponent::BurgerPartComponent(dae::GameObject* owner, float fallSpeed)
 	: Component(owner)
 	, m_FallSpeed{ fallSpeed }
 {
 	//get the RenderComponent from the owner
-	auto renderComponent{ owner->GetComponent<RenderComponent>() };
+	auto renderComponent{ owner->GetComponent<dae::RenderComponent>() };
 
 	//if there is a renderComponent get use the textureComponent to set m_Width and m_Height
 	if (renderComponent)
@@ -53,7 +51,7 @@ void BurgerPartComponent::Update()
 
 		if (m_UseDelay)
 		{
-			m_SecSinceDelayStart += Timer::GetInstance().GetElapsedSec();
+			m_SecSinceDelayStart += dae::Timer::GetInstance().GetElapsedSec();
 
 			if (m_SecSinceDelayStart <= 0.25f)
 				return;
@@ -132,7 +130,7 @@ void BurgerPartComponent::Update()
 
 		//calculate new pos
 		auto newPos{ m_pOwner->GetLocalPos() };
-		newPos.y += m_FallSpeed * Timer::GetInstance().GetElapsedSec();
+		newPos.y += m_FallSpeed * dae::Timer::GetInstance().GetElapsedSec();
 
 		m_pOwner->SetLocalPosition(newPos.x, newPos.y);
 	}
@@ -292,9 +290,13 @@ void BurgerPartComponent::HandleChildren(int childCount)
 		}
 
 		//loop over all the children, set there parent to nullptr (so they get added to the scene)
-		for (int index{}; index < childCount; ++index)
+		for (int index{ childCount - 1 }; index >= 0; --index)
 		{
 			m_pOwner->GetChildAt(index)->SetParent(nullptr, true);
+
+			auto pEnemyAIComponent{ m_pOwner->GetComponent<EnemyAIComponent>() };
+			if(pEnemyAIComponent)
+				pEnemyAIComponent->SetIsFallingWithBurgerPart(false);
 		}
 	}
 }

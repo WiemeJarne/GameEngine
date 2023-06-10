@@ -4,7 +4,7 @@
 
 namespace commands
 {
-	class ThumbstickMoveCommand : public ThumbstickCommand
+	class ThumbstickMoveCommand : public dae::ThumbstickCommand
 	{
 	public:
 		ThumbstickMoveCommand(dae::GameObject* go);

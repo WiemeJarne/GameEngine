@@ -1,6 +1,5 @@
 #include "MoveCommand.h"
-#include "Timer.h"
-#include "Events.h"
+#include "GameObject.h"
 
 using namespace commands;
 

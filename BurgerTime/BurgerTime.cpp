@@ -16,18 +16,10 @@
 #include "RenderComponent.h"
 #include "GameObject.h"
 #include "TextureComponent.h"
-#include "FPSComponent.h"
-#include "MoveInCircleComponent.h"
 #include "Renderer.h"
 #include "InputManager.h"
-#include "PlayerController.h"
-#include "MoveCommand.h"
 #include "HealthComponent.h"
-#include "LivesDisplayComponent.h"
-#include "PlayerPrefab.h"
 #include <iostream>
-#include <vector>
-#include "PlatformPrefab.h"
 #include "LevelManager.h"
 #include "PlaySoundCommand.h"
 #include "SDLSoundSystem.h"
@@ -58,11 +50,11 @@ void load()
 	pSDLSoundSystem->AddSound("../Data/sound/LoseLife.wav");
 	auto playSoundCommand = std::make_unique<commands::PlaySoundCommand>(pSDLSoundSystem);
 
-	dae::InputManager::GetInstance().AddCommand(std::move(playSoundCommand), dae::InputManager::KeyboardKey(dae::KeyState::pressed, 'P'));
+	dae::InputManager::GetInstance().AddCommand(std::move(playSoundCommand), dae::KeyState::pressed, dae::InputManager::KeyboardKey::P);
 
 	//logo
 	auto logo{ std::make_unique<TexturedGameObjectPrefab>(&scene, "burgerTimeLogo.png")->GetGameObject() };
-	auto logoSize{ logo->GetComponent<RenderComponent>()->GetTextureComponent()->GetSize() };
+	auto logoSize{ logo->GetComponent<dae::RenderComponent>()->GetTextureComponent()->GetSize() };
 	logo->SetLocalPosition(windowWidth / 2.f - logoSize.x / 2.f, 0.f);
 	scene.Add(std::move(logo));
 	
@@ -78,7 +70,7 @@ void load()
 		dae::InputManager::GetInstance().RemoveAllButtons();
 		LevelManager::GetInstance().LoadLevel(1, scene, GameMode::singlePlayer);
 	};
-	const auto button1Size{ button1->GetComponent<RenderComponent>()->GetTextureComponent()->GetSize() };
+	const auto button1Size{ button1->GetComponent<dae::RenderComponent>()->GetTextureComponent()->GetSize() };
 	glm::vec2 button1Pos{ windowWidth / 2.f - button1Size.x / 2.f, 150.f };
 	button1->AddComponent(std::make_unique<dae::ButtonComponent>(button1.get(), button1Pos, static_cast<float>(button1Size.x), static_cast<float>(button1Size.y), onclickButton1));
 	button1->SetLocalPosition(button1Pos.x, button1Pos.y);
@@ -93,7 +85,7 @@ void load()
 		dae::InputManager::GetInstance().RemoveAllButtons();
 		LevelManager::GetInstance().LoadLevel(1, scene, GameMode::coOp);
 	};
-	const auto button2Size{ button2->GetComponent<RenderComponent>()->GetTextureComponent()->GetSize() };
+	const auto button2Size{ button2->GetComponent<dae::RenderComponent>()->GetTextureComponent()->GetSize() };
 	const glm::vec2 button2Pos{ windowWidth / 2.f - button2Size.x / 2.f, 250.f };
 	button2->AddComponent(std::make_unique<dae::ButtonComponent>(button2.get(), button2Pos, static_cast<float>(button2Size.x), static_cast<float>(button2Size.y), onclickButton2));
 	button2->SetLocalPosition(button2Pos.x, button2Pos.y);
@@ -108,7 +100,7 @@ void load()
 		dae::InputManager::GetInstance().RemoveAllButtons();
 		LevelManager::GetInstance().LoadLevel(1, scene, GameMode::versus);
 	};
-	const auto button3Size{ button3->GetComponent<RenderComponent>()->GetTextureComponent()->GetSize() };
+	const auto button3Size{ button3->GetComponent<dae::RenderComponent>()->GetTextureComponent()->GetSize() };
 	glm::vec2 button3Pos{ windowWidth / 2.f - button3Size.x / 2.f, 350.f };
 	button3->AddComponent(std::make_unique<dae::ButtonComponent>(button3.get(), button3Pos, static_cast<float>(button3Size.x), static_cast<float>(button3Size.y), onclickButton3));
 	button3->SetLocalPosition(button3Pos.x, button3Pos.y);

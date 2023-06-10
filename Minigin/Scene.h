@@ -11,6 +11,9 @@ namespace dae
 		void Add(std::shared_ptr<GameObject> object);
 		void QueueForAdd(std::shared_ptr<GameObject> object);
 		void Remove(std::shared_ptr<GameObject> object);
+		void Remove(GameObject* object);
+		void QueueForRemove(std::shared_ptr<GameObject> object);
+		void QueueForRemove(GameObject* object);
 		void RemoveAll();
 		std::shared_ptr<GameObject> GetSharedPtr(GameObject* pGameObject) const;
 
@@ -30,6 +33,7 @@ namespace dae
 		std::string m_name;
 		std::vector < std::shared_ptr<GameObject>> m_objects{};
 		std::vector <std::shared_ptr<GameObject>> m_ObjectsQueuedToAdd{};
+		std::vector<GameObject*> m_ObjectsQueuedForRemove{};
 
 		static unsigned int m_idCounter; 
 	};

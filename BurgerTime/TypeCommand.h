@@ -4,18 +4,18 @@
 
 namespace commands
 {
-	class TypeCommand final : public Command
+	class TypeCommand final : public dae::Command
 	{
 	public:
 		TypeCommand(char charToType, dae::TextComponent* textComponentToTypeTo); //use /b for backspace
 
-		void Execute();
+		void Execute() override;
 		
 	private:
 		char m_CharToType;
 		dae::TextComponent* m_pTextComponentToTypeTo;
 		dae::GameObject* m_pTextComponentOwner;
 
-		void RecenterAlongXAxis();
+		void RecenterAlongXAxis() const;
 	};
 }

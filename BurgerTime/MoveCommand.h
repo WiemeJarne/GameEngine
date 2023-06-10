@@ -1,12 +1,10 @@
 #pragma once
 #include "Command.h"
-#include "Transform.h"
-#include "Subject.h"
 #include "MoveComponent.h"
 
 namespace commands
 {
-	class MoveCommand final : public Command
+	class MoveCommand final : public dae::Command
 	{
 	public:
 		MoveCommand(dae::GameObject* go, glm::vec2 moveDirection);

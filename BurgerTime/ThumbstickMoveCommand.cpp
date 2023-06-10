@@ -1,4 +1,5 @@
 #include "ThumbstickMoveCommand.h"
+#include "GameObject.h"
 
 commands::ThumbstickMoveCommand::ThumbstickMoveCommand(dae::GameObject* go)
 {

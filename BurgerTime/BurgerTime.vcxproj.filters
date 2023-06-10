@@ -22,21 +22,15 @@
     <Filter Include="Prefabs">
       <UniqueIdentifier>{53a6ef2e-0001-4fb0-9eef-97005e22a3de}</UniqueIdentifier>
     </Filter>
+    <Filter Include="States">
+      <UniqueIdentifier>{bcb586a8-839f-4a09-b177-6a9de458fc85}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BurgerTime.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FPSComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
     <ClCompile Include="HealthComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="LivesDisplayComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="MoveInCircleComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="MoveCommand.cpp">
@@ -90,18 +84,27 @@
     <ClCompile Include="EnemyManager.cpp">
       <Filter>Components</Filter>
     </ClCompile>
+    <ClCompile Include="StunnedState.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="NotStunnedState.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="PepperComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="StunEnemyComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="SkipLevelCommand.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="UsePepperCommand.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MoveInCircleComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="FPSComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
     <ClInclude Include="HealthComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="LivesDisplayComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="MoveCommand.h">
@@ -157,6 +160,27 @@
     </ClInclude>
     <ClInclude Include="EnemyManager.h">
       <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyState.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="StunnedState.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="NotStunnedState.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="PepperComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="StunEnemyComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="SkipLevelCommand.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="UsePepperCommand.h">
+      <Filter>Commands</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

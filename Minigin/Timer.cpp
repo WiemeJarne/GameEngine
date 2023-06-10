@@ -1,13 +1,12 @@
 #include "Timer.h"
-#include <iostream>
 
-void Timer::Start()
+void dae::Timer::Start()
 {
 	m_BeginTime = std::chrono::high_resolution_clock::now();
 	m_PreviousTime = m_BeginTime;
 }
 
-void Timer::Update()
+void dae::Timer::Update()
 {
 	const auto currentTime = std::chrono::high_resolution_clock::now();
 	m_ElapsedSec = std::chrono::duration<float>(currentTime - m_PreviousTime).count();

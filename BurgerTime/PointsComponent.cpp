@@ -3,6 +3,7 @@
 #include "ResourceManager.h"
 #include "EventQueue.h"
 #include "TextureComponent.h"
+#include "GameObject.h"
 #include <iostream>
 
 PointsComponent::PointsComponent(dae::GameObject* owner, const glm::vec2& middlePos)

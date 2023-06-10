@@ -23,7 +23,7 @@ public:
 	void LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode);
 	void LoadNextLevel();
 	void OnNotify(std::any data, int eventId, bool isEngineEvent) override;
-	LevelGrid* GetActiveLevelGrid();
+	LevelGrid* GetActiveLevelGrid() const;
 
 private:
 	int m_AmountOfBurgerPartsInCurrentLevel{};

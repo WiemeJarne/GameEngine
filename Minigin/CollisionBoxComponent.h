@@ -1,7 +1,6 @@
 #pragma once
 #include "Component.h"
 #include "glm/vec2.hpp"
-#include "Subject.h"
 
 namespace dae
 {

@@ -6,7 +6,7 @@
 #include <glm/vec2.hpp>
 #include <any>
 
-class BurgerPartComponent : public Component, public dae::EventListener
+class BurgerPartComponent : public dae::Component, public dae::EventListener
 {
 public:
 	BurgerPartComponent(dae::GameObject* owner, float fallSpeed);
