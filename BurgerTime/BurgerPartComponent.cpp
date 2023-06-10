@@ -8,7 +8,6 @@
 #include "EngineEvents.h"
 #include "DamageComponent.h"
 #include "EnemyAIComponent.h"
-#include  <iostream>
 
 BurgerPartComponent::BurgerPartComponent(dae::GameObject* owner, float fallSpeed)
 	: Component(owner)

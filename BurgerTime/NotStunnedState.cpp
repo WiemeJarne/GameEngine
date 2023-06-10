@@ -5,19 +5,8 @@ NotStunnedState::NotStunnedState(DamageComponent* pDamageComponent, HealthCompon
 	: m_pDamageComponent{ pDamageComponent }
 	, m_pHealthComponent{ pHealthComponent }
 	, m_pEnemyAIComponent{ pEnemyAIComponent }
-{}
-
-EnemyState* NotStunnedState::Update()
 {
-	//check if the enemy should be stunned
-	if (m_pHealthComponent->GetIsCollidingWithPepper() || m_pHealthComponent->GetHealth() == 0 || m_pEnemyAIComponent->GetIsFallingWithBurgerPart())
-		return new StunnedState(m_pDamageComponent, m_pHealthComponent, m_pEnemyAIComponent);
-
-	//if the enemy is already moving again return this
-	if (m_pEnemyAIComponent->GetCanMove())
-		return this;
-
-	//else make sure he can do damage again
+	//make sure he can do damage again
 	m_pDamageComponent->SetCanDoDamage(true);
 
 	//make sure he can move again
@@ -25,6 +14,13 @@ EnemyState* NotStunnedState::Update()
 
 	//make sure to set that he isn't colliding with pepper
 	m_pHealthComponent->SetIsCollidingWithPepper(false);
+}
+
+EnemyState* NotStunnedState::Update()
+{
+	//check if the enemy should be stunned
+	if (m_pHealthComponent->GetIsCollidingWithPepper() || m_pHealthComponent->GetHealth() == 0 || m_pEnemyAIComponent->GetIsFallingWithBurgerPart())
+		return new StunnedState(m_pDamageComponent, m_pHealthComponent, m_pEnemyAIComponent);
 
 	return this;
 }

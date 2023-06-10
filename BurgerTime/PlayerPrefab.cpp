@@ -12,12 +12,12 @@
 #include "PepperComponent.h"
 #include "UsePepperCommand.h"
 
-PlayerPrefab::PlayerPrefab(dae::Scene* pScene, const std::string& textureFilePath, const glm::vec2& pos, const glm::vec2& healthVisualizationPos, const std::string& healthVisualizationTextureFilepath, int , bool useKeyboard, float moveSpeed)
+PlayerPrefab::PlayerPrefab(dae::Scene* pScene, const std::string& textureFilePath, const glm::vec2& pos, const glm::vec2& healthVisualizationPos, const std::string& healthVisualizationTextureFilepath, int amountOfLives, bool useKeyboard, float moveSpeed)
 {
 	m_go = std::make_unique<dae::GameObject>(pScene);
 	m_go->SetLocalPosition(pos.x, pos.y);
 	auto renderComponent{ std::make_unique<dae::RenderComponent>(m_go.get(), textureFilePath) };
-	auto healthComponent{ std::make_unique<HealthComponent>(m_go.get(), 100, healthVisualizationPos, healthVisualizationTextureFilepath) };
+	auto healthComponent{ std::make_unique<HealthComponent>(m_go.get(), amountOfLives, healthVisualizationPos, healthVisualizationTextureFilepath) };
 	auto moveComponent{ std::make_unique<MoveComponent>(m_go.get(), moveSpeed) };
 	const auto textureSize{ renderComponent->GetTextureComponent()->GetSize()};
 	auto collisionBoxComponent{ std::make_unique<dae::CollisionBoxComponent>(m_go.get(), static_cast<float>(textureSize.x), static_cast<float>(textureSize.y)) };
