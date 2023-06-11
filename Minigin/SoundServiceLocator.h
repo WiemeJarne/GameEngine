@@ -9,20 +9,23 @@ namespace dae
 	{
 	public:
 		virtual ~SoundSystem() = default;
-		virtual void AddSound(const std::string& path) = 0;
-		virtual void Play(soundId soundId, const int volume) = 0;
+		virtual void Play(const std::string& path, const int volume, bool loop = false) = 0;
 	};
 
 	class DefaultSoundSystem final : public SoundSystem
 	{
 	public:
-		void AddSound(const std::string&) override {}
-		void Play(soundId , const int ) override {}
+		void Play(const std::string&, const int, bool) override {}
 	};
 
 	class ServiceLocator final
 	{
 	public:
+		~ServiceLocator()
+		{
+			delete m_spSoundSystem;
+		}
+
 		static SoundSystem& GetSoundSystem() { return *m_spSoundSystem; }
 		static void registerSoundSystem(SoundSystem* pSoundSystem) { m_spSoundSystem = pSoundSystem; }
 

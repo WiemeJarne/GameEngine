@@ -18,6 +18,8 @@
 #include "ResourceManager.h"
 #include "DamageComponent.h"
 #include "SkipLevelCommand.h"
+#include "PepperComponent.h"
+#include "SoundServiceLocator.h"
 #include <algorithm>
 #include <iostream>
 
@@ -26,7 +28,7 @@ LevelManager::~LevelManager()
 	WriteHighScoreListToFile();
 }
 
-void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode)
+void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode, bool cycleLevels)
 {
 	assert(levelNr > 0 && "ERROR LoadLevel called with levelNr lower then 1");
 
@@ -34,6 +36,7 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode)
 	{
 		m_HasBeenInitialized = true;
 		dae::EventQueue::GetInstance().AddListener(this);
+		dae::ServiceLocator::GetSoundSystem().Play("sound/Music.mp3", 25, true);
 	}
 
 	dae::InputManager::GetInstance().RemoveAllButtons();
@@ -48,6 +51,26 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode)
 		m_pPointsComponent = nullptr;
 	}
 
+	m_PlayersHealth.clear();
+	for(auto& healthComponent : m_PlayersHealthComponents)
+	{
+		if (healthComponent)
+		{
+			m_PlayersHealth.push_back(healthComponent->GetHealth());
+		}
+	}
+
+	if(m_PlayersHealthComponents.empty())
+	{
+		constexpr int maxAmountOfPlayers{ 2 };
+		for(int index{}; index < maxAmountOfPlayers; ++index)
+		{
+			m_PlayersHealth.push_back(3);
+		}
+	}
+
+	m_PlayersHealthComponents.clear();
+
 	dae::SceneManager::GetInstance().RemoveScene(&scene);
 
 	auto& levelScene = dae::SceneManager::GetInstance().CreateScene("levelScene");
@@ -55,12 +78,16 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode)
 
 	bool couldLoadLevel{};
 
-	if (m_LevelGrids.size() < levelNr)
+	if (static_cast<int>(m_LevelGrids.size()) < levelNr)
 	{
 		couldLoadLevel = LoadLevelPlatforms(levelNr);
 	}
-	else
+
+	if(!couldLoadLevel)
 	{
+		if(cycleLevels && static_cast<int>(m_LevelGrids.size()) < m_LevelNr)
+			m_LevelNr = 1;
+
 		const auto levelGridCells{ std::get<0>(m_LevelGrids[m_LevelNr - 1])->GetCells() };
 
 		for (const auto& cell : levelGridCells)
@@ -77,7 +104,7 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode)
 		return;
 	}
 	
-	LoadLevelBurgerParts(levelNr);
+	LoadLevelBurgerParts(m_LevelNr);
 
 	auto skipLevelCommand = std::make_unique<commands::SkipLevelCommand>();
 	dae::InputManager::GetInstance().AddCommand(std::move(skipLevelCommand), dae::KeyState::down, dae::InputManager::KeyboardKey::F1);
@@ -90,11 +117,10 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode)
 	}
 
 	auto enemyManager{ std::make_unique<dae::GameObject>(m_CurrentScene) };
-	enemyManager->AddComponent(std::make_unique<EnemyManagerComponent>(enemyManager.get(), m_CurrentScene, m_EnemiesSpawnLocations, 2, 2, 2));
+	enemyManager->AddComponent(std::make_unique<EnemyManagerComponent>(enemyManager.get(), m_CurrentScene, m_EnemiesSpawnLocations, m_LevelNr, m_LevelNr, m_LevelNr));
+	levelScene.Add(std::move(enemyManager));
 
 	const float cellSidesLenght{ std::get<0>(m_LevelGrids[m_LevelNr - 1])->GetCellSideLenght() };
-
-	levelScene.Add(std::move(enemyManager));
 
 	//create point screen
 	auto pointScreen{ std::make_unique<dae::GameObject>(m_CurrentScene) };
@@ -107,7 +133,8 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode)
 	//create player 1
 	glm::vec2 playerPos{ 1.5f * cellSidesLenght * std::get<1>(m_LevelGrids[m_LevelNr - 1]), cellSidesLenght * std::get<2>(m_LevelGrids[m_LevelNr - 1]) - 16.f };
 	playerPos.y += cellSidesLenght + 10.f;
-	auto player1{ std::make_unique<PlayerPrefab>(m_CurrentScene, "PeterPepperFrontFacing.png", playerPos, glm::vec2(0.f, 0.f), "PeterPepperHead.png")->GetGameObject()};
+	auto player1{ std::make_unique<PlayerPrefab>(m_CurrentScene, "PeterPepperFrontFacing.png", playerPos, glm::vec2(0.f, 0.f), "PeterPepperHead.png", m_PlayersHealth[0])->GetGameObject()};
+	m_PlayersHealthComponents.push_back(player1->GetComponent<HealthComponent>());
 	levelScene.Add(std::move(player1));
 	
 	std::unique_ptr<dae::GameObject> player2{};
@@ -117,7 +144,8 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode)
 	case GameMode::coOp:
 		playerPos = { 1.5f * cellSidesLenght * std::get<1>(m_LevelGrids[m_LevelNr - 1]) + 16.f, cellSidesLenght * std::get<2>(m_LevelGrids[m_LevelNr - 1]) - 16.f };
 		playerPos.y += cellSidesLenght + 10.f;
-		player2 = std::make_unique<PlayerPrefab>(m_CurrentScene, "MrsSalt.png",playerPos, glm::vec2(dae::SceneManager::GetInstance().GetScenesWidth() - 60.f, 0.f), "PeterPepperHead.png", 3, false)->GetGameObject();
+		player2 = std::make_unique<PlayerPrefab>(m_CurrentScene, "MrsSalt.png",playerPos, glm::vec2(dae::SceneManager::GetInstance().GetScenesWidth() - 60.f, 0.f), "PeterPepperHead.png", m_PlayersHealth[1], false)->GetGameObject();
+		m_PlayersHealthComponents.push_back(player2->GetComponent<HealthComponent>());
 		levelScene.Add(std::move(player2));
 		break;
 
@@ -148,17 +176,19 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode)
 
 		playerPos = { 1.5f * cellSidesLenght * colNr + 16.f, cellSidesLenght * rowNr };
 		playerPos.y += cellSidesLenght + 10.f;
-		player2 = std::make_unique<PlayerPrefab>(m_CurrentScene, "MrHotDog.png", playerPos, glm::vec2(dae::SceneManager::GetInstance().GetScenesWidth() - 30.f, dae::SceneManager::GetInstance().GetScenesHeight() - 10.f), "PeterPepperHead.png", 3, false)->GetGameObject();
+		player2 = std::make_unique<PlayerPrefab>(m_CurrentScene, "MrHotDog.png", playerPos, glm::vec2(dae::SceneManager::GetInstance().GetScenesWidth() - 60.f, 0.f), "PeterPepperHead.png", m_PlayersHealth[1], false)->GetGameObject();
+		player2->RemoveComponent<PepperComponent>();
 		player2->AddComponent(std::make_unique<DamageComponent>(player2.get(), 1));
+		m_PlayersHealthComponents.push_back(player2->GetComponent<HealthComponent>());
 		levelScene.Add(std::move(player2));
 		break;
 	}
 	
 }
 
-void LevelManager::LoadNextLevel()
+void LevelManager::LoadNextLevel(bool cycleLevels)
 {
-	LoadLevel(m_LevelNr + 1, *m_CurrentScene, m_GameMode);
+	LoadLevel(m_LevelNr + 1, *m_CurrentScene, m_GameMode, cycleLevels);
 }
 
 void LevelManager::OnNotify(std::any data, int eventId, bool isEngineEvent)
@@ -177,7 +207,7 @@ void LevelManager::OnNotify(std::any data, int eventId, bool isEngineEvent)
 			++m_LevelNr;
 
 			dae::InputManager::GetInstance().RemoveAllCommandsAndControlers();
-			LoadLevel(m_LevelNr, *m_CurrentScene, m_GameMode);
+			LoadLevel(m_LevelNr, *m_CurrentScene, m_GameMode, true);
 		}
 		break;
 
@@ -373,6 +403,8 @@ void LevelManager::LoadLevelBurgerParts(int levelNr)
 	{
 		assert("failed to open level ingredients file");
 	}
+
+	m_AmountOfBurgerPartsInCurrentLevel = 0;
 
 	int currentRowIndex = 0;
 	int currentCollIndex = 0;
@@ -656,7 +688,7 @@ void LevelManager::ShowPointsScreen()
 	}
 
 	bool isCurrentScoreHighScore{};
-	for (int index{}; index < m_HighScoreList.size(); ++index)
+	for (int index{}; index < static_cast<int>(m_HighScoreList.size()); ++index)
 	{
 		auto scoreObject{ std::make_unique<dae::GameObject>(m_CurrentScene) };
 		scoreObject->AddComponent(std::make_unique<dae::TextComponent>(scoreObject.get(), m_HighScoreList[index].first + ' ' + std::to_string(m_HighScoreList[index].second), m_Font));

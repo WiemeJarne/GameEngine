@@ -45,7 +45,7 @@ void dae::SceneManager::SetScenesSize(float width, float height)
 
 dae::Scene* dae::SceneManager::GetSceneByIndex(int index) const
 {
-	if (m_scenes.size() <= index)
+	if (static_cast<int>(m_scenes.size()) <= index)
 		return nullptr;
 
 	return m_scenes[index].get();

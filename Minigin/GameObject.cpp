@@ -189,15 +189,12 @@ void dae::GameObject::UpdateWorldPos()
 
 void dae::GameObject::EraseComponentsMarkedForDelete()
 {
-	for (const auto& iterator : m_ComponentToDeleteIterators)
+	for (const auto& pComponent : m_ComponentToDeletePtrs)
 	{
-		if (iterator != m_Components.end())
-		{
-			m_Components.erase(iterator);
-		}
+		m_Components.erase(std::remove_if(m_Components.begin(), m_Components.end(), [&pComponent](std::unique_ptr<Component>& otherComponent) { return otherComponent.get() == pComponent; }), m_Components.end());
 	}
 
-	m_ComponentToDeleteIterators.clear();
+	m_ComponentToDeletePtrs.clear();
 }
 
 void dae::GameObject::AddChild(std::shared_ptr<dae::GameObject> pChild)

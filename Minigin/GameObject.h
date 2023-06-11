@@ -40,13 +40,14 @@ namespace dae
 		template<typename ComponentType>
 		void RemoveComponent()
 		{
-			auto iterator = std::find_if(m_Components.begin(), m_Components.end(),
-				[](const std::shared_ptr<Component>& component)
+			for (const auto& pComponent : m_Components)
+			{
+				if (dynamic_cast<ComponentType*>(pComponent.get()))
 				{
-					return dynamic_cast<ComponentType*>(component.get()) != nullptr;
-				});
-
-			m_ComponentToDeleteIterators.push_back(iterator);
+					m_ComponentToDeletePtrs.push_back(pComponent.get());
+					return;
+				}
+			}
 		}
 
 		template<typename ComponentType>
@@ -77,7 +78,7 @@ namespace dae
 
 	private:
 		std::vector<std::unique_ptr<Component>> m_Components;
-		std::vector<std::vector<std::unique_ptr<Component>>::iterator> m_ComponentToDeleteIterators;
+		std::vector<Component*> m_ComponentToDeletePtrs;
 		std::vector<std::shared_ptr<GameObject>> m_Children;
 		GameObject* m_Parent{ nullptr };
 		Transform m_LocalTransform{};

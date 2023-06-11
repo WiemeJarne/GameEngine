@@ -60,9 +60,6 @@
     <ClCompile Include="BurgerPartPrefab.cpp">
       <Filter>Prefabs</Filter>
     </ClCompile>
-    <ClCompile Include="PlaySoundCommand.cpp">
-      <Filter>Commands</Filter>
-    </ClCompile>
     <ClCompile Include="BurgerPartComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
@@ -136,9 +133,6 @@
     </ClInclude>
     <ClInclude Include="BurgerPartPrefab.h">
       <Filter>Prefabs</Filter>
-    </ClInclude>
-    <ClInclude Include="PlaySoundCommand.h">
-      <Filter>Commands</Filter>
     </ClInclude>
     <ClInclude Include="BurgerPartComponent.h">
       <Filter>Components</Filter>

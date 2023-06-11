@@ -7,6 +7,7 @@
 #include "PointsComponent.h"
 #include "LevelGrid.h"
 #include "Font.h"
+#include "HealthComponent.h"
 
 enum class GameMode
 {
@@ -20,8 +21,8 @@ class LevelManager final : public dae::Singleton<LevelManager>, public dae::Even
 public:
 	~LevelManager();
 
-	void LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode);
-	void LoadNextLevel();
+	void LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode, bool cycleLevels = false);
+	void LoadNextLevel(bool cycleLevels = false);
 	void OnNotify(std::any data, int eventId, bool isEngineEvent) override;
 	LevelGrid* GetActiveLevelGrid() const;
 
@@ -34,6 +35,8 @@ private:
 	GameMode m_GameMode{};
 	PointsComponent* m_pPointsComponent{};
 	int m_AmountOfPoints{};
+	std::vector<HealthComponent*> m_PlayersHealthComponents{};
+	std::vector<int> m_PlayersHealth{};
 	std::vector<std::tuple<std::unique_ptr<LevelGrid>, int, int>> m_LevelGrids{};
 	const glm::vec2 m_LevelTopLeftPos{ 0.f, 32.f };
 	std::shared_ptr<dae::Font> m_Font;

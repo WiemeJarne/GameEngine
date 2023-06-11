@@ -115,8 +115,7 @@
       <Command>xcopy "$(SolutionDir)3rdParty\SDL2\lib\$(PlatformTarget)\SDL2.dll" "$(OutputPath)" /R /Y
 xcopy "$(SolutionDir)3rdParty\SDL2_image\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y
 xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y
-xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\*.dll" "$(OutputPath)" /Y
-xcopy "$(SolutionDir)3rdParty\steamworks\steam_appid.txt" "$(OutputPath)"  /Y</Command>
+xcopy "$(SolutionDir)3rdParty\SDL2_mixer\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y</Command>
     </PostBuildEvent>
     <Lib>
       <AdditionalDependencies>xinput.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -141,8 +140,10 @@ xcopy "$(SolutionDir)3rdParty\steamworks\steam_appid.txt" "$(OutputPath)"  /Y</C
     </Link>
     <PostBuildEvent />
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>xcopy "$(SolutionDir)3rdParty\SDL2\lib\$(PlatformTarget)\SDL2.dll" "$(OutputPath)" /R /Y
+xcopy "$(SolutionDir)3rdParty\SDL2_image\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y
+xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y
+xcopy "$(SolutionDir)3rdParty\SDL2_mixer\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y</Command>
     </PostBuildEvent>
     <Lib>
       <AdditionalDependencies>xinput.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -174,8 +175,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\steam_appid.txt" "$(OutputPath)"  /Y</C
       <Command>xcopy "$(SolutionDir)3rdParty\SDL2\lib\$(PlatformTarget)\SDL2.dll" "$(OutputPath)" /R /Y
 xcopy "$(SolutionDir)3rdParty\SDL2_image\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y
 xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y
-xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\*.dll" "$(OutputPath)" /Y
-xcopy "$(SolutionDir)3rdParty\steamworks\steam_appid.txt" "$(OutputPath)"  /Y</Command>
+xcopy "$(SolutionDir)3rdParty\SDL2_mixer\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y</Command>
     </PostBuildEvent>
     <Lib>
       <AdditionalDependencies>xinput.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -204,8 +204,10 @@ xcopy "$(SolutionDir)3rdParty\steamworks\steam_appid.txt" "$(OutputPath)"  /Y</C
     </Link>
     <PostBuildEvent />
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>xcopy "$(SolutionDir)3rdParty\SDL2\lib\$(PlatformTarget)\SDL2.dll" "$(OutputPath)" /R /Y
+xcopy "$(SolutionDir)3rdParty\SDL2_image\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y
+xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y
+xcopy "$(SolutionDir)3rdParty\SDL2_mixer\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y</Command>
     </PostBuildEvent>
     <Lib>
       <AdditionalDependencies>xinput.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>

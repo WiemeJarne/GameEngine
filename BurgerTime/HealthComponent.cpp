@@ -10,6 +10,7 @@
 #include "Events.h"
 #include "TextureComponent.h"
 #include "EnemyAIComponent.h"
+#include "SoundServiceLocator.h"
 
 HealthComponent::HealthComponent(dae::GameObject* owner, int amountOfLives, bool isPlayer)
 	: Component(owner)
@@ -89,14 +90,24 @@ void HealthComponent::OnNotify(std::any data, int eventId, bool isEngineEvent)
 
 void HealthComponent::Damage(int amount, bool shouldBreadCastDieEvent)
 {
-	if (m_AmountOfLives > 0 && m_SecSinceLiveLost >= 1.f)
+	if(amount <= 0)
+		return;
+
+	constexpr float invincibilitySec{ 2.f };
+
+	if (m_AmountOfLives > 0 && m_SecSinceLiveLost >= invincibilitySec)
 	{
 		m_SecSinceLiveLost = 0.f;
 
 		m_AmountOfLives -= amount;
 
-		if(m_IsOwnerPlayer && shouldBreadCastDieEvent)
-			dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::playerLostLife), false);
+		if(m_IsOwnerPlayer)
+		{
+			if(shouldBreadCastDieEvent)
+				dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::playerLostLife), false);
+
+			dae::ServiceLocator::GetSoundSystem().Play("sound/LoseLife.wav", 30);
+		}
 
 		if (!m_pVisualizeGameObjects.empty())
 		{

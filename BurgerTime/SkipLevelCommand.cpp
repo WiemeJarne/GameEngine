@@ -3,5 +3,5 @@
 
 void commands::SkipLevelCommand::Execute()
 {
-	LevelManager::GetInstance().LoadNextLevel();
+	LevelManager::GetInstance().LoadNextLevel(true);
 }

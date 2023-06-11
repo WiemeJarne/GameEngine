@@ -7,6 +7,7 @@ class PepperComponent final : public dae::Component
 {
 public:
 	PepperComponent(dae::GameObject* pOwner, int amount, const glm::vec2& visializePos);
+	~PepperComponent();
 
 	void Update() override {}
 	void Render() const override {}

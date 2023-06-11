@@ -26,6 +26,17 @@ PepperComponent::PepperComponent(dae::GameObject* pOwner, int amount, const glm:
 	}
 }
 
+PepperComponent::~PepperComponent()
+{
+	auto pScene{ dae::SceneManager::GetInstance().GetSceneByIndex(0) };
+
+	if (!pScene)
+		return;
+
+	for (auto& pVisualizedGameObject : m_pVisualizeGameObjects)
+		pScene->QueueForRemove(pVisualizedGameObject);
+}
+
 void PepperComponent::Use()
 {
 	if (m_Amount <= 0)

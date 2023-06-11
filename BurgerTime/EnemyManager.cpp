@@ -78,7 +78,6 @@ void EnemyManagerComponent::Update()
 	//loop over the enemies
 	for (auto& enemy : m_Enemies)
 	{
-		//std::cout << std::get<1>(enemy)->GetHealth() << '\n';
 		//check if the enemy has zero health
 		if (std::get<1>(enemy)->GetHealth() == 0)
 		{

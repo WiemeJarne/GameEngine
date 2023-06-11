@@ -81,7 +81,7 @@ Cell* LevelGrid::GetCell(int colNr, int rowNr)
 {
 	const int cellIndex{ rowNr * m_MaxAmountOfCollumns + colNr };
 
-	if (cellIndex > m_Cells.size())
+	if (cellIndex > static_cast<int>(m_Cells.size()))
 		return nullptr;
 
 	return m_Cells[cellIndex].get();

@@ -8,9 +8,8 @@ namespace dae
 	{
 	public:
 		SDLSoundSystem();
-
-		void AddSound(const std::string& path) override;
-		void Play(const soundId soundId, const int volume) override;
+		
+		void Play(const std::string& path, const int volume, bool loop = false) override;
 
 	private:
 		class SDLSoundSystemImpl;

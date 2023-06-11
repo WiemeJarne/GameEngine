@@ -1,6 +1,5 @@
 #include "CollisionManager.h"
 #include "EngineEvents.h"
-#include <iostream>
 
 void dae::CollisionManager::Update()
 {
