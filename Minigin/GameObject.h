@@ -12,7 +12,7 @@ namespace dae
 	public:
 		GameObject(Scene* pScene);
 
-		virtual ~GameObject();
+		~GameObject() = default;
 		GameObject(const GameObject& other) = delete;
 		GameObject(GameObject&& other) = default;
 		GameObject& operator=(const GameObject& other) = delete;

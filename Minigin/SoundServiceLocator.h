@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <memory>
 
 namespace dae
 {
@@ -18,18 +19,21 @@ namespace dae
 		void Play(const std::string&, const int, bool) override {}
 	};
 
+	
 	class ServiceLocator final
 	{
 	public:
-		~ServiceLocator()
-		{
-			delete m_spSoundSystem;
+		~ServiceLocator() = default;
+		static SoundSystem& GetSoundSystem() { return *m_spSoundSystem; }
+
+		template<typename T>
+		static void registerSoundSystem()
+		{	
+			static_assert(std::is_base_of<SoundSystem, T>::value);
+			m_spSoundSystem = std::make_unique<T>();
 		}
 
-		static SoundSystem& GetSoundSystem() { return *m_spSoundSystem; }
-		static void registerSoundSystem(SoundSystem* pSoundSystem) { m_spSoundSystem = pSoundSystem; }
-
 	private:
-		static SoundSystem* m_spSoundSystem;
+		static std::unique_ptr<SoundSystem> m_spSoundSystem;
 	};
 }

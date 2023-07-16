@@ -8,14 +8,6 @@ dae::GameObject::GameObject(Scene* pScene)
 	: m_pScene{ pScene }
 {}
 
-dae::GameObject::~GameObject()
-{
-	//for (auto& child : m_Children)
-	//{
-	//	delete child;
-	//}
-}
-
 void dae::GameObject::Update()
 {
 	for (auto& component : m_Components)

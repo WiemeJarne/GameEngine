@@ -8,12 +8,13 @@ namespace dae
 	{
 	public:
 		SDLSoundSystem();
+		~SDLSoundSystem();
 		
 		void Play(const std::string& path, const int volume, bool loop = false) override;
 
 	private:
 		class SDLSoundSystemImpl;
 
-		std::unique_ptr<SDLSoundSystemImpl> m_pImpl;
+		SDLSoundSystemImpl* m_pImpl;
 	};
 }

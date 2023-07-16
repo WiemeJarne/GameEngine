@@ -20,7 +20,11 @@ EnemyState* NotStunnedState::Update()
 {
 	//check if the enemy should be stunned
 	if (m_pHealthComponent->GetIsCollidingWithPepper() || m_pHealthComponent->GetHealth() == 0 || m_pEnemyAIComponent->GetIsFallingWithBurgerPart())
-		return new StunnedState(m_pDamageComponent, m_pHealthComponent, m_pEnemyAIComponent);
+	{
+		auto newState{ new StunnedState(m_pDamageComponent, m_pHealthComponent, m_pEnemyAIComponent) };
+		delete this;
+		return newState;
+	}
 
 	return this;
 }

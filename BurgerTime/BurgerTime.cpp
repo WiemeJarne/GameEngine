@@ -25,6 +25,7 @@
 #include "ButtonComponent.h"
 #include "TexturedGameObjectPrefab.h"
 #include "SoundServiceLocator.h"
+#include "SDLSoundSystem.h"
 
 void load()
 {
@@ -38,8 +39,7 @@ void load()
 	std::cout << "\tuse pepper: E or A (controller)\n";
 	std::cout << "\tskip level: F1\n";
 
-	auto pSDLSoundSystem{ new dae::SDLSoundSystem() };
-	dae::ServiceLocator::registerSoundSystem(pSDLSoundSystem);
+	dae::ServiceLocator::registerSoundSystem<dae::SDLSoundSystem>();
 
 	//logo
 	auto logo{ std::make_unique<TexturedGameObjectPrefab>(&scene, "burgerTimeLogo.png")->GetGameObject() };

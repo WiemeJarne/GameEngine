@@ -18,7 +18,8 @@ dae::TextureComponent::TextureComponent(dae::GameObject* owner, SDL_Texture* tex
 
 dae::TextureComponent::~TextureComponent()
 {
-	SDL_DestroyTexture(m_texture);
+	if(m_texture)
+		SDL_DestroyTexture(m_texture);
 }
 
 glm::ivec2 dae::TextureComponent::GetSize() const

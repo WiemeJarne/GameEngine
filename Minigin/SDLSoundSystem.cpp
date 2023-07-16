@@ -133,8 +133,13 @@ private:
 };
 
 SDLSoundSystem::SDLSoundSystem()
-	: m_pImpl{ std::make_unique<SDLSoundSystemImpl>() }
+	: m_pImpl{ new SDLSoundSystemImpl() }
 {}
+
+SDLSoundSystem::~SDLSoundSystem()
+{
+	delete m_pImpl;
+}
 
 void SDLSoundSystem::Play(const std::string& path, const int volume, bool loop)
 {

@@ -133,7 +133,7 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode, 
 	//create player 1
 	glm::vec2 playerPos{ 1.5f * cellSidesLenght * std::get<1>(m_LevelGrids[m_LevelNr - 1]), cellSidesLenght * std::get<2>(m_LevelGrids[m_LevelNr - 1]) - 16.f };
 	playerPos.y += cellSidesLenght + 10.f;
-	auto player1{ std::make_unique<PlayerPrefab>(m_CurrentScene, "PeterPepperFrontFacing.png", playerPos, glm::vec2(0.f, 0.f), "PeterPepperHead.png", m_PlayersHealth[0])->GetGameObject()};
+	auto player1{ std::make_unique<PlayerPrefab>(m_CurrentScene, "PeterPepperFrontFacing.png", playerPos, glm::vec2(0.f, 0.f), "PeterPepperHead.png", 100)->GetGameObject()};
 	m_PlayersHealthComponents.push_back(player1->GetComponent<HealthComponent>());
 	levelScene.Add(std::move(player1));
 	

@@ -21,7 +21,11 @@ EnemyState* StunnedState::Update()
 
 	//check if the enemy should stop being stunned
 	if (m_SecSinceStunned >= m_pHealthComponent->GetAmountOfSecStunned() || (m_pEnemyAIComponent->GetIsFallingWithBurgerPart() && !m_pEnemyAIComponent->GetOwner()))
-		return new NotStunnedState(m_pDamageComponent, m_pHealthComponent, m_pEnemyAIComponent);
+	{
+		auto newState{ new NotStunnedState(m_pDamageComponent, m_pHealthComponent, m_pEnemyAIComponent) };
+		delete this;
+		return newState;
+	}
 
 	return this;
 }
