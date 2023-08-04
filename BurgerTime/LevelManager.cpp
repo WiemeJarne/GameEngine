@@ -11,8 +11,6 @@
 #include "BurgerPartPrefab.h"
 #include "EnemyManager.h"
 #include "PointsComponent.h"
-#include "Events.h"
-#include "EventQueue.h"
 #include "InputManager.h"
 #include "TypeComponent.h"
 #include "ResourceManager.h"
@@ -35,7 +33,6 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode, 
 	if (!m_HasBeenInitialized)
 	{
 		m_HasBeenInitialized = true;
-		dae::EventQueue::GetInstance().AddListener(this);
 		dae::ServiceLocator::GetSoundSystem().Play("sound/Music.mp3", 25, true);
 	}
 
@@ -191,45 +188,37 @@ void LevelManager::LoadNextLevel(bool cycleLevels)
 	LoadLevel(m_LevelNr + 1, *m_CurrentScene, m_GameMode, cycleLevels);
 }
 
-void LevelManager::OnNotify(std::any data, int eventId, bool isEngineEvent)
+void LevelManager::OnNotify(const BurgerPartReachedPlateEvent* )
 {
-	if (isEngineEvent)
-		return;
-
-	Event event{ static_cast<Event>(eventId) };
-
-	switch (event)
+	++m_AmountOfBurgerParsReachedPlate;
+	if (m_AmountOfBurgerParsReachedPlate == m_AmountOfBurgerPartsInCurrentLevel)
 	{
-	case Event::burgerPartReachedPlate:
-		++m_AmountOfBurgerParsReachedPlate;
-		if (m_AmountOfBurgerParsReachedPlate == m_AmountOfBurgerPartsInCurrentLevel)
-		{
-			++m_LevelNr;
+		++m_LevelNr;
 
-			dae::InputManager::GetInstance().RemoveAllCommandsAndControlers();
-			LoadLevel(m_LevelNr, *m_CurrentScene, m_GameMode, true);
-		}
+		dae::InputManager::GetInstance().RemoveAllCommandsAndControlers();
+		LoadLevel(m_LevelNr, *m_CurrentScene, m_GameMode, true);
+	}
+}
+
+void LevelManager::OnNotify(const PlayerDiedEvent* )
+{
+	++m_AmountOfPlayersDead;
+
+	switch (m_GameMode)
+	{
+	case GameMode::singlePlayer:
+	case GameMode::versus:
+		ShowPointsScreen();
+		m_AmountOfPlayersDead = 0;
 		break;
 
-	case Event::playerDied:
-		++m_AmountOfPlayersDead;
-
-		switch (m_GameMode)
+	case GameMode::coOp:
+		if (m_AmountOfPlayersDead == 2)
 		{
-		case GameMode::singlePlayer:
-		case GameMode::versus:
 			ShowPointsScreen();
 			m_AmountOfPlayersDead = 0;
-			break;
-
-		case GameMode::coOp:
-			if (m_AmountOfPlayersDead == 2)
-			{
-				ShowPointsScreen();
-				m_AmountOfPlayersDead = 0;
-			}
-			break;
 		}
+		break;
 	}
 }
 

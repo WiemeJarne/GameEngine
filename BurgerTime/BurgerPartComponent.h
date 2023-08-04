@@ -4,9 +4,9 @@
 #include "GameObject.h"
 #include "EventListener.h"
 #include <glm/vec2.hpp>
-#include <any>
+#include "CollisionEvent.h"
 
-class BurgerPartComponent : public dae::Component, public dae::EventListener
+class BurgerPartComponent : public dae::Component, public dae::EventListener<dae::CollisionEvent>
 {
 public:
 	BurgerPartComponent(dae::GameObject* owner, float fallSpeed);
@@ -26,7 +26,7 @@ public:
 	float GetHeight() const { return m_Height; }
 	void SetHasReachedPlate(bool hasReachedPlate) { m_HasReachedPlate = hasReachedPlate; }
 	void SetIsFalling(bool startFalling) { m_IsFalling = startFalling; }
-	void OnNotify(std::any data, int eventId, bool isEngineEvent) override;
+	void OnNotify(const dae::CollisionEvent* event) override;
 
 private:
 	float m_Width{};

@@ -5,9 +5,10 @@
 #include "RenderComponent.h"
 #include "EventQueue.h"
 #include "CollisionManager.h"
-#include "EngineEvents.h"
 #include "DamageComponent.h"
 #include "EnemyAIComponent.h"
+#include "EventQueueManager.h"
+#include "BurgerPartEvents.h"
 
 BurgerPartComponent::BurgerPartComponent(dae::GameObject* owner, float fallSpeed)
 	: Component(owner)
@@ -30,12 +31,12 @@ BurgerPartComponent::BurgerPartComponent(dae::GameObject* owner, float fallSpeed
 		m_Height = static_cast<float>(textureSize.y);
 	}
 
-	dae::EventQueue::GetInstance().AddListener(this);
+	dae::EventQueueManager::GetInstance().AddListener<dae::CollisionEvent>(this);
 }
 
 BurgerPartComponent::~BurgerPartComponent()
 {
-	dae::EventQueue::GetInstance().RemoveListener(this);
+	dae::EventQueueManager::GetInstance().RemoveListener<dae::CollisionEvent>(this);
 }
 
 void BurgerPartComponent::Update()
@@ -78,7 +79,7 @@ void BurgerPartComponent::Update()
 			case CellKind::plate:
 				m_HasReachedPlate = true;
 				if(childCount == 0)
-					dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartReachedPlate), false);
+					dae::EventQueueManager::GetInstance().AddEvent<BurgerPartReachedPlateEvent>(std::make_unique<BurgerPartReachedPlateEvent>());
 			case CellKind::longFloor:
 			case CellKind::longGoDown:
 			case CellKind::longGoUp:
@@ -88,7 +89,7 @@ void BurgerPartComponent::Update()
 				m_ShouldFallUntilPlatform = true;
 				m_ToGoYValue = m_pCell->middlePos.y;
 				if (!m_HasReachedPlate)
-					dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartDropped1Level), false);
+					dae::EventQueueManager::GetInstance().AddEvent<BurgerPartReachedPlateEvent>(std::make_unique<BurgerPartReachedPlateEvent>());
 
 				if (childCount != 0)
 					HandleChildren(childCount);
@@ -135,34 +136,23 @@ void BurgerPartComponent::Update()
 	}
 }
 
-void BurgerPartComponent::OnNotify(std::any data, int eventId, bool isEngineEvent)
+void BurgerPartComponent::OnNotify(const dae::CollisionEvent* event)
 {
-	if (!isEngineEvent)
-		return;
-
-	if (eventId != static_cast<int>(dae::EngineEvents::collisionEvent))
-	return;
-
-	dae::CollidedGameObjects collidedGameObjects{};
-
-	if(data.type() == typeid(dae::CollidedGameObjects))
-	{ 
-		collidedGameObjects = std::any_cast<dae::CollidedGameObjects>(data);
-	}
-	else return;
+	auto pTriggeredGameObject{ event->GetTriggeredGameObject() };
+	auto pOtherGameObject{ event->GetOtherGameObject() };
 
 	//check if the triggered object is this component parent if not return
-	if (collidedGameObjects.pTriggered != m_pOwner)
+	if (pTriggeredGameObject != m_pOwner)
 		return;
 
 	//check if the other object is a player this is done by checking if the gameObject does not have a DamageComponent
-	if (!collidedGameObjects.pOther->HasComponent<BurgerPartComponent>())
+	if (!pOtherGameObject->HasComponent<BurgerPartComponent>())
 	{
-		if (!collidedGameObjects.pOther->HasComponent<DamageComponent>())
-			CalculateWalkedOver(collidedGameObjects.pOther);
+		if (!pOtherGameObject->HasComponent<DamageComponent>())
+			CalculateWalkedOver(pOtherGameObject);
 	}
 	//if pData is not a player check if it is another burger part by checking if the gameObject has a BurgerPartComponent
-	else CollidedWithOtherBurgerPart(collidedGameObjects.pOther);
+	else CollidedWithOtherBurgerPart(pOtherGameObject);
 }
 
 void BurgerPartComponent::CalculateWalkedOver(dae::GameObject* pGameObject)
@@ -245,7 +235,7 @@ void BurgerPartComponent::CollidedWithOtherBurgerPart(dae::GameObject* pGameObje
 		if (pOtherBurgerPartComponent->GetHasReachedPlate() && m_HasReachedPlate != true)
 		{
 			m_HasReachedPlate = true; //if so then is object also reached a plate
-			dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartReachedPlate), false);
+			dae::EventQueueManager::GetInstance().AddEvent<BurgerPartReachedPlateEvent>(std::make_unique<BurgerPartReachedPlateEvent>());
 
 			if (childCount != 0)
 				HandleChildren(childCount);
@@ -261,32 +251,8 @@ void BurgerPartComponent::HandleChildren(int childCount)
 {
 	if (m_AmountOfLevelsDropped == (childCount + 1) || m_HasReachedPlate)
 	{
-		switch (childCount)
-		{
-		case 1:
-			dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartDroppedWith1EnemyOn), false);
-			break;
-
-		case 2:
-			dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartDroppedWith2EnemiesOn), false);
-			break;
-
-		case 3:
-			dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartDroppedWith3EnemiesOn), false);
-			break;
-
-		case 4:
-			dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartDroppedWith4EnemiesOn), false);
-			break;
-
-		case 5:
-			dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartDroppedWith5EnemiesOn), false);
-			break;
-
-		case 6:
-			dae::EventQueue::GetInstance().AddEvent(std::any(), static_cast<int>(Event::burgerPartDroppedWith6EnemiesOn), false);
-			break;
-		}
+		if(childCount > 0)
+			dae::EventQueueManager::GetInstance().AddEvent<BurgerPartDroppedWithEnemiesOnEvent>(std::make_unique<BurgerPartDroppedWithEnemiesOnEvent>(childCount));
 
 		//loop over all the children, set there parent to nullptr (so they get added to the scene)
 		for (int index{ childCount - 1 }; index >= 0; --index)

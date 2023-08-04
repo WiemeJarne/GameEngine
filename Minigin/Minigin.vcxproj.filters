@@ -28,6 +28,9 @@
     <Filter Include="Collision">
       <UniqueIdentifier>{ab9c5acd-ea83-456c-a4e4-06a9e0b7acf5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Events">
+      <UniqueIdentifier>{949e4a9d-6f21-42c8-b9af-c520d12512fc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Singleton.h">
@@ -126,12 +129,6 @@
     <ClInclude Include="EngineEvents.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EventQueue.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EventListener.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CollisionManager.h">
       <Filter>Collision</Filter>
     </ClInclude>
@@ -140,6 +137,21 @@
     </ClInclude>
     <ClInclude Include="ThumbstickCommand.h">
       <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="EventListener.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="EventQueue.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="EventQueueManager.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseEvent.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionEvent.h">
+      <Filter>Events</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -218,14 +230,14 @@
     <ClCompile Include="CollisionBoxComponent.cpp">
       <Filter>Collision</Filter>
     </ClCompile>
-    <ClCompile Include="EventQueue.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CollisionManager.cpp">
       <Filter>Collision</Filter>
     </ClCompile>
     <ClCompile Include="ButtonComponent.cpp">
       <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="EventQueueManager.cpp">
+      <Filter>Events</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

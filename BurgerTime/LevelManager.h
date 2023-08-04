@@ -8,6 +8,8 @@
 #include "LevelGrid.h"
 #include "Font.h"
 #include "HealthComponent.h"
+#include "BurgerPartEvents.h"
+#include "PlayerDiedEvent.h"
 
 enum class GameMode
 {
@@ -16,14 +18,15 @@ enum class GameMode
 	versus
 };
 
-class LevelManager final : public dae::Singleton<LevelManager>, public dae::EventListener
+class LevelManager final : public dae::Singleton<LevelManager>, public dae::EventListener<BurgerPartReachedPlateEvent>, public dae::EventListener<PlayerDiedEvent>
 {
 public:
 	~LevelManager();
 
 	void LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode, bool cycleLevels = false);
 	void LoadNextLevel(bool cycleLevels = false);
-	void OnNotify(std::any data, int eventId, bool isEngineEvent) override;
+	void OnNotify(const BurgerPartReachedPlateEvent* pEvent) override;
+	void OnNotify(const PlayerDiedEvent* pEvent) override;
 	LevelGrid* GetActiveLevelGrid() const;
 
 private:

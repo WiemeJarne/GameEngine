@@ -12,6 +12,7 @@
 #include "Timer.h"
 #include "EventQueue.h"
 #include "CollisionManager.h"
+#include "EventQueueManager.h"
 
 SDL_Window* g_window{};
 
@@ -92,11 +93,10 @@ void dae::Minigin::Run(const std::function<void()>& load)
 
 	auto& input = InputManager::GetInstance();
 	auto& sceneManager = SceneManager::GetInstance();
+	auto& eventQueueManager = EventQueueManager::GetInstance();
 	auto& renderer = Renderer::GetInstance();
-	auto& eventQueue = EventQueue::GetInstance();
 	auto& collisionManager = CollisionManager::GetInstance();
 
-	// todo: this update loop could use some work.
 	Timer::GetInstance().Start();
 	bool doContinue = true;
 	while (doContinue)
@@ -105,8 +105,8 @@ void dae::Minigin::Run(const std::function<void()>& load)
 
 		doContinue = input.ProcessInput();
 		sceneManager.Update();
+		eventQueueManager.HandleEventQueues();
 		renderer.Render();
-		eventQueue.Update();
 		collisionManager.Update();
 
 		Timer::GetInstance().Update();

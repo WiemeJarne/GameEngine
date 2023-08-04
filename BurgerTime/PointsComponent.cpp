@@ -1,10 +1,9 @@
 #include "PointsComponent.h"
-#include "Events.h"
 #include "ResourceManager.h"
-#include "EventQueue.h"
 #include "TextureComponent.h"
 #include "GameObject.h"
-#include <iostream>
+#include "RenderComponent.h"
+#include "EventQueueManager.h"
 
 PointsComponent::PointsComponent(dae::GameObject* owner, const glm::vec2& middlePos)
 	: Component(owner)
@@ -25,85 +24,68 @@ PointsComponent::PointsComponent(dae::GameObject* owner, const glm::vec2& middle
 		Recenter();
 	}
 
-	dae::EventQueue::GetInstance().AddListener(this);
+	dae::EventQueueManager::GetInstance().AddListener<BurgerPartDropped1LevelEvent>(this);
+	dae::EventQueueManager::GetInstance().AddListener<BurgerPartReachedPlateEvent>(this);
+	dae::EventQueueManager::GetInstance().AddListener<BurgerPartDroppedWithEnemiesOnEvent>(this);
+	dae::EventQueueManager::GetInstance().AddListener<EnemyDiedEvent>(this);
 }
 
 PointsComponent::~PointsComponent()
 {
-	dae::EventQueue::GetInstance().RemoveListener(this);
+	dae::EventQueueManager::GetInstance().RemoveListener<BurgerPartDropped1LevelEvent>(this);
+	dae::EventQueueManager::GetInstance().RemoveListener<BurgerPartReachedPlateEvent>(this);
+	dae::EventQueueManager::GetInstance().RemoveListener<BurgerPartDroppedWithEnemiesOnEvent>(this);
+	dae::EventQueueManager::GetInstance().RemoveListener<EnemyDiedEvent>(this);
 }
 
-void PointsComponent::OnNotify(std::any data, int eventId, bool isEngineEvent)
+void PointsComponent::OnNotify(const BurgerPartDropped1LevelEvent* )
 {
-	if (isEngineEvent)
-		return;
+	AddPoints(50);
+}
 
-	Event event{ static_cast<Event>(eventId) };
+void PointsComponent::OnNotify(const BurgerPartReachedPlateEvent* )
+{
+	AddPoints(50);
+}
 
-	switch (event)
+void PointsComponent::OnNotify(const BurgerPartDroppedWithEnemiesOnEvent* pEvent)
+{
+	const int amountOfEnemiesDropped{ pEvent->GetAmountOfEnemiesDropped() };
+
+	int score{ 500 }; //when 1 enemy was dropped the score is 500 for every aditional enemy that is dropped to score is doubled so for 2 enemies it would be 1000, for 3 2000 ...
+	for (int index{}; index < amountOfEnemiesDropped; ++index)
 	{
-	case Event::burgerPartDropped1Level:
-	case Event::burgerPartReachedPlate:
-		m_AmountOfPoints += 50;
-		m_pTextComponent->SetText(std::to_string(m_AmountOfPoints));
-		Recenter();
-		break;
-
-	case Event::burgerPartDroppedWith1EnemyOn:
-		m_AmountOfPoints += 500;
-		Recenter();
-		break;
-
-	case Event::burgerPartDroppedWith2EnemiesOn:
-		m_AmountOfPoints += 1000;
-		Recenter();
-		break;
-
-	case Event::burgerPartDroppedWith3EnemiesOn:
-		m_AmountOfPoints += 2000;
-		Recenter();
-		break;
-
-	case Event::burgerPartDroppedWith4EnemiesOn:
-		m_AmountOfPoints += 4000;
-		Recenter();
-		break;
-
-	case Event::burgerPartDroppedWith5EnemiesOn:
-		m_AmountOfPoints += 8000;
-		Recenter();
-		break;
-
-	case Event::burgerPartDroppedWith6EnemiesOn:
-		m_AmountOfPoints += 16000;
-		Recenter();
-		break;
-
-	case Event::enemyDied:
-		auto pTextureComponent{ std::any_cast<dae::TextureComponent*>(data) };
-
-		if (!pTextureComponent)
-			return;
-
-		//get the texture file name
-		const std::string& textureFileName{ pTextureComponent->GetFileName() };
-
-		if (textureFileName == "MrHotDog.png")
-			m_AmountOfPoints += 100;
-		else if (textureFileName == "MrPickle.png")
-			m_AmountOfPoints += 200;
-		else if (textureFileName == "MrEgg.png")
-			m_AmountOfPoints += 300;
-
-		Recenter();
-		break;
+		if (index > 0)
+		{
+			score *= 2;
+		}
 	}
+
+	AddPoints(score);
+	m_pTextComponent->SetText(std::to_string(m_AmountOfPoints));
+	Recenter();
+}
+
+void PointsComponent::OnNotify(const EnemyDiedEvent* pEvent)
+{
+	//get the texture file name
+	const std::string& textureFileName{ pEvent->GetEnemy()->GetComponent<dae::RenderComponent>()->GetTextureComponent()->GetFileName()};
+
+	if (textureFileName == "MrHotDog.png")
+		m_AmountOfPoints += 100;
+	else if (textureFileName == "MrPickle.png")
+		m_AmountOfPoints += 200;
+	else if (textureFileName == "MrEgg.png")
+		m_AmountOfPoints += 300;
+
+	Recenter();
 }
 
 void PointsComponent::AddPoints(int amount)
 {
 	m_AmountOfPoints += amount;
 	m_pTextComponent->SetText(std::to_string(m_AmountOfPoints));
+	Recenter();
 }
 
 void PointsComponent::Recenter()

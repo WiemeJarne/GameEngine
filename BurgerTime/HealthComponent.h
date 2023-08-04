@@ -4,8 +4,9 @@
 #include <glm/vec2.hpp>
 #include <string>
 #include <vector>
+#include "CollisionEvent.h"
 
-class HealthComponent : public dae::Component, public dae::EventListener
+class HealthComponent : public dae::Component, public dae::EventListener<dae::CollisionEvent>
 {
 public:
 	HealthComponent(dae::GameObject* owner, int amountOfLives, bool isPlayer = true);
@@ -19,7 +20,7 @@ public:
 	void Update() override;
 	void Render() const override {}
 	void RenderImGui() override {}
-	void OnNotify(std::any data, int eventId, bool isEngineEvent) override;
+	void OnNotify(const dae::CollisionEvent* pEvent) override;
 	void Damage(int amount, bool shouldBreadCastDieEvent = true);
 	void Reset();
 	void VisualizeHealth(const glm::vec2& pos, const std::string& textureFilePath);

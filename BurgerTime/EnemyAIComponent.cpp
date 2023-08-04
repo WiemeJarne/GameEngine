@@ -1,13 +1,12 @@
 #include "EnemyAIComponent.h"
 #include "GameObject.h"
 #include "MoveComponent.h"
-#include "Events.h"
-#include "EventQueue.h"
 #include "LevelManager.h"
 #include "TextureComponent.h"
 #include "Timer.h"
 #include "NotStunnedState.h"
 #include <glm/glm.hpp>
+#include "EventQueueManager.h"
 
 glm::vec2 EnemyAIComponent::m_sUpDirection;
 glm::vec2 EnemyAIComponent::m_sDownDirection;
@@ -25,8 +24,6 @@ EnemyAIComponent::EnemyAIComponent(dae::GameObject* pOwner, float moveSpeed, boo
 	m_pMoveComponent = moveComponent.get();
 	pOwner->AddComponent(std::move(moveComponent));
 
-	dae::EventQueue::GetInstance().AddListener(this);
-
 	//if the abs(y) of the m_sUpDirection is close to zero initialize all the directions
 	if (abs(m_sUpDirection.y) <= 0.01f)
 	{
@@ -35,12 +32,14 @@ EnemyAIComponent::EnemyAIComponent(dae::GameObject* pOwner, float moveSpeed, boo
 		m_sLeftDirection = { -1.f, 0.f };
 		m_sRightDirection = { 1.f, 0.f };
 	}
+	
+	dae::EventQueueManager::GetInstance().AddListener<PlayerMovedEvent>(this);
 }
 
 EnemyAIComponent::~EnemyAIComponent()
 {
-	dae::EventQueue::GetInstance().RemoveListener(this);
 	delete m_pEnemyState;
+	dae::EventQueueManager::GetInstance().RemoveListener<PlayerMovedEvent>(this);
 }
 
 void EnemyAIComponent::Update()
@@ -48,7 +47,6 @@ void EnemyAIComponent::Update()
 	if(!m_pEnemyState)
 		m_pEnemyState = new NotStunnedState(m_pOwner->GetComponent<DamageComponent>(), m_pOwner->GetComponent<HealthComponent>(), this);
 
-	
 	m_pEnemyState = m_pEnemyState->Update();
 
 	//check if the owner has a parent if so then don't move
@@ -217,13 +215,9 @@ void EnemyAIComponent::Update()
 	}
 }
 
-void EnemyAIComponent::OnNotify(std::any data, int eventId, bool isEngineEvent)
+void EnemyAIComponent::OnNotify(const PlayerMovedEvent* pEvent)
 {
-	if (isEngineEvent)
-		return;
-
-	if (eventId == static_cast<int>(Event::playerMoved))
-		m_PlayerMiddlePos = std::any_cast<glm::vec2>(data);
+	m_PlayerMiddlePos = pEvent->GetPlayerMiddlePos();
 }
 
 void EnemyAIComponent::MoveTowardsGrid(const glm::vec2& ownerMiddlePos)

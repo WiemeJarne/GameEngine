@@ -2,9 +2,10 @@
 #include "Timer.h"
 #include "GameObject.h"
 #include "Events.h"
-#include "EventQueue.h"
 #include "TextureComponent.h"
 #include "LevelManager.h"
+#include "PlayerMovedEvent.h"
+#include "EventQueueManager.h"
 
 MoveComponent::MoveComponent(dae::GameObject* owner, float moveSpeed, bool isPlayer, bool canMoveOverEmptyCells)
 	: Component(owner)
@@ -48,7 +49,7 @@ bool MoveComponent::Move(const glm::vec2& moveDirection)
 
 		if (m_IsPlayer)
 		{
-			dae::EventQueue::GetInstance().AddEvent(std::any(ownerMiddlePos), static_cast<int>(Event::playerMoved), false);
+			dae::EventQueueManager::GetInstance().AddEvent<PlayerMovedEvent>(std::make_unique<PlayerMovedEvent>(ownerMiddlePos));
 		}
 
 		return true;
@@ -108,7 +109,7 @@ bool MoveComponent::Move(const glm::vec2& moveDirection)
 
 		if (m_IsPlayer)
 		{
-			dae::EventQueue::GetInstance().AddEvent(std::any(ownerMiddlePos), static_cast<int>(Event::playerMoved), false);
+			dae::EventQueueManager::GetInstance().AddEvent<PlayerMovedEvent>(std::make_unique<PlayerMovedEvent>(ownerMiddlePos));
 		}
 	}
 

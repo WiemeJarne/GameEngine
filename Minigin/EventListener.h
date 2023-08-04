@@ -1,12 +1,21 @@
 #pragma once
-#include <any>
 
 namespace dae
 {
+	template <typename EventType>
 	class EventListener
 	{
 	public:
-		virtual ~EventListener() = default;
-		virtual void OnNotify(std::any data, int eventId, bool isEngineEvent) = 0;
+		EventListener()
+		{
+			//EventQueueManager::GetInstance().AddListener<EventType>(this);
+		}
+
+		virtual ~EventListener()
+		{
+			//EventQueueManager::GetInstance().RemoveListener<EventType>(this);
+		}
+
+		virtual void OnNotify(const EventType* event) = 0;
 	};
 }

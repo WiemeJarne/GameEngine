@@ -1,17 +1,19 @@
 #include "CollisionManager.h"
-#include "EngineEvents.h"
+#include "EventQueueManager.h"
 
 void dae::CollisionManager::Update()
 {
-	if (!m_pEventQueue)
-		m_pEventQueue = &EventQueue::GetInstance();
+	if(!m_pCollisionEventQueue)
+	{
+		m_pCollisionEventQueue = EventQueueManager::GetInstance().GetEventQueue<CollisionEvent>();
+	}
 
 	//loop over all the collisionBoxComponents and check if they are colliding
 	for (auto& pCollider : m_CollisionBoxComponents)
 	{
 		auto Collider1TopLeft{ pCollider->GetTopLeftPos() };
-		auto collider1Width{ pCollider->GetWidth() };
-		auto collider1Height{ pCollider->GetHeight() };
+		const auto collider1Width{ pCollider->GetWidth() };
+		const auto collider1Height{ pCollider->GetHeight() };
 
 		for (auto& pOtherCollider : m_CollisionBoxComponents)
 		{
@@ -21,7 +23,7 @@ void dae::CollisionManager::Update()
 
 			if (AreColliding(Collider1TopLeft, collider1Width, collider1Height, pOtherCollider->GetTopLeftPos(), pOtherCollider->GetWidth(), pOtherCollider->GetHeight()))
 			{
-				m_pEventQueue->AddEvent(std::any(CollidedGameObjects(pCollider->GetOwner(), pOtherCollider->GetOwner())), static_cast<int>(EngineEvents::collisionEvent), true);
+				m_pCollisionEventQueue->AddEvent(std::make_unique<CollisionEvent>(pCollider->GetOwner(), pOtherCollider->GetOwner()));
 			}
 		}
 	}
@@ -32,13 +34,12 @@ void dae::CollisionManager::AddCollider(CollisionBoxComponent* pCollisionBoxComp
 	m_CollisionBoxComponents.push_back(pCollisionBoxComponent);
 }
 
-void dae::CollisionManager::RemoveCollider(CollisionBoxComponent* pCollisionBoxComponent)
+void dae::CollisionManager::RemoveCollider(const CollisionBoxComponent* pCollisionBoxComponent)
 {
 	if (!m_CollisionBoxComponents.empty())
 	{
 		m_CollisionBoxComponents.erase(std::remove_if(m_CollisionBoxComponents.begin(), m_CollisionBoxComponents.end()
-		, [&](CollisionBoxComponent* pOtherCollisionBoxComponent) {return pCollisionBoxComponent == pOtherCollisionBoxComponent; }), m_CollisionBoxComponents.end());
-
+		, [&](const CollisionBoxComponent* pOtherCollisionBoxComponent) {return pCollisionBoxComponent == pOtherCollisionBoxComponent; }), m_CollisionBoxComponents.end());
 	}
 }
 

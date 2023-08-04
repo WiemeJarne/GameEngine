@@ -4,8 +4,9 @@
 #include "EventListener.h"
 #include "glm/vec2.hpp"
 #include "EnemyState.h"
+#include "PlayerMovedEvent.h"
 
-class EnemyAIComponent final : public dae::Component, public dae::EventListener
+class EnemyAIComponent final : public dae::Component, public dae::EventListener<PlayerMovedEvent>
 {
 public:
 	EnemyAIComponent(dae::GameObject* pOwner, float moveSpeed, bool shouldRandomlyClimbLadder = false, float secBetweenRandomClimbLadder = 5.f, bool shouldRandomlyFlipDirection = false, float secBetweenRandomFlipDirection = 5.f);
@@ -15,7 +16,7 @@ public:
 	void Render() const override {}
 	void RenderImGui() override {}
 
-	void OnNotify(std::any data, int eventId, bool isEngineEvent);
+	void OnNotify(const PlayerMovedEvent* pEvent);
 	float GetHeight() const { return m_EnemyHeight; }
 	void SetCanMove(bool canWalk) { m_CanWalk = canWalk; }
 	bool GetCanMove() const { return m_CanWalk; }
