@@ -9,17 +9,18 @@ namespace dae
 	class EventQueue final
 	{
 	public:
-		EventQueue() = default;
+		EventQueue()
+			: m_Head{ 0 }
+			, m_Tail{ 0 }
+			, m_Size{ 10 }
+		{
+			m_pEvents.resize(m_Size);
+		}
 
 		~EventQueue() = default;
 
 		void Update()
 		{
-			if (!m_Isinitialized)
-			{
-				m_pEvents.resize(m_Size);
-			}
-
 			std::unique_ptr<EventType> e;
 			while (m_Head != m_Tail)
 			{
@@ -80,10 +81,9 @@ namespace dae
 	private:
 		std::vector<EventListener<EventType>*> m_Listeners{};
 		std::vector<std::unique_ptr<EventType>> m_pEvents{};
-		bool m_Isinitialized{};
 		int m_Head{};
 		int m_Tail{};
-		int m_Size{ 10 };
+		int m_Size{};
 		bool m_ListenerRemoved{};
 	};
 }

@@ -3,11 +3,6 @@
 
 void dae::CollisionManager::Update()
 {
-	if(!m_pCollisionEventQueue)
-	{
-		m_pCollisionEventQueue = EventQueueManager::GetInstance().GetEventQueue<CollisionEvent>();
-	}
-
 	//loop over all the collisionBoxComponents and check if they are colliding
 	for (auto& pCollider : m_CollisionBoxComponents)
 	{
@@ -23,7 +18,7 @@ void dae::CollisionManager::Update()
 
 			if (AreColliding(Collider1TopLeft, collider1Width, collider1Height, pOtherCollider->GetTopLeftPos(), pOtherCollider->GetWidth(), pOtherCollider->GetHeight()))
 			{
-				m_pCollisionEventQueue->AddEvent(std::make_unique<CollisionEvent>(pCollider->GetOwner(), pOtherCollider->GetOwner()));
+				EventQueueManager::GetInstance().AddEvent<CollisionEvent>(std::make_unique<CollisionEvent>(pCollider->GetOwner(), pOtherCollider->GetOwner()));
 			}
 		}
 	}

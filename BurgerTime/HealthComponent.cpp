@@ -102,9 +102,10 @@ void HealthComponent::Damage(int amount, bool shouldBreadCastDieEvent)
 
 		if(m_IsOwnerPlayer)
 		{
-			if (shouldBreadCastDieEvent)
-				dae::EventQueueManager::GetInstance().AddEvent<PlayerGotDamagedEvent>(std::make_unique<PlayerGotDamagedEvent>(1));
+			if (shouldBreadCastDieEvent && m_AmountOfLives <= 0)
+				dae::EventQueueManager::GetInstance().AddEvent<PlayerDiedEvent>(std::make_unique<PlayerDiedEvent>());
 
+			dae::EventQueueManager::GetInstance().AddEvent<PlayerGotDamagedEvent>(std::make_unique<PlayerGotDamagedEvent>(1));
 			dae::ServiceLocator::GetSoundSystem().Play("sound/LoseLife.wav", 30);
 		}
 

@@ -78,7 +78,6 @@ void BurgerPartComponent::Update()
 			{
 			case CellKind::plate:
 				m_HasReachedPlate = true;
-				if(childCount == 0)
 					dae::EventQueueManager::GetInstance().AddEvent<BurgerPartReachedPlateEvent>(std::make_unique<BurgerPartReachedPlateEvent>());
 			case CellKind::longFloor:
 			case CellKind::longGoDown:
@@ -89,7 +88,7 @@ void BurgerPartComponent::Update()
 				m_ShouldFallUntilPlatform = true;
 				m_ToGoYValue = m_pCell->middlePos.y;
 				if (!m_HasReachedPlate)
-					dae::EventQueueManager::GetInstance().AddEvent<BurgerPartReachedPlateEvent>(std::make_unique<BurgerPartReachedPlateEvent>());
+					dae::EventQueueManager::GetInstance().AddEvent<BurgerPartDropped1LevelEvent>(std::make_unique<BurgerPartDropped1LevelEvent>());
 
 				if (childCount != 0)
 					HandleChildren(childCount);

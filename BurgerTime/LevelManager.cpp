@@ -20,6 +20,13 @@
 #include "SoundServiceLocator.h"
 #include <algorithm>
 #include <iostream>
+#include "EventQueueManager.h"
+
+LevelManager::LevelManager()
+{
+	dae::EventQueueManager::GetInstance().AddListener<BurgerPartReachedPlateEvent>(this);
+	dae::EventQueueManager::GetInstance().AddListener<PlayerDiedEvent>(this);
+}
 
 LevelManager::~LevelManager()
 {
@@ -41,6 +48,8 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode, 
 
 	m_LevelNr = levelNr;
 	m_GameMode = gameMode;
+
+	m_AmountOfBurgerParsReachedPlate = 0;
 
 	if (m_pPointsComponent)
 	{
@@ -130,7 +139,7 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode, 
 	//create player 1
 	glm::vec2 playerPos{ 1.5f * cellSidesLenght * std::get<1>(m_LevelGrids[m_LevelNr - 1]), cellSidesLenght * std::get<2>(m_LevelGrids[m_LevelNr - 1]) - 16.f };
 	playerPos.y += cellSidesLenght + 10.f;
-	auto player1{ std::make_unique<PlayerPrefab>(m_CurrentScene, "PeterPepperFrontFacing.png", playerPos, glm::vec2(0.f, 0.f), "PeterPepperHead.png", 100)->GetGameObject()};
+	auto player1{ std::make_unique<PlayerPrefab>(m_CurrentScene, "PeterPepperFrontFacing.png", playerPos, glm::vec2(0.f, 0.f), "PeterPepperHead.png")->GetGameObject()};
 	m_PlayersHealthComponents.push_back(player1->GetComponent<HealthComponent>());
 	levelScene.Add(std::move(player1));
 	
@@ -672,11 +681,18 @@ void LevelManager::ShowPointsScreen()
 			std::getline(inputFile, score);
 			m_HighScoreList.push_back({ name, std::stoi(score) });
 		}
-
-		SortHighScoreList();
 	}
 
-	bool isCurrentScoreHighScore{};
+	SortHighScoreList();
+
+	bool isCurrentScoreInTopFive{};
+
+	// 1. check if there are less then 5 scores in the list
+	// 2. check if the current score is higher or equal then the lowest score 
+	// if any of these 2 condition are met make it so the player can type their name
+	if (m_HighScoreList.size() < 5 || m_AmountOfPoints >= m_HighScoreList[4].second)
+		isCurrentScoreInTopFive = true;
+
 	for (int index{}; index < static_cast<int>(m_HighScoreList.size()); ++index)
 	{
 		auto scoreObject{ std::make_unique<dae::GameObject>(m_CurrentScene) };
@@ -684,17 +700,14 @@ void LevelManager::ShowPointsScreen()
 		auto textureSize{ scoreObject->GetComponent<dae::RenderComponent>()->GetTextureComponent()->GetSize() };
 		scoreObject->SetLocalPosition(sceneWidth / 2.f - textureSize.x / 2.f, 75.f + index * 50.f);
 		m_CurrentScene->Add(std::move(scoreObject));
-
-		if (m_HighScoreList[index].second < m_AmountOfPoints)
-			isCurrentScoreHighScore = true;
 	}
 
 	if (m_HighScoreList.size() == 0)
-		isCurrentScoreHighScore = true;
+		isCurrentScoreInTopFive = true;
 
 	dae::TextComponent* pTextComponent{};
 
-	if (isCurrentScoreHighScore) //the player can only type in there name when their score is in the top 5
+	if (isCurrentScoreInTopFive) //the player can only type in there name when their score is in the top 5
 	{
 		//add object so the player can type in his name
 		auto typeObject{ std::make_unique<dae::GameObject>(m_CurrentScene) };
@@ -705,9 +718,9 @@ void LevelManager::ShowPointsScreen()
 		m_CurrentScene->Add(std::move(typeObject));
 	}
 
-	//add a button to continue
-	auto continueButton{ std::make_unique<dae::GameObject>(m_CurrentScene) };
-	continueButton->AddComponent(std::make_unique<dae::TextComponent>(continueButton.get(), "Replay?", m_Font));
+	//add a button to replay
+	auto replayButton{ std::make_unique<dae::GameObject>(m_CurrentScene) };
+	replayButton->AddComponent(std::make_unique<dae::TextComponent>(replayButton.get(), "Replay?", m_Font));
 	auto onContinueButtonClick =
 		[=]()
 	{
@@ -742,7 +755,7 @@ void LevelManager::ShowPointsScreen()
 				m_HighScoreList.push_back({ givenName, m_AmountOfPoints });
 				SortHighScoreList();
 			}
-			else if (m_HighScoreList[4].second < m_AmountOfPoints && !scoreWasAsigned) //if so check if the current score is higher then the lowest one in the list if so replace the one in the list with the current one else do nothing
+			else if (m_HighScoreList.size() >= 5 && m_HighScoreList[4].second < m_AmountOfPoints && !scoreWasAsigned) //if so check if the current score is higher then the lowest one in the list if so replace the one in the list with the current one else do nothing
 			{
 				m_HighScoreList[4].first = givenName;
 				m_HighScoreList[4].second = m_AmountOfPoints;
@@ -754,10 +767,10 @@ void LevelManager::ShowPointsScreen()
 		m_AmountOfPoints = 0;
 		LoadLevel(1, *m_CurrentScene, m_GameMode);
 	};
-	const auto buttonSize{ continueButton->GetComponent<dae::RenderComponent>()->GetTextureComponent()->GetSize() };
+	const auto buttonSize{ replayButton->GetComponent<dae::RenderComponent>()->GetTextureComponent()->GetSize() };
 	const glm::vec2 buttonPos{ sceneWidth / 2.f - buttonSize.x / 2.f, sceneHeight - 25.f };
-	continueButton->AddComponent(std::make_unique<dae::ButtonComponent>(continueButton.get(), buttonPos, static_cast<float>(buttonSize.x), static_cast<float>(buttonSize.y), onContinueButtonClick));
-	m_CurrentScene->Add(std::move(continueButton));
+	replayButton->AddComponent(std::make_unique<dae::ButtonComponent>(replayButton.get(), buttonPos, static_cast<float>(buttonSize.x), static_cast<float>(buttonSize.y), onContinueButtonClick));
+	m_CurrentScene->Add(std::move(replayButton));
 
 	//add object to show the current score
 	auto currentScoreObject{ std::make_unique<dae::GameObject>(m_CurrentScene) };

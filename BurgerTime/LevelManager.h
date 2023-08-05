@@ -21,6 +21,7 @@ enum class GameMode
 class LevelManager final : public dae::Singleton<LevelManager>, public dae::EventListener<BurgerPartReachedPlateEvent>, public dae::EventListener<PlayerDiedEvent>
 {
 public:
+	LevelManager();
 	~LevelManager();
 
 	void LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode, bool cycleLevels = false);

@@ -17,7 +17,6 @@ namespace dae
 
 	private:
 		std::vector<CollisionBoxComponent*> m_CollisionBoxComponents;
-		EventQueue<CollisionEvent>* m_pCollisionEventQueue;
 
 		bool AreColliding(const glm::vec2& collider1TopLeft, float collider1With, float collider1Height, const glm::vec2& collider2TopLeft, float collider2Width, float collider2Height);
 	};
