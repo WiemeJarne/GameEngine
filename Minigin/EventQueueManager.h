@@ -18,7 +18,7 @@ namespace dae
 		}
 	
 		template <typename EventType>
-		void AddListener(EventListener<EventType>* pEventListener)
+		void AddListener(EventListener<EventType>* )
 		{
 			GetEventQueue<EventType>()->AddListener(pEventListener);
 		}
