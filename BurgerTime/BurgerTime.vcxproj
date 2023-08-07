@@ -199,6 +199,7 @@ xcopy "$(SolutionDir)3rdParty\SDL2_mixer\lib\$(PlatformTarget)\*.dll" "$(OutputP
     <ClCompile Include="PlatePrefab.cpp" />
     <ClCompile Include="PlayerPrefab.cpp" />
     <ClCompile Include="PointsComponent.cpp" />
+    <ClCompile Include="SetActiveSceneCommand.cpp" />
     <ClCompile Include="SkipLevelCommand.cpp" />
     <ClCompile Include="StunEnemyComponent.cpp" />
     <ClCompile Include="StunnedState.cpp" />
@@ -231,6 +232,7 @@ xcopy "$(SolutionDir)3rdParty\SDL2_mixer\lib\$(PlatformTarget)\*.dll" "$(OutputP
     <ClInclude Include="PlayerMovedEvent.h" />
     <ClInclude Include="PlayerPrefab.h" />
     <ClInclude Include="PointsComponent.h" />
+    <ClInclude Include="SetActiveSceneCommand.h" />
     <ClInclude Include="SkipLevelCommand.h" />
     <ClInclude Include="StunEnemyComponent.h" />
     <ClInclude Include="StunnedState.h" />

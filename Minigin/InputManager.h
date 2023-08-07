@@ -37,7 +37,8 @@ namespace dae
 			F9, F10, F11, F12,
 			BackSpace,
 			Minus,
-			Space
+			Space,
+			esc
 		};
 		
 		void AddCommand(std::unique_ptr<dae::Command> command, KeyState keyState, KeyboardKey keyboardKey);

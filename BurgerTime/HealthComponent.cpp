@@ -111,7 +111,7 @@ void HealthComponent::Damage(int amount, bool shouldBreadCastDieEvent)
 
 		if (!m_pVisualizeGameObjects.empty())
 		{
-			auto pScene{ dae::SceneManager::GetInstance().GetSceneByIndex(0) };
+			auto pScene{ dae::SceneManager::GetInstance().GetSceneByName("levelScene")};
 
 			if (pScene)
 				pScene->Remove(m_pVisualizeGameObjects[m_AmountOfLives]);
@@ -142,7 +142,7 @@ void HealthComponent::VisualizeHealth(const glm::vec2& pos, const std::string& t
 	if (!m_pVisualizeGameObjects.empty())
 		return;
 
-	dae::Scene* pScene{ dae::SceneManager::GetInstance().GetSceneByIndex(0) };
+	dae::Scene* pScene{ dae::SceneManager::GetInstance().GetSceneByName("levelScene") };
 
 	if (!pScene)
 		return;

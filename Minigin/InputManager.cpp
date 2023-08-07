@@ -210,6 +210,8 @@ int dae::InputManager::ConvertKeyboardKeyToInt(KeyboardKey keyboardKey) const
 	case KeyboardKey::Minus: return VK_OEM_MINUS;
 
 	case KeyboardKey::Space: return VK_SPACE;
+
+	case KeyboardKey::esc: return VK_ESCAPE;
 	}
 	
 	return -1;

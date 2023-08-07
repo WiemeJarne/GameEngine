@@ -3,37 +3,42 @@
 
 void dae::SceneManager::Update()
 {
-	for(auto& scene : m_scenes)
-	{
-		scene->Update();
-	}
+	//update the active scene if there is a scene active
+	if(m_ActiveScene)
+		m_ActiveScene->Update();
 }
 
 void dae::SceneManager::Render() const
 {
-	for (const auto& scene : m_scenes)
-	{
-		scene->Render();
-	}
+	//render the active scene if there is a scene active
+	if (m_ActiveScene)
+		m_ActiveScene->Render();
 }
 
 void dae::SceneManager::RenderImGui()
 {
-	for (const auto& scene : m_scenes)
-	{
-		scene->RenderImGui();
-	}
+	//render ImGui for the active scene if there is a scene active
+	if (m_ActiveScene)
+		m_ActiveScene->RenderImGui();
 }
 
-dae::Scene& dae::SceneManager::CreateScene(const std::string& name)
+dae::Scene* dae::SceneManager::CreateScene(const std::string& name, bool setAsActiveScene)
 {
 	const auto& scene = std::shared_ptr<Scene>(new Scene(name));
 	m_scenes.push_back(scene);
-	return *scene;
+	
+	if (setAsActiveScene)
+		m_ActiveScene = scene.get();
+
+	return scene.get();
 }
 
 void dae::SceneManager::RemoveScene(Scene* scene)
 {
+	//if the scene to remove is the active scene set the active scene to nullptr
+	if (scene == m_ActiveScene)
+		m_ActiveScene = nullptr;
+
 	m_scenes.erase(std::remove_if(m_scenes.begin(), m_scenes.end(), [&](std::shared_ptr<Scene> pScene) { return scene == pScene.get(); }));
 }
 
@@ -49,4 +54,51 @@ dae::Scene* dae::SceneManager::GetSceneByIndex(int index) const
 		return nullptr;
 
 	return m_scenes[index].get();
+}
+
+dae::Scene* dae::SceneManager::GetSceneByName(const std::string& name) const
+{
+	for (const auto& scene : m_scenes)
+	{
+		if (scene->GetName() == name)
+		{
+			return scene.get();
+		}
+	}
+
+	return nullptr;
+}
+
+void dae::SceneManager::SetActiveSceneByIndex(int index)
+{
+	//check if the index is valid
+	if (static_cast<int>(m_scenes.size()) <= index)
+		return;
+
+	m_ActiveScene = GetSceneByIndex(index);
+}
+
+void dae::SceneManager::SetActiveSceneByName(const std::string& name)
+{
+	auto sceneToSetActive{ GetSceneByName(name) };
+
+	//check if the scene exists
+	if (sceneToSetActive)
+		m_ActiveScene = sceneToSetActive;
+}
+
+void dae::SceneManager::RemoveSceneByIndex(int index)
+{
+	auto sceneToRemove{ GetSceneByIndex(index) };
+
+	if (sceneToRemove)
+		RemoveScene(sceneToRemove);
+}
+
+void dae::SceneManager::RemoveSceneByName(const std::string& name)
+{
+	auto sceneToRemove{ GetSceneByName(name) };
+
+	if (sceneToRemove)
+		RemoveScene(sceneToRemove);
 }

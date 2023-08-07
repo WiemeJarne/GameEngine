@@ -6,7 +6,7 @@ namespace dae
 {
 	class Scene final
 	{
-		friend Scene& SceneManager::CreateScene(const std::string& name);
+		friend Scene* SceneManager::CreateScene(const std::string& name, bool setAsActiveScene = true);
 	public:
 		void Add(std::shared_ptr<GameObject> object);
 		void QueueForAdd(std::shared_ptr<GameObject> object);
@@ -16,6 +16,7 @@ namespace dae
 		void QueueForRemove(GameObject* object);
 		void RemoveAll();
 		std::shared_ptr<GameObject> GetSharedPtr(GameObject* pGameObject) const;
+		const std::string& GetName() const { return m_name; }
 
 		void Update();
 		void Render() const;

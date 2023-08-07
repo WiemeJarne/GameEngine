@@ -102,6 +102,9 @@
     <ClCompile Include="TypeComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
+    <ClCompile Include="SetActiveSceneCommand.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MoveCommand.h">
@@ -193,6 +196,9 @@
     </ClInclude>
     <ClInclude Include="TypeComponent.h">
       <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="SetActiveSceneCommand.h">
+      <Filter>Commands</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

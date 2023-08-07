@@ -24,7 +24,7 @@ public:
 	LevelManager();
 	~LevelManager();
 
-	void LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode, bool cycleLevels = false);
+	void LoadLevel(int levelNr, GameMode gameMode, bool cycleLevels = false);
 	void LoadNextLevel(bool cycleLevels = false);
 	void OnNotify(const BurgerPartReachedPlateEvent* pEvent) override;
 	void OnNotify(const PlayerDiedEvent* pEvent) override;
@@ -34,7 +34,6 @@ private:
 	int m_AmountOfBurgerPartsInCurrentLevel{};
 	int m_AmountOfBurgerParsReachedPlate{};
 	bool m_HasBeenInitialized{};
-	dae::Scene* m_CurrentScene{};
 	int m_LevelNr{};
 	GameMode m_GameMode{};
 	PointsComponent* m_pPointsComponent{};

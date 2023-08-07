@@ -11,7 +11,7 @@ PepperComponent::PepperComponent(dae::GameObject* pOwner, int amount, const glm:
 	: Component(pOwner)
 	, m_Amount{ amount }
 {
-	auto pScene{ dae::SceneManager::GetInstance().GetSceneByIndex(0) };
+	auto pScene{ dae::SceneManager::GetInstance().GetSceneByName("levelScene")};
 
 	if (!pScene)
 		return;
@@ -26,17 +26,6 @@ PepperComponent::PepperComponent(dae::GameObject* pOwner, int amount, const glm:
 	}
 }
 
-PepperComponent::~PepperComponent()
-{
-	auto pScene{ dae::SceneManager::GetInstance().GetSceneByIndex(0) };
-
-	if (!pScene)
-		return;
-
-	for (auto& pVisualizedGameObject : m_pVisualizeGameObjects)
-		pScene->QueueForRemove(pVisualizedGameObject);
-}
-
 void PepperComponent::Use()
 {
 	if (m_Amount <= 0)
@@ -45,7 +34,7 @@ void PepperComponent::Use()
 	--m_Amount;
 	m_IsActive = true;
 
-	auto pScene{ dae::SceneManager::GetInstance().GetSceneByIndex(0) };
+	auto pScene{ dae::SceneManager::GetInstance().GetSceneByName("levelScene") };
 
 	if (!pScene)
 		return;

@@ -21,6 +21,7 @@
 #include <algorithm>
 #include <iostream>
 #include "EventQueueManager.h"
+#include "SetActiveSceneCommand.h"
 
 LevelManager::LevelManager()
 {
@@ -33,7 +34,7 @@ LevelManager::~LevelManager()
 	WriteHighScoreListToFile();
 }
 
-void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode, bool cycleLevels)
+void LevelManager::LoadLevel(int levelNr, GameMode gameMode, bool cycleLevels)
 {
 	assert(levelNr > 0 && "ERROR LoadLevel called with levelNr lower then 1");
 
@@ -77,10 +78,15 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode, 
 
 	m_PlayersHealthComponents.clear();
 
-	dae::SceneManager::GetInstance().RemoveScene(&scene);
+	//remove the previous level
+	dae::SceneManager::GetInstance().RemoveSceneByName("levelScene");
 
-	auto& levelScene = dae::SceneManager::GetInstance().CreateScene("levelScene");
-	m_CurrentScene = &levelScene;
+	//create the new level and set it as active
+	auto levelScene = dae::SceneManager::GetInstance().CreateScene("levelScene", true);
+
+	//add pause command to the scene
+	dae::InputManager::GetInstance().AddCommand(std::make_unique<commands::SetActiveSceneCommand>("pauseScreen"), dae::KeyState::down, dae::InputManager::KeyboardKey::esc);
+	dae::InputManager::GetInstance().AddCommand(std::make_unique<commands::SetActiveSceneCommand>("levelScene"), dae::KeyState::down, dae::InputManager::KeyboardKey::Space);
 
 	bool couldLoadLevel{};
 
@@ -122,26 +128,26 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode, 
 		m_EnemiesSpawnLocations.push_back({ cellSideLenght * (std::get<0>(m_LevelGrids[m_LevelNr - 1])->GetAmountOfRows() + 1), m_LevelTopLeftPos.y + cellSideLenght});
 	}
 
-	auto enemyManager{ std::make_unique<dae::GameObject>(m_CurrentScene) };
-	enemyManager->AddComponent(std::make_unique<EnemyManagerComponent>(enemyManager.get(), m_CurrentScene, m_EnemiesSpawnLocations, m_LevelNr, m_LevelNr, m_LevelNr));
-	levelScene.Add(std::move(enemyManager));
+	auto enemyManager{ std::make_unique<dae::GameObject>(levelScene) };
+	enemyManager->AddComponent(std::make_unique<EnemyManagerComponent>(enemyManager.get(), levelScene, m_EnemiesSpawnLocations, m_LevelNr, m_LevelNr, m_LevelNr));
+	levelScene->Add(std::move(enemyManager));
 
 	const float cellSidesLenght{ std::get<0>(m_LevelGrids[m_LevelNr - 1])->GetCellSideLenght() };
 
 	//create point screen
-	auto pointScreen{ std::make_unique<dae::GameObject>(m_CurrentScene) };
+	auto pointScreen{ std::make_unique<dae::GameObject>(levelScene) };
 	auto pointsComponent{ std::make_unique<PointsComponent>(pointScreen.get(), glm::vec2(dae::SceneManager::GetInstance().GetScenesWidth() / 2.f, 10.f)) };
 	pointsComponent->AddPoints(m_AmountOfPoints);
 	m_pPointsComponent = pointsComponent.get();
 	pointScreen->AddComponent(std::move(pointsComponent));
-	levelScene.Add(std::move(pointScreen));
+	levelScene->Add(std::move(pointScreen));
 
 	//create player 1
 	glm::vec2 playerPos{ 1.5f * cellSidesLenght * std::get<1>(m_LevelGrids[m_LevelNr - 1]), cellSidesLenght * std::get<2>(m_LevelGrids[m_LevelNr - 1]) - 16.f };
 	playerPos.y += cellSidesLenght + 10.f;
-	auto player1{ std::make_unique<PlayerPrefab>(m_CurrentScene, "PeterPepperFrontFacing.png", playerPos, glm::vec2(0.f, 0.f), "PeterPepperHead.png")->GetGameObject()};
+	auto player1{ std::make_unique<PlayerPrefab>(levelScene, "PeterPepperFrontFacing.png", playerPos, glm::vec2(0.f, 0.f), "PeterPepperHead.png")->GetGameObject()};
 	m_PlayersHealthComponents.push_back(player1->GetComponent<HealthComponent>());
-	levelScene.Add(std::move(player1));
+	levelScene->Add(std::move(player1));
 	
 	std::unique_ptr<dae::GameObject> player2{};
 
@@ -150,9 +156,9 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode, 
 	case GameMode::coOp:
 		playerPos = { 1.5f * cellSidesLenght * std::get<1>(m_LevelGrids[m_LevelNr - 1]) + 16.f, cellSidesLenght * std::get<2>(m_LevelGrids[m_LevelNr - 1]) - 16.f };
 		playerPos.y += cellSidesLenght + 10.f;
-		player2 = std::make_unique<PlayerPrefab>(m_CurrentScene, "MrsSalt.png",playerPos, glm::vec2(dae::SceneManager::GetInstance().GetScenesWidth() - 60.f, 0.f), "PeterPepperHead.png", m_PlayersHealth[1], false)->GetGameObject();
+		player2 = std::make_unique<PlayerPrefab>(levelScene, "MrsSalt.png",playerPos, glm::vec2(dae::SceneManager::GetInstance().GetScenesWidth() - 60.f, 0.f), "PeterPepperHead.png", m_PlayersHealth[1], false)->GetGameObject();
 		m_PlayersHealthComponents.push_back(player2->GetComponent<HealthComponent>());
-		levelScene.Add(std::move(player2));
+		levelScene->Add(std::move(player2));
 		break;
 
 	case GameMode::versus:
@@ -182,19 +188,18 @@ void LevelManager::LoadLevel(int levelNr, dae::Scene& scene, GameMode gameMode, 
 
 		playerPos = { 1.5f * cellSidesLenght * colNr + 16.f, cellSidesLenght * rowNr };
 		playerPos.y += cellSidesLenght + 10.f;
-		player2 = std::make_unique<PlayerPrefab>(m_CurrentScene, "MrHotDog.png", playerPos, glm::vec2(dae::SceneManager::GetInstance().GetScenesWidth() - 60.f, 0.f), "PeterPepperHead.png", m_PlayersHealth[1], false)->GetGameObject();
+		player2 = std::make_unique<PlayerPrefab>(levelScene, "MrHotDog.png", playerPos, glm::vec2(dae::SceneManager::GetInstance().GetScenesWidth() - 60.f, 0.f), "PeterPepperHead.png", m_PlayersHealth[1], false)->GetGameObject();
 		player2->RemoveComponent<PepperComponent>();
 		player2->AddComponent(std::make_unique<DamageComponent>(player2.get(), 1));
 		m_PlayersHealthComponents.push_back(player2->GetComponent<HealthComponent>());
-		levelScene.Add(std::move(player2));
+		levelScene->Add(std::move(player2));
 		break;
-	}
-	
+	}	
 }
 
 void LevelManager::LoadNextLevel(bool cycleLevels)
 {
-	LoadLevel(m_LevelNr + 1, *m_CurrentScene, m_GameMode, cycleLevels);
+	LoadLevel(m_LevelNr + 1, m_GameMode, cycleLevels);
 }
 
 void LevelManager::OnNotify(const BurgerPartReachedPlateEvent* )
@@ -205,7 +210,7 @@ void LevelManager::OnNotify(const BurgerPartReachedPlateEvent* )
 		++m_LevelNr;
 
 		dae::InputManager::GetInstance().RemoveAllCommandsAndControlers();
-		LoadLevel(m_LevelNr, *m_CurrentScene, m_GameMode, true);
+		LoadLevel(m_LevelNr, m_GameMode, true);
 	}
 }
 
@@ -409,6 +414,9 @@ void LevelManager::LoadLevelBurgerParts(int levelNr)
 
 	const float cellSidesLenght{ std::get<0>(m_LevelGrids[m_LevelNr - 1])->GetCellSideLenght() };
 
+	//get the active scene
+	auto activeScene{ dae::SceneManager::GetInstance().GetActiveScene() };
+
 	char command{};
 
 	while (!inputFile.eof())
@@ -426,10 +434,10 @@ void LevelManager::LoadLevelBurgerParts(int levelNr)
 			if (currentCollIndex % 2 == 1 && currentCollIndex != 1)
 				cellTopLeftPos.x += cellSidesLenght * (currentCollIndex - 1) / 2;
 
-			auto burgerPartPrefab{ std::make_unique<BurgerPartPrefab>(m_CurrentScene, "bunTop.png", cellTopLeftPos) };
+			auto burgerPartPrefab{ std::make_unique<BurgerPartPrefab>(activeScene, "bunTop.png", cellTopLeftPos) };
 			auto burgerPartGo{ std::move(burgerPartPrefab->GetGameObject()) };
 
-			m_CurrentScene->Add(std::move(burgerPartGo));
+			activeScene->Add(std::move(burgerPartGo));
 
 			++m_AmountOfBurgerPartsInCurrentLevel;
 		}
@@ -441,10 +449,10 @@ void LevelManager::LoadLevelBurgerParts(int levelNr)
 			if (currentCollIndex % 2 == 1 && currentCollIndex != 1)
 				cellTopLeftPos.x += cellSidesLenght * (currentCollIndex - 1) / 2;
 
-			auto burgerPartPrefab{ std::make_unique<BurgerPartPrefab>(m_CurrentScene, "lettuce.png", cellTopLeftPos) };
+			auto burgerPartPrefab{ std::make_unique<BurgerPartPrefab>(activeScene, "lettuce.png", cellTopLeftPos) };
 			auto burgerPartGo{ std::move(burgerPartPrefab->GetGameObject()) };
 
-			m_CurrentScene->Add(std::move(burgerPartGo));
+			activeScene->Add(std::move(burgerPartGo));
 
 			++m_AmountOfBurgerPartsInCurrentLevel;
 		}
@@ -456,10 +464,10 @@ void LevelManager::LoadLevelBurgerParts(int levelNr)
 			if (currentCollIndex % 2 == 1 && currentCollIndex != 1)
 				cellTopLeftPos.x += cellSidesLenght * (currentCollIndex - 1) / 2;
 
-			auto burgerPartPrefab{ std::make_unique<BurgerPartPrefab>(m_CurrentScene, "tomato.png", cellTopLeftPos) };
+			auto burgerPartPrefab{ std::make_unique<BurgerPartPrefab>(activeScene, "tomato.png", cellTopLeftPos) };
 			auto burgerPartGo{ std::move(burgerPartPrefab->GetGameObject()) };
 
-			m_CurrentScene->Add(std::move(burgerPartGo));
+			activeScene->Add(std::move(burgerPartGo));
 
 			++m_AmountOfBurgerPartsInCurrentLevel;
 		}
@@ -471,10 +479,10 @@ void LevelManager::LoadLevelBurgerParts(int levelNr)
 			if (currentCollIndex % 2 == 1 && currentCollIndex != 1)
 				cellTopLeftPos.x += cellSidesLenght * (currentCollIndex - 1) / 2;
 
-			auto burgerPartPrefab{ std::make_unique<BurgerPartPrefab>(m_CurrentScene, "cheese.png", cellTopLeftPos) };
+			auto burgerPartPrefab{ std::make_unique<BurgerPartPrefab>(activeScene, "cheese.png", cellTopLeftPos) };
 			auto burgerPartGo{ std::move(burgerPartPrefab->GetGameObject()) };
 
-			m_CurrentScene->Add(std::move(burgerPartGo));
+			activeScene->Add(std::move(burgerPartGo));
 
 			++m_AmountOfBurgerPartsInCurrentLevel;
 		}
@@ -486,10 +494,10 @@ void LevelManager::LoadLevelBurgerParts(int levelNr)
 			if (currentCollIndex % 2 == 1 && currentCollIndex != 1)
 				cellTopLeftPos.x += cellSidesLenght * (currentCollIndex - 1) / 2;
 
-			auto burgerPartPrefab{ std::make_unique<BurgerPartPrefab>(m_CurrentScene, "patty.png", cellTopLeftPos) };
+			auto burgerPartPrefab{ std::make_unique<BurgerPartPrefab>(activeScene, "patty.png", cellTopLeftPos) };
 			auto burgerPartGo{ std::move(burgerPartPrefab->GetGameObject()) };
 
-			m_CurrentScene->Add(std::move(burgerPartGo));
+			activeScene->Add(std::move(burgerPartGo));
 
 			++m_AmountOfBurgerPartsInCurrentLevel;
 		}
@@ -501,10 +509,10 @@ void LevelManager::LoadLevelBurgerParts(int levelNr)
 			if (currentCollIndex % 2 == 1 && currentCollIndex != 1)
 				cellTopLeftPos.x += cellSidesLenght * (currentCollIndex - 1) / 2;
 
-			auto burgerPartPrefab{ std::make_unique<BurgerPartPrefab>(m_CurrentScene, "bunBottom.png", cellTopLeftPos) };
+			auto burgerPartPrefab{ std::make_unique<BurgerPartPrefab>(activeScene, "bunBottom.png", cellTopLeftPos) };
 			auto burgerPartGo{ std::move(burgerPartPrefab->GetGameObject()) };
 
-			m_CurrentScene->Add(std::move(burgerPartGo));
+			activeScene->Add(std::move(burgerPartGo));
 
 			++m_AmountOfBurgerPartsInCurrentLevel;
 		}
@@ -520,6 +528,9 @@ void LevelManager::LoadLevelBurgerParts(int levelNr)
 
 const glm::vec2 LevelManager::AddLevelElementToCurrentScene(CellKind cellKind, int colNr, int rowNr)
 {
+	//get the active scene
+	auto activeScene{ dae::SceneManager::GetInstance().GetActiveScene() };
+
 	const float cellSidesLenght{ std::get<0>(m_LevelGrids[m_LevelNr - 1])->GetCellSideLenght() };
 
 	glm::vec2 cellPos{};
@@ -532,7 +543,7 @@ const glm::vec2 LevelManager::AddLevelElementToCurrentScene(CellKind cellKind, i
 		if (colNr % 2 == 0 && colNr != 0)
 			cellPos.x += cellSidesLenght * colNr / 2;
 
-		m_CurrentScene->Add(std::make_unique<TexturedGameObjectPrefab>(m_CurrentScene, "shortPlatform.png", cellPos)->GetGameObject());
+		activeScene->Add(std::make_unique<TexturedGameObjectPrefab>(activeScene, "shortPlatform.png", cellPos)->GetGameObject());
 
 		return cellPos;
 
@@ -542,7 +553,7 @@ const glm::vec2 LevelManager::AddLevelElementToCurrentScene(CellKind cellKind, i
 		if (colNr % 2 == 0 && colNr != 0)
 			cellPos.x += cellSidesLenght * colNr / 2;
 
-		m_CurrentScene->Add(std::make_unique<TexturedGameObjectPrefab>(m_CurrentScene, "shortGoUp.png", cellPos)->GetGameObject());
+		activeScene->Add(std::make_unique<TexturedGameObjectPrefab>(activeScene, "shortGoUp.png", cellPos)->GetGameObject());
 		
 		return cellPos;
 
@@ -552,7 +563,7 @@ const glm::vec2 LevelManager::AddLevelElementToCurrentScene(CellKind cellKind, i
 		if (colNr % 2 == 0 && colNr != 0)
 			cellPos.x += cellSidesLenght * colNr / 2;
 
-		m_CurrentScene->Add(std::make_unique<TexturedGameObjectPrefab>(m_CurrentScene, "shortPlatform.png", cellPos)->GetGameObject());
+		activeScene->Add(std::make_unique<TexturedGameObjectPrefab>(activeScene, "shortPlatform.png", cellPos)->GetGameObject());
 
 		return cellPos;
 
@@ -562,7 +573,7 @@ const glm::vec2 LevelManager::AddLevelElementToCurrentScene(CellKind cellKind, i
 		if (colNr % 2 == 0 && colNr != 0)
 			cellPos.x += cellSidesLenght * colNr / 2;
 
-		m_CurrentScene->Add(std::make_unique<TexturedGameObjectPrefab>(m_CurrentScene, "shortGoUp.png", cellPos)->GetGameObject());
+		activeScene->Add(std::make_unique<TexturedGameObjectPrefab>(activeScene, "shortGoUp.png", cellPos)->GetGameObject());
 
 		return cellPos;
 
@@ -572,7 +583,7 @@ const glm::vec2 LevelManager::AddLevelElementToCurrentScene(CellKind cellKind, i
 		if (colNr % 2 == 1 && colNr != 1)
 			cellPos.x += cellSidesLenght * (colNr - 1) / 2;
 
-		m_CurrentScene->Add(std::make_unique<TexturedGameObjectPrefab>(m_CurrentScene, "longPlatform.png", cellPos)->GetGameObject());
+		activeScene->Add(std::make_unique<TexturedGameObjectPrefab>(activeScene, "longPlatform.png", cellPos)->GetGameObject());
 
 		return cellPos;
 
@@ -582,7 +593,7 @@ const glm::vec2 LevelManager::AddLevelElementToCurrentScene(CellKind cellKind, i
 		if (colNr % 2 == 1 && colNr != 1)
 			cellPos.x += cellSidesLenght * (colNr - 1) / 2;
 
-		m_CurrentScene->Add(std::make_unique<TexturedGameObjectPrefab>(m_CurrentScene, "longGoUp.png", cellPos)->GetGameObject());
+		activeScene->Add(std::make_unique<TexturedGameObjectPrefab>(activeScene, "longGoUp.png", cellPos)->GetGameObject());
 
 		return cellPos;
 
@@ -592,7 +603,7 @@ const glm::vec2 LevelManager::AddLevelElementToCurrentScene(CellKind cellKind, i
 		if (colNr % 2 == 1 && colNr != 1)
 			cellPos.x += cellSidesLenght * (colNr - 1) / 2;
 
-		m_CurrentScene->Add(std::make_unique<TexturedGameObjectPrefab>(m_CurrentScene, "longPlatform.png", cellPos)->GetGameObject());
+		activeScene->Add(std::make_unique<TexturedGameObjectPrefab>(activeScene, "longPlatform.png", cellPos)->GetGameObject());
 
 		return cellPos;
 
@@ -602,7 +613,7 @@ const glm::vec2 LevelManager::AddLevelElementToCurrentScene(CellKind cellKind, i
 		if (colNr % 2 == 1 && colNr != 1)
 			cellPos.x += cellSidesLenght * (colNr - 1) / 2;
 
-		m_CurrentScene->Add(std::make_unique<TexturedGameObjectPrefab>(m_CurrentScene, "longGoUp.png", cellPos)->GetGameObject());
+		activeScene->Add(std::make_unique<TexturedGameObjectPrefab>(activeScene, "longGoUp.png", cellPos)->GetGameObject());
 		
 		return cellPos;
 
@@ -611,7 +622,7 @@ const glm::vec2 LevelManager::AddLevelElementToCurrentScene(CellKind cellKind, i
 
 		cellPos.x += cellSidesLenght * colNr / 2;
 
-		m_CurrentScene->Add(std::make_unique<TexturedGameObjectPrefab>(m_CurrentScene, "ladder.png", cellPos)->GetGameObject());
+		activeScene->Add(std::make_unique<TexturedGameObjectPrefab>(activeScene, "ladder.png", cellPos)->GetGameObject());
 
 		return cellPos;
 
@@ -622,17 +633,17 @@ const glm::vec2 LevelManager::AddLevelElementToCurrentScene(CellKind cellKind, i
 			cellPos.x += cellSidesLenght * (colNr - 1) / 2;
 
 		//add the plate
-		m_CurrentScene->Add(std::make_unique<TexturedGameObjectPrefab>(m_CurrentScene, "plateMiddle.png", cellPos)->GetGameObject());
+		activeScene->Add(std::make_unique<TexturedGameObjectPrefab>(activeScene, "plateMiddle.png", cellPos)->GetGameObject());
 
 		//add the leftPlateEdge
 		glm::vec2 leftPlateEdgePos{ cellPos };
 		leftPlateEdgePos.x -= cellSidesLenght / 2.f;
-		m_CurrentScene->Add(std::make_unique<TexturedGameObjectPrefab>(m_CurrentScene, "plateEdgeLeft.png", leftPlateEdgePos)->GetGameObject());
+		activeScene->Add(std::make_unique<TexturedGameObjectPrefab>(activeScene, "plateEdgeLeft.png", leftPlateEdgePos)->GetGameObject());
 
 		//add the rightPlateEdge
 		glm::vec2 rightPlateEdgePos{ cellPos };
 		rightPlateEdgePos.x += cellSidesLenght * 2.f;
-		m_CurrentScene->Add(std::make_unique<TexturedGameObjectPrefab>(m_CurrentScene, "plateEdgeRight.png", rightPlateEdgePos)->GetGameObject());
+		activeScene->Add(std::make_unique<TexturedGameObjectPrefab>(activeScene, "plateEdgeRight.png", rightPlateEdgePos)->GetGameObject());
 		
 		return cellPos;
 	}
@@ -648,10 +659,11 @@ void LevelManager::ShowPointsScreen()
 		m_pPointsComponent = nullptr;
 	}
 
-	dae::SceneManager::GetInstance().RemoveScene(m_CurrentScene);
+	//remove the previous pointScreenScene
+	dae::SceneManager::GetInstance().RemoveSceneByName("pointScreen");
 
-	auto& levelScene = dae::SceneManager::GetInstance().CreateScene("levelScene");
-	m_CurrentScene = &levelScene;
+	//create a new pointsScreenScene and set it as the active scene
+	auto pPointScreenScene{ dae::SceneManager::GetInstance().CreateScene("pointScreen", true) };
 
 	dae::InputManager::GetInstance().RemoveAllButtons();
 	dae::InputManager::GetInstance().RemoveAllCommandsAndControlers();
@@ -695,11 +707,11 @@ void LevelManager::ShowPointsScreen()
 
 	for (int index{}; index < static_cast<int>(m_HighScoreList.size()); ++index)
 	{
-		auto scoreObject{ std::make_unique<dae::GameObject>(m_CurrentScene) };
+		auto scoreObject{ std::make_unique<dae::GameObject>(pPointScreenScene) };
 		scoreObject->AddComponent(std::make_unique<dae::TextComponent>(scoreObject.get(), m_HighScoreList[index].first + ' ' + std::to_string(m_HighScoreList[index].second), m_Font));
 		auto textureSize{ scoreObject->GetComponent<dae::RenderComponent>()->GetTextureComponent()->GetSize() };
 		scoreObject->SetLocalPosition(sceneWidth / 2.f - textureSize.x / 2.f, 75.f + index * 50.f);
-		m_CurrentScene->Add(std::move(scoreObject));
+		pPointScreenScene->Add(std::move(scoreObject));
 	}
 
 	if (m_HighScoreList.size() == 0)
@@ -710,16 +722,16 @@ void LevelManager::ShowPointsScreen()
 	if (isCurrentScoreInTopFive) //the player can only type in there name when their score is in the top 5
 	{
 		//add object so the player can type in his name
-		auto typeObject{ std::make_unique<dae::GameObject>(m_CurrentScene) };
+		auto typeObject{ std::make_unique<dae::GameObject>(pPointScreenScene) };
 		typeObject->AddComponent(std::make_unique<TypeComponent>(typeObject.get(), m_Font));
 		auto textureSize{ typeObject->GetComponent<dae::RenderComponent>()->GetTextureComponent()->GetSize() };
 		typeObject->SetLocalPosition(sceneWidth / 2.f - textureSize.x / 2.f, sceneHeight - 75.f);
 		pTextComponent = typeObject->GetComponent<dae::TextComponent>();
-		m_CurrentScene->Add(std::move(typeObject));
+		pPointScreenScene->Add(std::move(typeObject));
 	}
 
 	//add a button to replay
-	auto replayButton{ std::make_unique<dae::GameObject>(m_CurrentScene) };
+	auto replayButton{ std::make_unique<dae::GameObject>(pPointScreenScene) };
 	replayButton->AddComponent(std::make_unique<dae::TextComponent>(replayButton.get(), "Replay?", m_Font));
 	auto onContinueButtonClick =
 		[=]()
@@ -765,19 +777,20 @@ void LevelManager::ShowPointsScreen()
 		dae::InputManager::GetInstance().RemoveAllButtons();
 		dae::InputManager::GetInstance().RemoveAllCommandsAndControlers();
 		m_AmountOfPoints = 0;
-		LoadLevel(1, *m_CurrentScene, m_GameMode);
+		LoadLevel(1, m_GameMode);
 	};
+
 	const auto buttonSize{ replayButton->GetComponent<dae::RenderComponent>()->GetTextureComponent()->GetSize() };
 	const glm::vec2 buttonPos{ sceneWidth / 2.f - buttonSize.x / 2.f, sceneHeight - 25.f };
 	replayButton->AddComponent(std::make_unique<dae::ButtonComponent>(replayButton.get(), buttonPos, static_cast<float>(buttonSize.x), static_cast<float>(buttonSize.y), onContinueButtonClick));
-	m_CurrentScene->Add(std::move(replayButton));
+	pPointScreenScene->Add(std::move(replayButton));
 
 	//add object to show the current score
-	auto currentScoreObject{ std::make_unique<dae::GameObject>(m_CurrentScene) };
+	auto currentScoreObject{ std::make_unique<dae::GameObject>(pPointScreenScene) };
 	currentScoreObject->AddComponent(std::make_unique<dae::TextComponent>(currentScoreObject.get(), "your current score: " + std::to_string(m_AmountOfPoints), m_Font));
 	auto textureSize{ currentScoreObject->GetComponent<dae::RenderComponent>()->GetTextureComponent()->GetSize() };
 	currentScoreObject->SetLocalPosition(sceneWidth / 2.f - textureSize.x / 2.f, sceneHeight - 125.f);
-	m_CurrentScene->Add(std::move(currentScoreObject));
+	pPointScreenScene->Add(std::move(currentScoreObject));
 }
 
 void LevelManager::SortHighScoreList()
