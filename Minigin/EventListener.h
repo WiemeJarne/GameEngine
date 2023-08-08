@@ -6,15 +6,9 @@ namespace dae
 	class EventListener
 	{
 	public:
-		EventListener()
-		{
-			//EventQueueManager::GetInstance().AddListener<EventType>(this);
-		}
+		EventListener() = default;
 
-		virtual ~EventListener()
-		{
-			//EventQueueManager::GetInstance().RemoveListener<EventType>(this);
-		}
+		virtual ~EventListener() = default;
 
 		virtual void OnNotify(const EventType* event) = 0;
 	};

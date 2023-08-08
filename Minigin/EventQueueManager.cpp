@@ -9,7 +9,9 @@ void dae::EventQueueManager::HandleEventQueues()
 			pEventQueue.second->Update();
 		}
 
-		m_EventWasAdded = false;
+		//if there are not queues in m_pEventQueues then the event still need to be processed so m_EventWasAdded stays true else it turn false
+		if(!m_pvEventQueues.empty())
+			m_EventWasAdded = false;
 	}
 
 	//check if there are new queues

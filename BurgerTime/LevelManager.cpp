@@ -44,7 +44,6 @@ void LevelManager::LoadLevel(int levelNr, GameMode gameMode, bool cycleLevels)
 		dae::ServiceLocator::GetSoundSystem().Play("sound/Music.mp3", 25, true);
 	}
 
-	dae::InputManager::GetInstance().RemoveAllButtons();
 	dae::InputManager::GetInstance().RemoveAllCommandsAndControlers();
 
 	m_LevelNr = levelNr;
@@ -665,7 +664,6 @@ void LevelManager::ShowPointsScreen()
 	//create a new pointsScreenScene and set it as the active scene
 	auto pPointScreenScene{ dae::SceneManager::GetInstance().CreateScene("pointScreen", true) };
 
-	dae::InputManager::GetInstance().RemoveAllButtons();
 	dae::InputManager::GetInstance().RemoveAllCommandsAndControlers();
 
 	if (!m_Font)
@@ -774,7 +772,6 @@ void LevelManager::ShowPointsScreen()
 			}
 		}
 
-		dae::InputManager::GetInstance().RemoveAllButtons();
 		dae::InputManager::GetInstance().RemoveAllCommandsAndControlers();
 		m_AmountOfPoints = 0;
 		LoadLevel(1, m_GameMode);

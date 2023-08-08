@@ -224,7 +224,9 @@ xcopy "$(SolutionDir)3rdParty\SDL2_mixer\lib\$(PlatformTarget)\*.dll" "$(OutputP
     <ClInclude Include="..\3rdParty\imgui-1.89.4\imstb_textedit.h" />
     <ClInclude Include="..\3rdParty\imgui-1.89.4\imstb_truetype.h" />
     <ClInclude Include="BaseEvent.h" />
+    <ClInclude Include="ButtonAddedToActiveSceneEvent.h" />
     <ClInclude Include="ButtonComponent.h" />
+    <ClInclude Include="ButtonRemovedFromActiveSceneEvent.h" />
     <ClInclude Include="CollisionBoxComponent.h" />
     <ClInclude Include="CollisionEvent.h" />
     <ClInclude Include="CollisionManager.h" />
@@ -238,6 +240,7 @@ xcopy "$(SolutionDir)3rdParty\SDL2_mixer\lib\$(PlatformTarget)\*.dll" "$(OutputP
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Minigin.h" />
+    <ClInclude Include="NewSceneActivatedEvent.h" />
     <ClInclude Include="Observer.h" />
     <ClInclude Include="PlayerController.h" />
     <ClInclude Include="RenderComponent.h" />

@@ -153,6 +153,15 @@
     <ClInclude Include="CollisionEvent.h">
       <Filter>Events</Filter>
     </ClInclude>
+    <ClInclude Include="NewSceneActivatedEvent.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonAddedToActiveSceneEvent.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonRemovedFromActiveSceneEvent.h">
+      <Filter>Events</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ResourceManager.cpp">

@@ -1,5 +1,7 @@
 #include "SceneManager.h"
 #include "Scene.h"
+#include "EventQueueManager.h"
+#include "NewSceneActivatedEvent.h"
 
 void dae::SceneManager::Update()
 {
@@ -28,7 +30,10 @@ dae::Scene* dae::SceneManager::CreateScene(const std::string& name, bool setAsAc
 	m_scenes.push_back(scene);
 	
 	if (setAsActiveScene)
+	{
 		m_ActiveScene = scene.get();
+		EventQueueManager::GetInstance().AddEvent<NewSceneActivatedEvent>(std::make_unique<NewSceneActivatedEvent>(m_ActiveScene));
+	}
 
 	return scene.get();
 }
@@ -76,6 +81,7 @@ void dae::SceneManager::SetActiveSceneByIndex(int index)
 		return;
 
 	m_ActiveScene = GetSceneByIndex(index);
+	EventQueueManager::GetInstance().AddEvent<NewSceneActivatedEvent>(std::make_unique<NewSceneActivatedEvent>(m_ActiveScene));
 }
 
 void dae::SceneManager::SetActiveSceneByName(const std::string& name)
@@ -84,7 +90,10 @@ void dae::SceneManager::SetActiveSceneByName(const std::string& name)
 
 	//check if the scene exists
 	if (sceneToSetActive)
+	{
 		m_ActiveScene = sceneToSetActive;
+		EventQueueManager::GetInstance().AddEvent<NewSceneActivatedEvent>(std::make_unique<NewSceneActivatedEvent>(m_ActiveScene));
+	}
 }
 
 void dae::SceneManager::RemoveSceneByIndex(int index)

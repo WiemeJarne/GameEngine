@@ -3,6 +3,10 @@
 #include <vector>
 #include "PlayerController.h"
 #include "ButtonComponent.h"
+#include "EventListener.h"
+#include "NewSceneActivatedEvent.h"
+#include "ButtonAddedToActiveSceneEvent.h"
+#include "ButtonRemovedFromActiveSceneEvent.h"
 #include <map>
 #include <memory>
 #define KEY_DOWN_MASK 0x80
@@ -16,9 +20,10 @@ namespace dae
 		pressed
 	};
 
-	class InputManager final : public Singleton<InputManager>
+	class InputManager final : public Singleton<InputManager>, EventListener<NewSceneActivatedEvent>, EventListener<ButtonAddedToActiveSceneEvent>, EventListener<ButtonRemovedFromActiveSceneEvent>
 	{
 	public:
+		InputManager();
 		bool ProcessInput();
 		void AddController(std::unique_ptr<dae::PlayerController> playerController);
 		int GetAmountOfControllers() const { return static_cast<int>(m_Controllers.size()); }
@@ -42,9 +47,10 @@ namespace dae
 		};
 		
 		void AddCommand(std::unique_ptr<dae::Command> command, KeyState keyState, KeyboardKey keyboardKey);
-		void AddButton(ButtonComponent* pButtomComponent);
-		void RemoveAllButtons();
 		void RemoveAllCommandsAndControlers();
+		void OnNotify(const NewSceneActivatedEvent* pEvent) override;
+		void OnNotify(const ButtonAddedToActiveSceneEvent* pEvent) override;
+		void OnNotify(const ButtonRemovedFromActiveSceneEvent* pEvent) override;
 
 	private:
 		std::vector<std::unique_ptr<dae::PlayerController>> m_Controllers;
@@ -61,5 +67,7 @@ namespace dae
 		bool IsUpThisFrame(int button) const;
 		bool IsPressed(int button) const;
 		int ConvertKeyboardKeyToInt(KeyboardKey keyboardKey) const;
+		void AddButton(ButtonComponent* pButtonComponent);
+		void RemoveButton(ButtonComponent* pButtonComponent);
 	};
 }

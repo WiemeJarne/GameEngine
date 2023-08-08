@@ -1,7 +1,15 @@
 #include <SDL.h>
 #include "InputManager.h"
 #include "imgui_impl_sdl2.h"
+#include "EventQueueManager.h"
 #include <Windows.h>
+
+dae::InputManager::InputManager()
+{
+	EventQueueManager::GetInstance().AddListener<NewSceneActivatedEvent>(this);
+	EventQueueManager::GetInstance().AddListener<ButtonAddedToActiveSceneEvent>(this);
+	EventQueueManager::GetInstance().AddListener<ButtonRemovedFromActiveSceneEvent>(this);
+}
 
 bool dae::InputManager::ProcessInput()
 {
@@ -51,9 +59,19 @@ void dae::InputManager::AddCommand(std::unique_ptr<dae::Command> command, KeySta
 	m_KeyboardCommands.insert(std::pair<KeyboardAction, std::unique_ptr<dae::Command>>(keyboardAction, std::move(command)));
 }
 
-void dae::InputManager::AddButton(ButtonComponent* pButtomComponent)
+void dae::InputManager::AddButton(ButtonComponent* pButtonComponent)
 {
-	m_pButtons.push_back(pButtomComponent);
+	//check if the button was already added
+	auto pButton = std::find_if(m_pButtons.begin(), m_pButtons.end(), [pButtonComponent](ButtonComponent* pOtherButton) { return pButtonComponent == pOtherButton; });
+
+	//if it was not found add it to the vector if it was found ignore it
+	if(pButton == m_pButtons.end())
+		m_pButtons.push_back(pButtonComponent);
+}
+
+void dae::InputManager::RemoveButton(ButtonComponent* pButtonComponent)
+{
+	m_pButtons.erase(std::remove(m_pButtons.begin(), m_pButtons.end(), pButtonComponent), m_pButtons.end());
 }
 
 void dae::InputManager::HandleKeyboardInput()
@@ -113,16 +131,27 @@ bool dae::InputManager::IsPressed(int button) const
 	return (m_CurrentKeyboardKeysState[button] & KEY_DOWN_MASK);
 }
 
-void dae::InputManager::RemoveAllButtons()
-{
-	m_pButtons.clear();
-}
-
 void dae::InputManager::RemoveAllCommandsAndControlers()
 {
 	m_KeyboardCommands.clear();
 	m_Controllers.clear();
 	m_CommandsWhereRemoved = true;
+}
+
+void dae::InputManager::OnNotify(const NewSceneActivatedEvent* pEvent)
+{
+	m_pButtons.clear();
+	m_pButtons = pEvent->GetNewlyActivatedScene()->GetButtons();
+}
+
+void dae::InputManager::OnNotify(const ButtonAddedToActiveSceneEvent* pEvent)
+{
+	AddButton(pEvent->GetButtonComponent());
+}
+
+void dae::InputManager::OnNotify(const ButtonRemovedFromActiveSceneEvent* pEvent)
+{
+	RemoveButton(pEvent->GetButtonComponent());
 }
 
 int dae::InputManager::ConvertKeyboardKeyToInt(KeyboardKey keyboardKey) const

@@ -1,5 +1,4 @@
 #include "ButtonComponent.h"
-#include "InputManager.h"
 #include "GameObject.h"
 
 dae::ButtonComponent::ButtonComponent(dae::GameObject* pOwner, const glm::vec2& topLeftPos, float width, float height, std::function<void()> onClickFunction)
@@ -9,7 +8,6 @@ dae::ButtonComponent::ButtonComponent(dae::GameObject* pOwner, const glm::vec2& 
 	, height{ height }
 	, m_OnClickFunction{ onClickFunction }
 {
-	InputManager::GetInstance().AddButton(this);
 	pOwner->SetLocalPosition(topLeftPos.x, topLeftPos.y);
 }
 
