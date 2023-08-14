@@ -27,7 +27,10 @@ namespace dae
 				e = std::move(m_pEvents[m_Head]);
 
 				if (e == nullptr)
-					return;
+				{
+					m_Head = (m_Head + 1) % m_Size;
+					continue;
+				}
 
 				for (auto pListener : m_Listeners)
 				{
@@ -70,8 +73,7 @@ namespace dae
 		{
 			if ((m_Tail + 1) % m_Size == m_Head)
 			{
-				m_Size += m_Size / 2;
-				m_pEvents.resize(m_Size);
+				Resize();
 			}
 
 			m_pEvents[m_Tail] = std::move(pEvent);
@@ -85,5 +87,29 @@ namespace dae
 		int m_Tail{};
 		int m_Size{};
 		bool m_ListenerRemoved{};
+
+		void Resize()
+		{
+			//remember what the size is now before resizing
+			const int oldSize{ m_Size };
+
+			//make the vector bigger
+			m_Size += m_Size / 2;
+			m_pEvents.resize(m_Size);
+
+			//if head is bigger then tail put the head at the end
+			if (m_Head > m_Tail)
+			{
+				const int amountOfEventsToMove{ oldSize - m_Head };
+
+				for (int index{}; index < amountOfEventsToMove; ++index)
+				{
+					m_pEvents[m_Size - amountOfEventsToMove + index] = std::move(m_pEvents[m_Head + index]);
+					m_pEvents[m_Head + index] = nullptr;
+				}
+
+				m_Head = m_Size - amountOfEventsToMove;
+			}
+		}
 	};
 }

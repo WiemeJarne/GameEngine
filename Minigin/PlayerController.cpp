@@ -2,6 +2,9 @@
 #include <Windows.h>
 #include <XInput.h>
 #include "InputManager.h"
+#include "EventQueueManager.h"
+#include "ControllerKeyCommandAddedEvent.h"
+#include "ControllerAxisCommandAddedEvent.h"
 
 class dae::PlayerController::PlayerControllerImpl final
 {
@@ -132,19 +135,30 @@ public:
 		return(thumbStickDirection - deadZone) / (m_ThumbStickMaxValue - deadZone);
 	}
 
-	void AddCommand(std::unique_ptr<dae::Command> command, Control controllerKey)
+	void AddCommand(std::shared_ptr<dae::Command> command, Control controllerKey)
 	{
-		m_ControllerButtonCommands.insert(std::pair<Control, std::unique_ptr<dae::Command>>(controllerKey, std::move(command)));
+		m_ControllerButtonCommands.insert(std::pair<Control, std::shared_ptr<dae::Command>>(controllerKey, std::move(command)));
 	}
 
-	void AddCommand(std::unique_ptr<dae::ThumbstickCommand> command, ControllerAxis controllerAxis)
+	void AddCommand(std::shared_ptr<dae::ThumbstickCommand> command, ControllerAxis controllerAxis)
 	{
-		m_ControllerAxisCommands.insert(std::pair<ControllerAxis, std::unique_ptr<dae::ThumbstickCommand>>(controllerAxis, std::move(command)));
+		m_ControllerAxisCommands.insert(std::pair<ControllerAxis, std::shared_ptr<dae::ThumbstickCommand>>(controllerAxis, std::move(command)));
 	}
 
 	void InvertThumbstickLeftYAxis()
 	{
 		m_IsThumbstickLeftYAxisInverted = true;
+	}
+
+	int GetControllerIndex() const
+	{
+		return m_ControllerIndex;
+	}
+
+	void RemoveAllCommands()
+	{
+		m_ControllerButtonCommands.clear();
+		m_ControllerAxisCommands.clear();
 	}
 
 private:
@@ -169,9 +183,9 @@ private:
 	int m_ControllerIndex{};
 	unsigned int m_ButtonsPressedThisFrame{};
 	unsigned int m_ButtonsReleasedThisFrame{};
-	using ControllerButtonCommandsMap = std::map<Control, std::unique_ptr<dae::Command>>;
+	using ControllerButtonCommandsMap = std::map<Control, std::shared_ptr<dae::Command>>;
 	ControllerButtonCommandsMap m_ControllerButtonCommands{};
-	using ControllerAxisCommandsMap = std::map<ControllerAxis, std::unique_ptr<dae::ThumbstickCommand>>;
+	using ControllerAxisCommandsMap = std::map<ControllerAxis, std::shared_ptr<dae::ThumbstickCommand>>;
 	ControllerAxisCommandsMap m_ControllerAxisCommands{};
 	const float m_ThumbStickMaxValue{ 32768.f };
 	bool m_IsThumbstickLeftYAxisInverted{};
@@ -192,17 +206,26 @@ void dae::PlayerController::Update()
 	m_PlayerControllerImpl->HandleControllerInput();
 }
 
-void dae::PlayerController::AddCommand(std::unique_ptr<dae::Command> command, Control controllerKey)
+void dae::PlayerController::AddCommand(std::shared_ptr<dae::Command> command, Control controllerKey)
 {
-	m_PlayerControllerImpl->AddCommand(std::move(command), controllerKey);
+	m_PlayerControllerImpl->AddCommand(command, controllerKey);
+
+	dae::EventQueueManager::GetInstance().AddEvent<dae::ControllerKeyCommandAddedEvent>(std::make_unique<dae::ControllerKeyCommandAddedEvent>(command, controllerKey, m_PlayerControllerImpl->GetControllerIndex()));
 }
 
-void dae::PlayerController::AddCommand(std::unique_ptr<dae::ThumbstickCommand> command, ControllerAxis controllerAxis)
+void dae::PlayerController::AddCommand(std::shared_ptr<dae::ThumbstickCommand> command, ControllerAxis controllerAxis)
 {
-	m_PlayerControllerImpl->AddCommand(std::move(command), controllerAxis);
+	m_PlayerControllerImpl->AddCommand(command, controllerAxis);
+
+	dae::EventQueueManager::GetInstance().AddEvent<dae::ControllerAxisCommandAddedEvent>(std::make_unique<dae::ControllerAxisCommandAddedEvent>(command, controllerAxis, m_PlayerControllerImpl->GetControllerIndex()));
 }
 
 void dae::PlayerController::InvertThumbstickLeftYAxis()
 {
 	m_PlayerControllerImpl->InvertThumbstickLeftYAxis();
+}
+
+void dae::PlayerController::RemoveAllCommands()
+{
+	m_PlayerControllerImpl->RemoveAllCommands();
 }

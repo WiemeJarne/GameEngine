@@ -4,7 +4,7 @@
 
 namespace dae
 {
-	class ButtonRemovedFromActiveSceneEvent : public BaseEvent
+	class ButtonRemovedFromActiveSceneEvent final : public BaseEvent
 	{
 	public:
 		ButtonRemovedFromActiveSceneEvent(ButtonComponent* pButtonComponent)

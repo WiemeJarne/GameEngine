@@ -1,12 +1,13 @@
-#pragma once
+#ifndef InputManager_h
+#define InputManager_h
 #include "Singleton.h"
 #include <vector>
 #include "PlayerController.h"
 #include "ButtonComponent.h"
 #include "EventListener.h"
-#include "NewSceneActivatedEvent.h"
 #include "ButtonAddedToActiveSceneEvent.h"
 #include "ButtonRemovedFromActiveSceneEvent.h"
+#include "KeyboardCommandAddedToActiveSceneEvent.h"
 #include <map>
 #include <memory>
 #define KEY_DOWN_MASK 0x80
@@ -20,7 +21,9 @@ namespace dae
 		pressed
 	};
 
-	class InputManager final : public Singleton<InputManager>, EventListener<NewSceneActivatedEvent>, EventListener<ButtonAddedToActiveSceneEvent>, EventListener<ButtonRemovedFromActiveSceneEvent>
+	class NewSceneActivatedEvent;
+
+	class InputManager final : public Singleton<InputManager>, EventListener<NewSceneActivatedEvent>, EventListener<ButtonAddedToActiveSceneEvent>, EventListener<ButtonRemovedFromActiveSceneEvent>, EventListener<KeyboardCommandAddedToActiveSceneEvent>
 	{
 	public:
 		InputManager();
@@ -46,16 +49,16 @@ namespace dae
 			esc
 		};
 		
-		void AddCommand(std::unique_ptr<dae::Command> command, KeyState keyState, KeyboardKey keyboardKey);
-		void RemoveAllCommandsAndControlers();
+		int ConvertKeyboardKeyToInt(KeyboardKey keyboardKey) const;
 		void OnNotify(const NewSceneActivatedEvent* pEvent) override;
 		void OnNotify(const ButtonAddedToActiveSceneEvent* pEvent) override;
 		void OnNotify(const ButtonRemovedFromActiveSceneEvent* pEvent) override;
+		void OnNotify(const KeyboardCommandAddedToActiveSceneEvent* pEvent) override;
 
 	private:
 		std::vector<std::unique_ptr<dae::PlayerController>> m_Controllers;
 		using KeyboardAction = std::pair<KeyState, int>;
-		using KeyboardCommandsMap = std::map<KeyboardAction, std::unique_ptr<dae::Command>>;
+		using KeyboardCommandsMap = std::map<KeyboardAction, dae::Command*>;
 		KeyboardCommandsMap m_KeyboardCommands;
 		uint8_t m_CurrentKeyboardKeysState[256]{};
 		uint8_t m_PreviousKeyboardKeysState[256]{};
@@ -66,8 +69,8 @@ namespace dae
 		bool IsDownThisFrame(int button) const;
 		bool IsUpThisFrame(int button) const;
 		bool IsPressed(int button) const;
-		int ConvertKeyboardKeyToInt(KeyboardKey keyboardKey) const;
 		void AddButton(ButtonComponent* pButtonComponent);
 		void RemoveButton(ButtonComponent* pButtonComponent);
 	};
 }
+#endif // !InputManager_h

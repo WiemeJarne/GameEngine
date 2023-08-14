@@ -126,9 +126,6 @@
     <ClInclude Include="CollisionBoxComponent.h">
       <Filter>Collision</Filter>
     </ClInclude>
-    <ClInclude Include="EngineEvents.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CollisionManager.h">
       <Filter>Collision</Filter>
     </ClInclude>
@@ -160,6 +157,15 @@
       <Filter>Events</Filter>
     </ClInclude>
     <ClInclude Include="ButtonRemovedFromActiveSceneEvent.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyboardCommandAddedToActiveSceneEvent.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="ControllerKeyCommandAddedEvent.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="ControllerAxisCommandAddedEvent.h">
       <Filter>Events</Filter>
     </ClInclude>
   </ItemGroup>

@@ -44,8 +44,6 @@ void LevelManager::LoadLevel(int levelNr, GameMode gameMode, bool cycleLevels)
 		dae::ServiceLocator::GetSoundSystem().Play("sound/Music.mp3", 25, true);
 	}
 
-	dae::InputManager::GetInstance().RemoveAllCommandsAndControlers();
-
 	m_LevelNr = levelNr;
 	m_GameMode = gameMode;
 
@@ -84,8 +82,8 @@ void LevelManager::LoadLevel(int levelNr, GameMode gameMode, bool cycleLevels)
 	auto levelScene = dae::SceneManager::GetInstance().CreateScene("levelScene", true);
 
 	//add pause command to the scene
-	dae::InputManager::GetInstance().AddCommand(std::make_unique<commands::SetActiveSceneCommand>("pauseScreen"), dae::KeyState::down, dae::InputManager::KeyboardKey::esc);
-	dae::InputManager::GetInstance().AddCommand(std::make_unique<commands::SetActiveSceneCommand>("levelScene"), dae::KeyState::down, dae::InputManager::KeyboardKey::Space);
+	levelScene->AddKeyboardCommand(std::make_unique<commands::SetActiveSceneCommand>("pauseScreen"), dae::KeyState::down, dae::InputManager::KeyboardKey::esc);
+	levelScene->AddKeyboardCommand(std::make_unique<commands::SetActiveSceneCommand>("levelScene"), dae::KeyState::down, dae::InputManager::KeyboardKey::Space);
 
 	bool couldLoadLevel{};
 
@@ -118,7 +116,7 @@ void LevelManager::LoadLevel(int levelNr, GameMode gameMode, bool cycleLevels)
 	LoadLevelBurgerParts(m_LevelNr);
 
 	auto skipLevelCommand = std::make_unique<commands::SkipLevelCommand>();
-	dae::InputManager::GetInstance().AddCommand(std::move(skipLevelCommand), dae::KeyState::down, dae::InputManager::KeyboardKey::F1);
+	levelScene->AddKeyboardCommand(std::move(skipLevelCommand), dae::KeyState::down, dae::InputManager::KeyboardKey::F1);
 
 	if (m_EnemiesSpawnLocations.empty())
 	{
@@ -208,7 +206,6 @@ void LevelManager::OnNotify(const BurgerPartReachedPlateEvent* )
 	{
 		++m_LevelNr;
 
-		dae::InputManager::GetInstance().RemoveAllCommandsAndControlers();
 		LoadLevel(m_LevelNr, m_GameMode, true);
 	}
 }
@@ -664,8 +661,6 @@ void LevelManager::ShowPointsScreen()
 	//create a new pointsScreenScene and set it as the active scene
 	auto pPointScreenScene{ dae::SceneManager::GetInstance().CreateScene("pointScreen", true) };
 
-	dae::InputManager::GetInstance().RemoveAllCommandsAndControlers();
-
 	if (!m_Font)
 		m_Font = dae::ResourceManager::GetInstance().LoadFont("PressStart2P-vaV7.ttf", 15u);
 
@@ -721,7 +716,7 @@ void LevelManager::ShowPointsScreen()
 	{
 		//add object so the player can type in his name
 		auto typeObject{ std::make_unique<dae::GameObject>(pPointScreenScene) };
-		typeObject->AddComponent(std::make_unique<TypeComponent>(typeObject.get(), m_Font));
+		typeObject->AddComponent(std::make_unique<TypeComponent>(typeObject.get(), m_Font, pPointScreenScene));
 		auto textureSize{ typeObject->GetComponent<dae::RenderComponent>()->GetTextureComponent()->GetSize() };
 		typeObject->SetLocalPosition(sceneWidth / 2.f - textureSize.x / 2.f, sceneHeight - 75.f);
 		pTextComponent = typeObject->GetComponent<dae::TextComponent>();
@@ -772,7 +767,6 @@ void LevelManager::ShowPointsScreen()
 			}
 		}
 
-		dae::InputManager::GetInstance().RemoveAllCommandsAndControlers();
 		m_AmountOfPoints = 0;
 		LoadLevel(1, m_GameMode);
 	};

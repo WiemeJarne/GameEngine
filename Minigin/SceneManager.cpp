@@ -3,6 +3,15 @@
 #include "EventQueueManager.h"
 #include "NewSceneActivatedEvent.h"
 
+class SetSceneActiveBeforeAddingControllerCommandsException final
+{};
+
+dae::SceneManager::SceneManager()
+{
+	EventQueueManager::GetInstance().AddListener<ControllerKeyCommandAddedEvent>(this);
+	EventQueueManager::GetInstance().AddListener<ControllerAxisCommandAddedEvent>(this);
+}
+
 void dae::SceneManager::Update()
 {
 	//update the active scene if there is a scene active
@@ -110,4 +119,20 @@ void dae::SceneManager::RemoveSceneByName(const std::string& name)
 
 	if (sceneToRemove)
 		RemoveScene(sceneToRemove);
+}
+
+void dae::SceneManager::OnNotify(const ControllerKeyCommandAddedEvent* event)
+{
+	if (!m_ActiveScene)
+		throw(SetSceneActiveBeforeAddingControllerCommandsException());
+
+	m_ActiveScene->AddControllerKeyCommand(event->GetCommand(), event->GetControllerKey(), event->GetControllerIndex());
+}
+
+void dae::SceneManager::OnNotify(const ControllerAxisCommandAddedEvent* event)
+{
+	if (!m_ActiveScene)
+		throw(SetSceneActiveBeforeAddingControllerCommandsException());
+
+	m_ActiveScene->AddControllerAxisCommand(event->GetCommand(), event->GetControllerAxis(), event->GetControllerIndex());
 }

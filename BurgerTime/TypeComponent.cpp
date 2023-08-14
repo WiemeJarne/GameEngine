@@ -5,7 +5,7 @@
 #include "InputManager.h"
 #include "TypeCommand.h"
 
-TypeComponent::TypeComponent(dae::GameObject* pOwner, std::shared_ptr<dae::Font> font)
+TypeComponent::TypeComponent(dae::GameObject* pOwner, std::shared_ptr<dae::Font> font, dae::Scene* sceneToAddCommandsTo)
 	: Component(pOwner)
 {
 	auto textComponent{ std::make_unique<dae::TextComponent>(pOwner, "_", font) };
@@ -45,35 +45,35 @@ TypeComponent::TypeComponent(dae::GameObject* pOwner, std::shared_ptr<dae::Font>
 	using KeyState = dae::KeyState;
 	using KeyboardKey = dae::InputManager::KeyboardKey;
 	
-	dae::InputManager::GetInstance().AddCommand(std::move(commandA), KeyState::down, KeyboardKey::A);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandB), KeyState::down, KeyboardKey::B);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandC), KeyState::down, KeyboardKey::C);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandD), KeyState::down, KeyboardKey::D);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandE), KeyState::down, KeyboardKey::E);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandF), KeyState::down, KeyboardKey::F);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandG), KeyState::down, KeyboardKey::G);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandH), KeyState::down, KeyboardKey::H);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandI), KeyState::down, KeyboardKey::I);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandJ), KeyState::down, KeyboardKey::J);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandK), KeyState::down, KeyboardKey::K);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandL), KeyState::down, KeyboardKey::L);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandM), KeyState::down, KeyboardKey::M);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandN), KeyState::down, KeyboardKey::N);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandO), KeyState::down, KeyboardKey::O);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandP), KeyState::down, KeyboardKey::P);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandQ), KeyState::down, KeyboardKey::Q);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandR), KeyState::down, KeyboardKey::R);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandS), KeyState::down, KeyboardKey::S);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandT), KeyState::down, KeyboardKey::T);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandU), KeyState::down, KeyboardKey::U);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandV), KeyState::down, KeyboardKey::V);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandW), KeyState::down, KeyboardKey::W);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandX), KeyState::down, KeyboardKey::X);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandY), KeyState::down, KeyboardKey::Y);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandZ), KeyState::down, KeyboardKey::Z);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandDash), KeyState::down, KeyboardKey::Minus);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandBackSpace), KeyState::down, KeyboardKey::BackSpace);
-	dae::InputManager::GetInstance().AddCommand(std::move(commandSpace), KeyState::down, KeyboardKey::Space);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandA), KeyState::down, KeyboardKey::A);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandB), KeyState::down, KeyboardKey::B);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandC), KeyState::down, KeyboardKey::C);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandD), KeyState::down, KeyboardKey::D);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandE), KeyState::down, KeyboardKey::E);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandF), KeyState::down, KeyboardKey::F);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandG), KeyState::down, KeyboardKey::G);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandH), KeyState::down, KeyboardKey::H);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandI), KeyState::down, KeyboardKey::I);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandJ), KeyState::down, KeyboardKey::J);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandK), KeyState::down, KeyboardKey::K);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandL), KeyState::down, KeyboardKey::L);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandM), KeyState::down, KeyboardKey::M);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandN), KeyState::down, KeyboardKey::N);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandO), KeyState::down, KeyboardKey::O);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandP), KeyState::down, KeyboardKey::P);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandQ), KeyState::down, KeyboardKey::Q);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandR), KeyState::down, KeyboardKey::R);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandS), KeyState::down, KeyboardKey::S);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandT), KeyState::down, KeyboardKey::T);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandU), KeyState::down, KeyboardKey::U);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandV), KeyState::down, KeyboardKey::V);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandW), KeyState::down, KeyboardKey::W);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandX), KeyState::down, KeyboardKey::X);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandY), KeyState::down, KeyboardKey::Y);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandZ), KeyState::down, KeyboardKey::Z);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandDash), KeyState::down, KeyboardKey::Minus);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandBackSpace), KeyState::down, KeyboardKey::BackSpace);
+	sceneToAddCommandsTo->AddKeyboardCommand(std::move(commandSpace), KeyState::down, KeyboardKey::Space);
 
 	pOwner->AddComponent(std::move(textComponent));
 }

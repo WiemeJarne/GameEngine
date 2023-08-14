@@ -4,7 +4,7 @@
 
 namespace dae
 {
-	class ButtonAddedToActiveSceneEvent : public BaseEvent
+	class ButtonAddedToActiveSceneEvent final : public BaseEvent
 	{
 	public:
 		ButtonAddedToActiveSceneEvent(ButtonComponent* pButtonComponent)

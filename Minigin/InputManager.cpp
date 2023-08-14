@@ -2,6 +2,7 @@
 #include "InputManager.h"
 #include "imgui_impl_sdl2.h"
 #include "EventQueueManager.h"
+#include "NewSceneActivatedEvent.h"
 #include <Windows.h>
 
 dae::InputManager::InputManager()
@@ -9,6 +10,7 @@ dae::InputManager::InputManager()
 	EventQueueManager::GetInstance().AddListener<NewSceneActivatedEvent>(this);
 	EventQueueManager::GetInstance().AddListener<ButtonAddedToActiveSceneEvent>(this);
 	EventQueueManager::GetInstance().AddListener<ButtonRemovedFromActiveSceneEvent>(this);
+	EventQueueManager::GetInstance().AddListener<KeyboardCommandAddedToActiveSceneEvent>(this);
 }
 
 bool dae::InputManager::ProcessInput()
@@ -50,13 +52,6 @@ bool dae::InputManager::ProcessInput()
 void dae::InputManager::AddController(std::unique_ptr<PlayerController> playerController)
 {
 	m_Controllers.push_back(std::move(playerController));
-}
-
-void dae::InputManager::AddCommand(std::unique_ptr<dae::Command> command, KeyState keyState, KeyboardKey keyboardKey)
-{
-	KeyboardAction keyboardAction{ keyState, ConvertKeyboardKeyToInt(keyboardKey) };
-
-	m_KeyboardCommands.insert(std::pair<KeyboardAction, std::unique_ptr<dae::Command>>(keyboardAction, std::move(command)));
 }
 
 void dae::InputManager::AddButton(ButtonComponent* pButtonComponent)
@@ -131,17 +126,38 @@ bool dae::InputManager::IsPressed(int button) const
 	return (m_CurrentKeyboardKeysState[button] & KEY_DOWN_MASK);
 }
 
-void dae::InputManager::RemoveAllCommandsAndControlers()
-{
-	m_KeyboardCommands.clear();
-	m_Controllers.clear();
-	m_CommandsWhereRemoved = true;
-}
-
 void dae::InputManager::OnNotify(const NewSceneActivatedEvent* pEvent)
 {
+	auto pScene{ pEvent->GetNewlyActivatedScene() };
+
 	m_pButtons.clear();
-	m_pButtons = pEvent->GetNewlyActivatedScene()->GetButtons();
+	m_pButtons = pScene->GetButtons();
+	m_KeyboardCommands = pScene->GetKeyboardCommands();
+
+	for (auto& playerController : m_Controllers)
+	{
+		playerController->RemoveAllCommands();
+	}
+
+	//get the ControllerKeyCommands of the new active scene
+	auto controllerKeyCommands{ pScene->GetControllerKeyCommands() };
+	for (auto& playerController : controllerKeyCommands)
+	{
+		for (auto& controllerKeyCommand : playerController.second)
+		{
+			m_Controllers[playerController.first]->AddCommand(controllerKeyCommand.second, controllerKeyCommand.first);
+		}
+	}
+
+	//get the controllerAxisCommands of the new active scene
+	auto controllerAxisCommands{ pScene->GetControllerAxisCommmands() };
+	for (auto& playerController : controllerAxisCommands)
+	{
+		for (auto& controllerAxisCommand : playerController.second)
+		{
+			m_Controllers[playerController.first]->AddCommand(controllerAxisCommand.second, controllerAxisCommand.first);
+		}
+	}
 }
 
 void dae::InputManager::OnNotify(const ButtonAddedToActiveSceneEvent* pEvent)
@@ -152,6 +168,11 @@ void dae::InputManager::OnNotify(const ButtonAddedToActiveSceneEvent* pEvent)
 void dae::InputManager::OnNotify(const ButtonRemovedFromActiveSceneEvent* pEvent)
 {
 	RemoveButton(pEvent->GetButtonComponent());
+}
+
+void dae::InputManager::OnNotify(const KeyboardCommandAddedToActiveSceneEvent* pEvent)
+{
+	m_KeyboardCommands.insert(std::pair<KeyboardAction, dae::Command*>(pEvent->GetKeyboardAction(), pEvent->GetCommand()));
 }
 
 int dae::InputManager::ConvertKeyboardKeyToInt(KeyboardKey keyboardKey) const

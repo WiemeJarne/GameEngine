@@ -45,9 +45,10 @@ namespace dae
 		void Update();
 
 		using Control = std::pair<dae::KeyState, ControllerKey>;
-		void AddCommand(std::unique_ptr<Command> command, Control controllerKey);
-		void AddCommand(std::unique_ptr<ThumbstickCommand> command, ControllerAxis controllerAxis);
+		void AddCommand(std::shared_ptr<Command> command, Control controllerKey);
+		void AddCommand(std::shared_ptr<ThumbstickCommand> command, ControllerAxis controllerAxis);
 		void InvertThumbstickLeftYAxis();
+		void RemoveAllCommands(); //this does not delete the commands the commands are still on the scene where they where added on
 
 	private:
 		class PlayerControllerImpl;

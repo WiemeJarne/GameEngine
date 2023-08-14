@@ -3,6 +3,7 @@
 #include "EventQueueManager.h"
 #include "ButtonAddedToActiveSceneEvent.h"
 #include "ButtonRemovedFromActiveSceneEvent.h"
+#include "KeyboardCommandAddedToActiveSceneEvent.h"
 #include <iostream>
 
 using namespace dae;
@@ -123,6 +124,43 @@ std::shared_ptr<GameObject> Scene::GetSharedPtr(GameObject* pGameObject) const
 	}
 
 	return nullptr;
+}
+
+void Scene::AddKeyboardCommand(std::unique_ptr<dae::Command> command, KeyState keyState, InputManager::KeyboardKey keyboardKey)
+{
+	//create the KeyboardAction
+	KeyboardAction keyboardAction{ keyState, InputManager::GetInstance().ConvertKeyboardKeyToInt(keyboardKey) };	
+
+	//add the command and its keyboardAction to the scene
+	m_KeyboardCommands[keyboardAction] = std::move(command);
+
+	//if this scene is active send out a KeyboardCommandAddedToActiveSceneEvent
+	if (SceneManager::GetInstance().GetActiveScene() == this)
+	{
+		EventQueueManager::GetInstance().AddEvent<KeyboardCommandAddedToActiveSceneEvent>(std::make_unique<KeyboardCommandAddedToActiveSceneEvent>(m_KeyboardCommands[keyboardAction].get(), keyboardAction));
+	}
+}
+
+std::map<Scene::KeyboardAction, Command*> Scene::GetKeyboardCommands() const
+{
+	std::map<KeyboardAction, Command*> keyboardCommands{};
+
+	for (const auto& keyBoardActionAndCommand : m_KeyboardCommands)
+	{
+		keyboardCommands[keyBoardActionAndCommand.first] = keyBoardActionAndCommand.second.get();
+	}
+
+	return keyboardCommands;
+}
+
+void Scene::AddControllerKeyCommand(std::shared_ptr<Command> command, Control controllerKey, int controllerIndex)
+{
+	m_ControllerButtonCommands[controllerIndex][controllerKey] = command;
+}
+
+void Scene::AddControllerAxisCommand(std::shared_ptr<ThumbstickCommand> command, PlayerController::ControllerAxis controllerAxis, int controllerIndex)
+{
+	m_ControllerAxisCommands[controllerIndex][controllerAxis] = command;
 }
 
 void Scene::Update()

@@ -3,11 +3,14 @@
 #include <string>
 #include <memory>
 #include "Singleton.h"
+#include "EventListener.h"
+#include "ControllerKeyCommandAddedEvent.h"
+#include "ControllerAxisCommandAddedEvent.h"
 
 namespace dae
 {
 	class Scene;
-	class SceneManager final : public Singleton<SceneManager>
+	class SceneManager final : public Singleton<SceneManager>, public EventListener<ControllerKeyCommandAddedEvent>, public EventListener<ControllerAxisCommandAddedEvent>
 	{
 	public:
 		Scene* CreateScene(const std::string& name, bool setAsActiveScene);
@@ -28,10 +31,12 @@ namespace dae
 		void SetActiveSceneByName(const std::string& name);
 		void RemoveSceneByIndex(int index);
 		void RemoveSceneByName(const std::string& name);
+		void OnNotify(const ControllerKeyCommandAddedEvent* event);
+		void OnNotify(const ControllerAxisCommandAddedEvent* event);
 
 	private:
 		friend class Singleton<SceneManager>;
-		SceneManager() = default;
+		SceneManager();
 		std::vector<std::shared_ptr<Scene>> m_scenes;
 		Scene* m_ActiveScene;
 		float m_ScenesWidth{};

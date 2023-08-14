@@ -29,15 +29,25 @@ PlayerPrefab::PlayerPrefab(dae::Scene* pScene, const std::string& textureFilePat
 	m_go->AddComponent(std::move(collisionBoxComponent));
 	
 	//create controller commands
-	//create thumbstickMoveCommand
-	auto thumbstickMoveCommand = std::make_unique<commands::ThumbstickMoveCommand>(m_go.get());
-	auto controllerUsePepperCommand = std::make_unique<commands::UsePepperCommand>(pepperComponent.get());
+	//create controllerMoveLeftCommmand
+	auto controllerMoveLeftCommmand = std::make_shared<commands::MoveCommand>(m_go.get(), glm::vec2(-1.f, 0.f));
+	//create controllerMoveRightCommmand
+	auto controllerMoveRightCommmand = std::make_shared<commands::MoveCommand>(m_go.get(), glm::vec2(1.f, 0.f));
+	//create controllerMoveUpCommmand
+	auto controllerMoveUpCommmand = std::make_shared<commands::MoveCommand>(m_go.get(), glm::vec2(0.f, -1.f));
+	//create controllerMoveDownCommmand
+	auto controllerMoveDownCommmand = std::make_shared<commands::MoveCommand>(m_go.get(), glm::vec2(0.f, 1.f));
+	//create controllerUsePepperCommand
+	auto controllerUsePepperCommand = std::make_shared<commands::UsePepperCommand>(pepperComponent.get());
 	
 	//controler input
 	auto playerController{ std::make_unique<dae::PlayerController>(-1) };
 	playerController->InvertThumbstickLeftYAxis();
-	playerController->AddCommand(std::move(thumbstickMoveCommand), dae::PlayerController::ControllerAxis::tumbStickLeft);
-	playerController->AddCommand(std::move(controllerUsePepperCommand), dae::PlayerController::Control(dae::KeyState::down, dae::PlayerController::ControllerKey::A));
+	playerController->AddCommand(controllerMoveLeftCommmand, dae::PlayerController::Control(dae::KeyState::pressed, dae::PlayerController::ControllerKey::dPadLeft));
+	playerController->AddCommand(controllerMoveRightCommmand, dae::PlayerController::Control(dae::KeyState::pressed, dae::PlayerController::ControllerKey::dPadRight));
+	playerController->AddCommand(controllerMoveUpCommmand, dae::PlayerController::Control(dae::KeyState::pressed, dae::PlayerController::ControllerKey::dPadUp));
+	playerController->AddCommand(controllerMoveDownCommmand, dae::PlayerController::Control(dae::KeyState::pressed, dae::PlayerController::ControllerKey::dPadDown));
+	playerController->AddCommand(controllerUsePepperCommand, dae::PlayerController::Control(dae::KeyState::down, dae::PlayerController::ControllerKey::A));
 	dae::InputManager::GetInstance().AddController(std::move(playerController));
 
 	//create keyboard commands
@@ -57,10 +67,10 @@ PlayerPrefab::PlayerPrefab(dae::Scene* pScene, const std::string& textureFilePat
 	//keyboard input
 	if (useKeyboard)
 	{
-		dae::InputManager::GetInstance().AddCommand(std::move(moveLeftCommmand), dae::KeyState::pressed, dae::InputManager::KeyboardKey::A);
-		dae::InputManager::GetInstance().AddCommand(std::move(moveRightCommmand), dae::KeyState::pressed, dae::InputManager::KeyboardKey::D);
-		dae::InputManager::GetInstance().AddCommand(std::move(moveUpCommmand), dae::KeyState::pressed, dae::InputManager::KeyboardKey::W);
-		dae::InputManager::GetInstance().AddCommand(std::move(moveDownCommmand), dae::KeyState::pressed, dae::InputManager::KeyboardKey::S);
-		dae::InputManager::GetInstance().AddCommand(std::move(usePepperCommand), dae::KeyState::down, dae::InputManager::KeyboardKey::E);
+		pScene->AddKeyboardCommand(std::move(moveLeftCommmand), dae::KeyState::pressed, dae::InputManager::KeyboardKey::A);
+		pScene->AddKeyboardCommand(std::move(moveRightCommmand), dae::KeyState::pressed, dae::InputManager::KeyboardKey::D);
+		pScene->AddKeyboardCommand(std::move(moveUpCommmand), dae::KeyState::pressed, dae::InputManager::KeyboardKey::W);
+		pScene->AddKeyboardCommand(std::move(moveDownCommmand), dae::KeyState::pressed, dae::InputManager::KeyboardKey::S);
+		pScene->AddKeyboardCommand(std::move(usePepperCommand), dae::KeyState::down, dae::InputManager::KeyboardKey::E);
 	}
 }

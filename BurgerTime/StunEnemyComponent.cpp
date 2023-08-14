@@ -25,7 +25,7 @@ void StunEnemyComponent::Update()
 
 	if(m_AmountOfSecSinceSpawned >= m_AmountOfSecAlive)
 	{
-		auto pScene{ dae::SceneManager::GetInstance().GetSceneByIndex(0) };
+		auto pScene{ dae::SceneManager::GetInstance().GetSceneByName("levelScene")};
 
 		if (pScene)
 			pScene->QueueForRemove(m_pOwner);

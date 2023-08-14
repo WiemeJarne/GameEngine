@@ -1,10 +1,11 @@
-#pragma once
+#ifndef NewSceneActivatedEvent_h
+#define NewSceneActivatedEvent_h
 #include "BaseEvent.h"
 #include "Scene.h"
 
 namespace dae
 {
-	class NewSceneActivatedEvent : public BaseEvent
+	class NewSceneActivatedEvent final : public BaseEvent
 	{
 	public:
 		NewSceneActivatedEvent(Scene* pNewScene)
@@ -17,3 +18,4 @@ namespace dae
 		Scene* m_pNewlyActivatedScene;
 	};
 }
+#endif // !NewSceneActivatedEvent_h

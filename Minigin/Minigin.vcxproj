@@ -232,13 +232,15 @@ xcopy "$(SolutionDir)3rdParty\SDL2_mixer\lib\$(PlatformTarget)\*.dll" "$(OutputP
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="Command.h" />
     <ClInclude Include="Component.h" />
-    <ClInclude Include="EngineEvents.h" />
+    <ClInclude Include="ControllerAxisCommandAddedEvent.h" />
+    <ClInclude Include="ControllerKeyCommandAddedEvent.h" />
     <ClInclude Include="EventListener.h" />
     <ClInclude Include="EventQueue.h" />
     <ClInclude Include="EventQueueManager.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="KeyboardCommandAddedToActiveSceneEvent.h" />
     <ClInclude Include="Minigin.h" />
     <ClInclude Include="NewSceneActivatedEvent.h" />
     <ClInclude Include="Observer.h" />
