@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "EventQueueManager.h"
 #include "NewSceneActivatedEvent.h"
+#include "Renderer.h"
 
 class SetSceneActiveBeforeAddingControllerCommandsException final
 {};
@@ -42,6 +43,7 @@ dae::Scene* dae::SceneManager::CreateScene(const std::string& name, bool setAsAc
 	{
 		m_ActiveScene = scene.get();
 		EventQueueManager::GetInstance().AddEvent<NewSceneActivatedEvent>(std::make_unique<NewSceneActivatedEvent>(m_ActiveScene));
+		Renderer::GetInstance().ActiveCameraChanged(scene->GetCameraPtr());
 	}
 
 	return scene.get();

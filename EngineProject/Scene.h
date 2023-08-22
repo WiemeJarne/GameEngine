@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "ButtonComponent.h"
 #include "PlayerController.h"
+#include "Camera.h"
 
 namespace dae
 {
@@ -13,6 +14,7 @@ namespace dae
 		friend Scene* SceneManager::CreateScene(const std::string& name, bool setAsActiveScene = true);
 	public:
 		void Add(std::shared_ptr<GameObject> object, bool isButton = false);
+		void Add(std::unique_ptr<Camera> camera);
 		void QueueForAdd(std::shared_ptr<GameObject> object, bool isButton = false);
 		void Remove(std::shared_ptr<GameObject> object, bool isButton = false);
 		void Remove(GameObject* object, bool isButton = false);
@@ -21,6 +23,7 @@ namespace dae
 		void RemoveAll();
 		std::shared_ptr<GameObject> GetSharedPtr(GameObject* pGameObject) const;
 		const std::string& GetName() const { return m_name; }
+		Camera* GetCameraPtr() const;
 		std::vector<ButtonComponent*> GetButtons() const { return m_pButtons; }
 		void AddKeyboardCommand(std::unique_ptr<Command> command, KeyState keyState, InputManager::KeyboardKey keyboardKey);
 		using KeyboardAction = std::pair<KeyState, int>;
@@ -53,6 +56,8 @@ namespace dae
 		std::vector <std::shared_ptr<GameObject>> m_ObjectsQueuedToAdd{};
 		std::vector<GameObject*> m_ObjectsQueuedForRemove{};
 		std::vector<ButtonComponent*> m_pButtons{};
+
+		std::unique_ptr<Camera> m_Camera{};
 
 		using KeyboardCommandsMap = std::map<KeyboardAction, std::unique_ptr<Command>>;
 		KeyboardCommandsMap m_KeyboardCommands;

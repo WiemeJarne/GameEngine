@@ -3,6 +3,7 @@
 #include <SDL.h>
 #include "Singleton.h"
 #include "TextureComponent.h"
+#include "Camera.h"
 
 class TrashTheCache;
 
@@ -29,8 +30,11 @@ namespace dae
 		const SDL_Color& GetBackgroundColor() const { return m_clearColor; }
 		void SetBackgroundColor(const SDL_Color& color) { m_clearColor = color; }
 
+		void ActiveCameraChanged(Camera* pCamera);
+
 	private:
 		bool m_showDemo{ false };
+		Camera* m_pActiveCamera;
 	};
 }
 

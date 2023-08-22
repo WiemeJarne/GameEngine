@@ -7,6 +7,7 @@
 #endif
 #endif
 
+#include "GameObject.h"
 #include "Engine.h"
 #include "SceneManager.h"
 #include "SoundServiceLocator.h"
@@ -18,7 +19,7 @@ void load()
 	//auto scene = dae::SceneManager::GetInstance().CreateScene("scene", true);
 
 	//register the sdl soundSystem
-	dae::ServiceLocator::registerSoundSystem<dae::SDLSoundSystem>();
+	//dae::ServiceLocator::registerSoundSystem<dae::SDLSoundSystem>();
 }
 
 int main(int, char* []) {

@@ -4,6 +4,7 @@
 #include "ButtonAddedToActiveSceneEvent.h"
 #include "ButtonRemovedFromActiveSceneEvent.h"
 #include "KeyboardCommandAddedToActiveSceneEvent.h"
+#include "Renderer.h"
 #include <iostream>
 
 using namespace dae;
@@ -28,6 +29,12 @@ void Scene::Add(std::shared_ptr<GameObject> object, bool isButton)
 	}
 
 	m_objects.emplace_back(std::move(object));
+}
+
+void Scene::Add(std::unique_ptr<Camera> camera)
+{
+	Renderer::GetInstance().ActiveCameraChanged(camera.get());
+	m_Camera = std::move(camera);
 }
 
 void Scene::QueueForAdd(std::shared_ptr<GameObject> object, bool isButton)
@@ -122,6 +129,14 @@ std::shared_ptr<GameObject> Scene::GetSharedPtr(GameObject* pGameObject) const
 		if (object.get() == pGameObject)
 			return object;
 	}
+
+	return nullptr;
+}
+
+Camera* Scene::GetCameraPtr() const
+{
+	if (m_Camera)
+		return m_Camera.get();
 
 	return nullptr;
 }

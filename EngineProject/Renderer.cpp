@@ -72,10 +72,28 @@ void dae::Renderer::Destroy()
 
 void dae::Renderer::RenderTexture(const TextureComponent& texture, const float x, const float y) const
 {
+	int cameraXPos{};
+	int cameraYPos{};
+
+	if (m_pActiveCamera)
+	{
+		cameraXPos = m_pActiveCamera->GetXPos();
+		cameraYPos = m_pActiveCamera->GetYPos();
+	}
+
 	SDL_Rect dst{};
-	dst.x = static_cast<int>(x);
-	dst.y = static_cast<int>(y);
+	dst.x = static_cast<int>(x) + cameraXPos;
+	dst.y = static_cast<int>(y) + cameraYPos;
+
 	SDL_QueryTexture(texture.GetSDLTexture(), nullptr, nullptr, &dst.w, &dst.h);
+
+	if (m_pActiveCamera)
+	{
+		float zoom{ (1.f / m_pActiveCamera->GetZoom()) };
+		dst.h = static_cast<int>(dst.h * zoom);
+		dst.w = static_cast<int>(dst.w * zoom);
+	}
+	
 	SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
 }
 
@@ -90,3 +108,8 @@ void dae::Renderer::RenderTexture(const TextureComponent& texture, const float x
 }
 
 inline SDL_Renderer* dae::Renderer::GetSDLRenderer() const { return m_renderer; }
+
+void dae::Renderer::ActiveCameraChanged(Camera* pCamera)
+{
+	m_pActiveCamera = pCamera;
+}
