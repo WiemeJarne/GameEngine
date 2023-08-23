@@ -82,10 +82,11 @@ void dae::Renderer::RenderTexture(const TextureComponent& texture, const float x
 	}
 
 	SDL_Rect dst{};
-	dst.x = static_cast<int>(x) + cameraXPos;
-	dst.y = static_cast<int>(y) + cameraYPos;
 
 	SDL_QueryTexture(texture.GetSDLTexture(), nullptr, nullptr, &dst.w, &dst.h);
+
+	dst.x = static_cast<int>(x) + cameraXPos;
+	dst.y = static_cast<int>(y) + cameraYPos;
 
 	if (m_pActiveCamera)
 	{
