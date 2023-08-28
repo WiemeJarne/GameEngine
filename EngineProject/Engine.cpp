@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <fstream>
 #include "Engine.h"
 #include "InputManager.h"
 #include "SceneManager.h"
@@ -53,10 +54,35 @@ dae::Engine::Engine(const std::string &dataPath)
 		throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
 	}
 
-	constexpr int windowWidth{ 416 };
-	constexpr int windowHeight{ 480 };
+	//read in the settings.txt file for the windowHeight and windowWidth
+	std::string filePath{ dataPath + "/settings.txt" };
+	std::ifstream inputFile{ filePath };
 
-	SceneManager::GetInstance().SetScenesSize(windowWidth, windowHeight);
+	int windowWidth{ 416 };
+	int windowHeight{ 480 };
+
+	if (inputFile.is_open())
+	{
+		char command{};
+		while (!inputFile.eof())
+		{
+			inputFile >> command;
+
+			if (command == '\n')
+				continue;
+
+			if (command == 'h')
+			{
+				inputFile >> windowHeight;
+			}
+			else if (command == 'w')
+			{
+				inputFile >> windowWidth;
+			}
+		}
+	}
+
+	SceneManager::GetInstance().SetScenesSize(static_cast<float>(windowWidth), static_cast<float>(windowHeight));
 
 	g_window = SDL_CreateWindow(
 		"Programming 4 assignment",
